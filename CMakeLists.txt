@@ -6,6 +6,16 @@ cmake_minimum_required(VERSION 3.18)
 #######################CLIENT#######################
 
 project(r-type_client LANGUAGES CXX)
+include(FetchContent)
+
+FetchContent_Declare(asio-cmake
+  GIT_REPOSITORY https://github.com/kingsamchen/asio-cmake.git
+  GIT_TAG        origin/master
+)
+
+set(ASIO_CMAKE_ASIO_TAG asio-1-12-2)
+
+FetchContent_MakeAvailable(asio-cmake)
 
 find_package(SFML COMPONENTS system window graphics audio REQUIRED)
 set(CMAKE_CXX_STANDARD 17)
@@ -20,10 +30,11 @@ set(SRC_CLIENT client/main.cpp
 add_executable(r-type_client ${SRC_CLIENT})
 
 target_link_libraries(r-type_client
-    sfml-system
-    sfml-window
-    sfml-graphics
-    sfml-audio
+    PRIVATE sfml-system
+    PRIVATE sfml-window
+    PRIVATE sfml-graphics
+    PRIVATE sfml-audio
+    PRIVATE asio
 )
 
 #######################SERVER#######################
@@ -39,7 +50,8 @@ set(SRC_SERVER server/main.cpp
 
 add_executable(r-type_server ${SRC_SERVER})
 
-target_link_libraries(r-type_server 
+target_link_libraries(r-type_server
+    PRIVATE asio
 )
 
 
