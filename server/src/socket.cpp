@@ -7,13 +7,13 @@
 
 #include "socket.hpp"
 
-Socket::Socket(char const *port) : _port(std::atoi(port)), _endpoint(asio::ip::tcp::v6(), std::atoi(port)), _client(_ioContext), _acceptor(_ioContext, _endpoint), buffer()
+Socket::Socket(char const *port) : _port(std::atoi(port)), _endpoint(asio::ip::tcp::v6(), std::atoi(port)), _acceptor(_ioContext, _endpoint), buffer()
 {
 }
 
-asio::ip::tcp::socket &Socket::getClient()
+std::vector<std::shared_ptr<asio::ip::tcp::socket>> &Socket::getClientsConnected()
 {
-    return this->_client;
+    return this->_clientsConnected;
 }
 
 asio::io_context &Socket::getIoContext()
@@ -47,28 +47,42 @@ void Socket::createSocket()
     std::cout << "Server socket created and bound to port " << this->_port << std::endl;
 }
 
-void Socket::handleRead()
+void Socket::handleRead(std::shared_ptr<asio::ip::tcp::socket> client)
 {
-    std::size_t bytesRead = asio::read_until(this->_client, this->buffer, "\n");
-    if (bytesRead > 0) {
-        std::istream input(&this->buffer);
-        std::string data;
-        std::getline(input, data);
-        std::cout << "Received data: " << data << std::endl;
-        std::string response = "Server response: " + data + "\n";
-        asio::write(this->_client, asio::buffer(response));
-    } else {
-        std::cerr << "Error reading data from the client" << std::endl;
-    }
+    asio::async_read_until(*client, buffer, "\n", [this, client](const asio::error_code& ec, std::size_t bytesRead) {
+        if (!ec) {
+            std::istream input(&this->buffer);
+            std::string data;
+            std::getline(input, data);
+            std::cout << "Client: " << client->remote_endpoint() << " Sent: " << data << std::endl;
+            std::string response = "Server response: " + data + "\n";
+            asio::write(*client, asio::buffer(response));
+            handleRead(client);
+        } else {
+            std::cerr << "Error reading data from client " << client->remote_endpoint() << ": " << ec.message() << std::endl;
+            _clientsConnected.erase(std::remove(_clientsConnected.begin(), _clientsConnected.end(), client), _clientsConnected.end());
+        }
+    });
+}
+
+void Socket::startAccept()
+{
+    auto newClient = std::make_shared<asio::ip::tcp::socket>(_ioContext);
+
+    _acceptor.async_accept(*newClient, [this, newClient](const asio::error_code& ec) {
+        if (!ec) {
+            _clientsConnected.push_back(newClient);
+            std::cout << "Accepted connection from: " << newClient->remote_endpoint() << std::endl;
+            handleRead(newClient);
+            startAccept();
+        } else {
+            std::cerr << "Error accepting connection: " << ec.message() << std::endl;
+        }
+    });
 }
 
 void Socket::run()
 {
-    while (1) {
-        this->_acceptor.accept(this->_client);
-        std::cout << "Accepted connection from: " << this->_client.remote_endpoint() << std::endl;
-        while (1) {
-            handleRead();
-        }
-    }
+    startAccept();
+    _ioContext.run();
 }

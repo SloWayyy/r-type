@@ -15,23 +15,24 @@ class Socket {
     public:
         Socket(char const *port);
         ~Socket() = default;
-        asio::ip::tcp::socket &getClient();
+        std::vector<std::shared_ptr<asio::ip::tcp::socket>> &getClientsConnected();
         asio::io_context &getIoContext();
         asio::error_code &getEc();
         asio::ip::tcp::endpoint &getEndpoint();
         asio::ip::tcp::acceptor &getAcceptor();
         asio::streambuf &getBuffer();
         void createSocket();
-        void handleRead();
+        void startAccept();
+        void handleRead(std::shared_ptr<asio::ip::tcp::socket> client);
         void run();
     private:
         std::size_t _port;
         asio::io_context _ioContext;
-        asio::error_code _ec;
         asio::ip::tcp::endpoint _endpoint;
-        asio::ip::tcp::socket _client;
         asio::ip::tcp::acceptor _acceptor;
         asio::streambuf buffer;
+        std::vector<std::shared_ptr<asio::ip::tcp::socket>> _clientsConnected;
+        asio::error_code _ec;
     protected:
 };
 
