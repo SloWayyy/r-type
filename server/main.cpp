@@ -7,14 +7,31 @@
 
 #include <iostream>
 #include <asio.hpp>
+#include "src/socket.hpp"
 
-
-int main(int ac, char **av)
+bool isAllDigits(char const *str)
 {
-    (void) av;
+    while (*str) {
+        if (!std::isdigit(*str)) {
+            return false;
+        }
+        str++;
+    }
+    return true;
+}
+
+int main(int ac, char const **av)
+{
     if (ac != 2) {
         std::cerr << "USAGE: ./r-type_server port" << std::endl;
         return 84;
     }
+    if (!isAllDigits(av[1])) {
+        std::cerr << "Error: Port must be a digit" << std::endl;
+        return 84;
+    }
+    Socket socket(av[1]);
+    socket.createSocket();
+    socket.run();
     return 0;
 }
