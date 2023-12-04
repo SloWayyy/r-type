@@ -5,8 +5,6 @@
 ** main.cpp
 */
 
-#include "SFML/Graphics.hpp"
-
 int main(int ac, char **av)
 {
     (void) ac;

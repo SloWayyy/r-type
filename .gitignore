@@ -3,3 +3,4 @@ build
 CMakeFiles/
 r-type_client
 r-type_server
+.vscode/

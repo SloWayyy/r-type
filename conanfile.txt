@@ -1,13 +1,13 @@
 [requires]
 sfml/2.5.0@bincrafters/stable
+boost/1.67.0@conan/stable
 
 [options]
 sfml:graphics=True
 sfml:window=True
 sfml:audio=True
 sfml:system=True
+boost:shared=True
 
 [generators]
 cmake
-
-[imports]
