@@ -12,23 +12,24 @@
 
 template <typename Component> // You can also mirror the definition of std :: vector ,
 
-class sparse_array {
+class Sparse_array {
     public:
-        using value_type = ? ? ? ; // optional component type
+        using value_type = std::Optional<Component>;
         using reference_type = value_type &;
         using const_reference_type = value_type const &;
         using container_t = std::vector<value_type>; // optionally add your allocator
-        template here.using size_type = typename container_t::size_type;
+        //templated here.
+        using size_type = typename container_t::size_type;
         using iterator = typename container_t::iterator;
         using const_iterator = typename container_t::const_iterator;
 
     public:
-        sparse_array();                         // You can add more constructors .
-        sparse_array(sparse_array const &);     // copy constructor
-        sparse_array(sparse_array &&) noexcept; // move constructor
-        ~sparse_array();
-        sparse_array &operator=(sparse_array const &);     // copy assignment operator
-        sparse_array &operator=(sparse_array &&) noexcept; // move assignment operator
+        Sparse_array() = default;                         // You can add more constructors .
+        Sparse_array(Sparse_array const &);     // copy constructor
+        Sparse_array(Sparse_array &&) = default; // move constructor
+        ~Sparse_array();
+        Sparse_array &operator=(Sparse_array const &);     // copy assignment operator
+        Sparse_array &operator=(Sparse_array &&) noexcept; // move assignment operator
         reference_type operator[](size_t idx);
         const_reference_type operator[](size_t idx) const;
         iterator begin();
@@ -44,7 +45,11 @@ class sparse_array {
         reference_type emplace_at(size_type pos, Params &&...); // optional
         void erase(size_type pos);
         size_type get_index(value_type const &) const;
-        5 private : container_t _data;
+        private:
+            container_t _data;
 };
+
+
+
 
 #endif /* !SPARSE_ARRAY_HPP_ */
