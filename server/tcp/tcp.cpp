@@ -7,48 +7,49 @@
 
 #include "tcp.hpp"
 
-Tcp_server::Tcp_server(std::size_t port) : _port(port), _endpoint(asio::ip::tcp::v6(), port), _acceptor(_ioContext, _endpoint), buffer()
+TCPServer::TCPServer(std::size_t port) : _port(port), _endpoint(asio::ip::tcp::v6(), port), _acceptor(_ioContext, _endpoint), buffer()
 {
-    std::cout << "Constructing Tcp_server..." << _port << std::endl;
+    std::cout << "Constructing TCPServer..." << _port << std::endl;
 }
 
-std::vector<std::shared_ptr<asio::ip::tcp::socket>> &Tcp_server::getClientsConnected()
+std::vector<std::shared_ptr<asio::ip::tcp::socket>> &TCPServer::getClientsConnected()
 {
     return this->_clientsConnected;
 }
 
-asio::io_context &Tcp_server::getIoContext()
+asio::io_context &TCPServer::getIoContext()
 {
     return this->_ioContext;
 }
 
-asio::error_code &Tcp_server::getEc()
+asio::error_code &TCPServer::getEc()
 {
     return this->_ec;
 }
 
-asio::ip::tcp::endpoint &Tcp_server::getEndpoint()
+asio::ip::tcp::endpoint &TCPServer::getEndpoint()
 {
     return this->_endpoint;
 }
 
-asio::ip::tcp::acceptor &Tcp_server::getAcceptor()
+asio::ip::tcp::acceptor &TCPServer::getAcceptor()
 {
     return this->_acceptor;
 }
 
-asio::streambuf &Tcp_server::getBuffer()
+asio::streambuf &TCPServer::getBuffer()
 {
     return this->buffer;
 }
 
-void Tcp_server::createSocket()
+void TCPServer::createSocket()
 {
+    std::cout << "Creating server socket..." << std::endl;
     this->_acceptor.listen();
     std::cout << "Server socket created and bound to port " << this->_port << std::endl;
 }
 
-void Tcp_server::handleRead(std::shared_ptr<asio::ip::tcp::socket> client)
+void TCPServer::handleRead(std::shared_ptr<asio::ip::tcp::socket> client)
 {
     asio::async_read_until(*client, buffer, "\n", [this, client](const asio::error_code& ec, std::size_t bytesRead) {
         if (!ec) {
@@ -66,7 +67,7 @@ void Tcp_server::handleRead(std::shared_ptr<asio::ip::tcp::socket> client)
     });
 }
 
-void Tcp_server::startAccept()
+void TCPServer::startAccept()
 {
     auto newClient = std::make_shared<asio::ip::tcp::socket>(_ioContext);
 
@@ -82,7 +83,7 @@ void Tcp_server::startAccept()
     });
 }
 
-void Tcp_server::run()
+void TCPServer::run()
 {
     startAccept();
     _ioContext.run();

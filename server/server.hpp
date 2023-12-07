@@ -17,9 +17,9 @@ public:
     void run();
 
 private:
-    std::shared_ptr<Tcp_server> tcpServer;
-    std::shared_ptr<Udp_server> udpServer;
-    asio::io_context ioContext;
+    std::shared_ptr<TCPServer> tcpServer;
+    std::shared_ptr<UDPSERVER> udpServer;
+    // asio::io_context ioContext;
 };
 
 #endif /* !SERVER_HPP_ */

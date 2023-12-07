@@ -11,10 +11,10 @@
     #include <asio.hpp>
     #include <iostream>
 
-class Tcp_server {
+class TCPServer {
     public:
-        Tcp_server(std::size_t port);
-        ~Tcp_server() = default;
+        TCPServer(std::size_t port);
+        ~TCPServer() = default;
         std::vector<std::shared_ptr<asio::ip::tcp::socket>> &getClientsConnected();
         asio::io_context &getIoContext();
         asio::error_code &getEc();
