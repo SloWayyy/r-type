@@ -7,8 +7,9 @@
 
 #include "server.hpp"
 
+// , udpServer(std::make_shared<UDPSERVER>(Port + 1)
 Server::Server(std::size_t Port)
-    : tcpServer(std::make_shared<TCPServer>(Port)), udpServer(std::make_shared<UDPSERVER>(Port + 1))
+    : tcpServer(std::make_shared<TCPServer>(Port))
 {
 }
 

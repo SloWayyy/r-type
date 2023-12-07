@@ -18,7 +18,7 @@ public:
 
 private:
     std::shared_ptr<TCPServer> tcpServer;
-    std::shared_ptr<UDPSERVER> udpServer;
+    // std::shared_ptr<UDPSERVER> udpServer;
     // asio::io_context ioContext;
 };
 

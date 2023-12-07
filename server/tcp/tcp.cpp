@@ -10,36 +10,7 @@
 TCPServer::TCPServer(std::size_t port) : _port(port), _endpoint(asio::ip::tcp::v6(), port), _acceptor(_ioContext, _endpoint), buffer()
 {
     std::cout << "Constructing TCPServer..." << _port << std::endl;
-}
-
-std::vector<std::shared_ptr<asio::ip::tcp::socket>> &TCPServer::getClientsConnected()
-{
-    return this->_clientsConnected;
-}
-
-asio::io_context &TCPServer::getIoContext()
-{
-    return this->_ioContext;
-}
-
-asio::error_code &TCPServer::getEc()
-{
-    return this->_ec;
-}
-
-asio::ip::tcp::endpoint &TCPServer::getEndpoint()
-{
-    return this->_endpoint;
-}
-
-asio::ip::tcp::acceptor &TCPServer::getAcceptor()
-{
-    return this->_acceptor;
-}
-
-asio::streambuf &TCPServer::getBuffer()
-{
-    return this->buffer;
+    std::cout << _endpoint.address() << _endpoint.port() << std::endl;
 }
 
 void TCPServer::createSocket()

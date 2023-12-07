@@ -15,12 +15,6 @@ class TCPServer {
     public:
         TCPServer(std::size_t port);
         ~TCPServer() = default;
-        std::vector<std::shared_ptr<asio::ip::tcp::socket>> &getClientsConnected();
-        asio::io_context &getIoContext();
-        asio::error_code &getEc();
-        asio::ip::tcp::endpoint &getEndpoint();
-        asio::ip::tcp::acceptor &getAcceptor();
-        asio::streambuf &getBuffer();
         void createSocket();
         void startAccept();
         void handleRead(std::shared_ptr<asio::ip::tcp::socket> client);
