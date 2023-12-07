@@ -5,16 +5,16 @@
 ** socket
 */
 
-#ifndef SOCKET_HPP_
-    #define SOCKET_HPP_
+#ifndef TCP_SERVER_HPP_
+    #define TCP_SERVER_HPP_
 
     #include <asio.hpp>
     #include <iostream>
 
-class Socket {
+class Tcp_server {
     public:
-        Socket(char const *port);
-        ~Socket() = default;
+        Tcp_server(char const *port);
+        ~Tcp_server() = default;
         std::vector<std::shared_ptr<asio::ip::tcp::socket>> &getClientsConnected();
         asio::io_context &getIoContext();
         asio::error_code &getEc();
@@ -36,4 +36,4 @@ class Socket {
     protected:
 };
 
-#endif /* !SOCKET_HPP_ */
+#endif /* !TCP_SERVER_HPP_ */

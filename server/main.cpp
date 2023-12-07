@@ -7,8 +7,8 @@
 
 #include <iostream>
 #include <asio.hpp>
-#include "src/socket.hpp"
 
+#include "tcp/tcp.hpp"
 #include "udp/udp.hpp"
 
 bool isAllDigits(char const *str)

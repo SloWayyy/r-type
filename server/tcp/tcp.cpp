@@ -5,49 +5,49 @@
 ** socket
 */
 
-#include "socket.hpp"
+#include "tcp.hpp"
 
-Socket::Socket(char const *port) : _port(std::atoi(port)), _endpoint(asio::ip::tcp::v6(), std::atoi(port)), _acceptor(_ioContext, _endpoint), buffer()
+Tcp_server::Tcp_server(char const *port) : _port(std::atoi(port)), _endpoint(asio::ip::tcp::v6(), std::atoi(port)), _acceptor(_ioContext, _endpoint), buffer()
 {
 }
 
-std::vector<std::shared_ptr<asio::ip::tcp::socket>> &Socket::getClientsConnected()
+std::vector<std::shared_ptr<asio::ip::tcp::socket>> &Tcp_server::getClientsConnected()
 {
     return this->_clientsConnected;
 }
 
-asio::io_context &Socket::getIoContext()
+asio::io_context &Tcp_server::getIoContext()
 {
     return this->_ioContext;
 }
 
-asio::error_code &Socket::getEc()
+asio::error_code &Tcp_server::getEc()
 {
     return this->_ec;
 }
 
-asio::ip::tcp::endpoint &Socket::getEndpoint()
+asio::ip::tcp::endpoint &Tcp_server::getEndpoint()
 {
     return this->_endpoint;
 }
 
-asio::ip::tcp::acceptor &Socket::getAcceptor()
+asio::ip::tcp::acceptor &Tcp_server::getAcceptor()
 {
     return this->_acceptor;
 }
 
-asio::streambuf &Socket::getBuffer()
+asio::streambuf &Tcp_server::getBuffer()
 {
     return this->buffer;
 }
 
-void Socket::createSocket()
+void Tcp_server::createSocket()
 {
     this->_acceptor.listen();
     std::cout << "Server socket created and bound to port " << this->_port << std::endl;
 }
 
-void Socket::handleRead(std::shared_ptr<asio::ip::tcp::socket> client)
+void Tcp_server::handleRead(std::shared_ptr<asio::ip::tcp::socket> client)
 {
     asio::async_read_until(*client, buffer, "\n", [this, client](const asio::error_code& ec, std::size_t bytesRead) {
         if (!ec) {
@@ -65,7 +65,7 @@ void Socket::handleRead(std::shared_ptr<asio::ip::tcp::socket> client)
     });
 }
 
-void Socket::startAccept()
+void Tcp_server::startAccept()
 {
     auto newClient = std::make_shared<asio::ip::tcp::socket>(_ioContext);
 
@@ -81,7 +81,7 @@ void Socket::startAccept()
     });
 }
 
-void Socket::run()
+void Tcp_server::run()
 {
     startAccept();
     _ioContext.run();
