@@ -34,6 +34,13 @@ typename Sparse_array<Component>::reference_type Sparse_array<Component>::operat
 }
 
 template <typename Component>
+typename Sparse_array<Component>::const_reference_type Sparse_array<Component>::operator[](size_t idx) const
+{
+    return _data[idx];
+}
+
+
+template <typename Component>
 typename Sparse_array<Component>::iterator Sparse_array<Component>::begin()
 {
     return _data.begin();
@@ -71,6 +78,12 @@ typename Sparse_array<Component>::const_iterator Sparse_array<Component>::cend()
 
 template <typename Component>
 typename Sparse_array<Component>::size_type Sparse_array<Component>::size() const
+{
+    return _data.size();
+}
+
+template <typename Component>
+typename Sparse_array<Component>::size_type Sparse_array<Component>::size()
 {
     return _data.size();
 }

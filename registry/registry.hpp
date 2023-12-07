@@ -22,9 +22,9 @@ public:
     registry();
     ~registry();
     void add_component(std::any component);
+    std::unordered_map<std::type_index, std::any> _component_arrays;
 private:
     int _entity_count;
-    std::unordered_map<std::type_index, std::unique_ptr<std::any>> _component_arrays;
 
 };
 #endif /* !REGISTRY_HPP_ */

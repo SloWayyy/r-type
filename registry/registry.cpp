@@ -21,7 +21,7 @@ void registry::add_component(std::any component)
     std::type_index type = std::type_index(component.type());
     if (_component_arrays.find(type) == _component_arrays.end())
     {
-        _component_arrays.insert({type, std::make_unique<std::any>()});
+        _component_arrays.insert(std::pair{type, &component});
     }
     else
     {

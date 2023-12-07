@@ -29,7 +29,7 @@ class Sparse_array {
         Sparse_array() = default;                         // You can add more constructors .
         Sparse_array(Sparse_array const &);     // copy constructor
         Sparse_array(Sparse_array &&) = default; // move constructor
-        ~Sparse_array();
+        ~Sparse_array() = default;
         Sparse_array &operator=(Sparse_array const &);     // copy assignment operator
         Sparse_array &operator=(Sparse_array &&) noexcept; // move assignment operator
         reference_type operator[](size_t idx);
@@ -41,6 +41,7 @@ class Sparse_array {
         const_iterator end() const;
         const_iterator cend() const;
         size_type size() const;
+        size_type size();
         reference_type insert_at(size_type pos, Component const &);
         reference_type insert_at(size_type pos, Component &&);
         template <class... Params>
