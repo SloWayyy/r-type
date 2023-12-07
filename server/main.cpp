@@ -10,6 +10,7 @@
 
 #include "tcp/tcp.hpp"
 #include "udp/udp.hpp"
+#include "server.hpp"
 
 bool isAllDigits(char const *str)
 {
@@ -35,13 +36,15 @@ int main(int ac, char const **av)
     // Socket socket(av[1]);
     // socket.createSocket();
     // socket.run();
-    std::cout << "Server started UDP " << std::endl;
-    try {
-        asio::io_context io_context;
-        Udp_server server(io_context, std::atoi(av[1]));
-    }
-    catch (std::exception& e) {
-        std::cerr << e.what() << std::endl;
-    }
+    // std::cout << "Server started UDP " << std::endl;
+    // try {
+    //     asio::io_context io_context;
+    //     Udp_server server(io_context, std::atoi(av[1]));
+    // }
+    // catch (std::exception& e) {
+    //     std::cerr << e.what() << std::endl;
+    // }
+    Server server(std::atoi(av[1]));
+    server.run();
     return 0;
 }

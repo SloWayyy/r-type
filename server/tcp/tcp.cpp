@@ -7,8 +7,9 @@
 
 #include "tcp.hpp"
 
-Tcp_server::Tcp_server(char const *port) : _port(std::atoi(port)), _endpoint(asio::ip::tcp::v6(), std::atoi(port)), _acceptor(_ioContext, _endpoint), buffer()
+Tcp_server::Tcp_server(std::size_t port) : _port(port), _endpoint(asio::ip::tcp::v6(), port), _acceptor(_ioContext, _endpoint), buffer()
 {
+    std::cout << "Constructing Tcp_server..." << std::endl;
 }
 
 std::vector<std::shared_ptr<asio::ip::tcp::socket>> &Tcp_server::getClientsConnected()

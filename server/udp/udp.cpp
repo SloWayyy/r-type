@@ -10,6 +10,7 @@
 Udp_server::Udp_server(asio::io_context &io_context, std::size_t port)
     : socket_(io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
 {
+    std::cout << "Constructing Udp_server..." << std::endl;
     start_receive();
     io_context.run();
 }

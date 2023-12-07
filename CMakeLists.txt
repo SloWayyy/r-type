@@ -45,7 +45,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(server/include)
 
-set(SRC_SERVER server/main.cpp server/tcp/tcp.cpp server/udp/udp.cpp
+set(SRC_SERVER server/main.cpp server/tcp/tcp.cpp server/udp/udp.cpp server/server.cpp
 )
 
 add_executable(r-type_server ${SRC_SERVER})

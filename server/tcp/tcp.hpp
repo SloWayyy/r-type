@@ -13,7 +13,7 @@
 
 class Tcp_server {
     public:
-        Tcp_server(char const *port);
+        Tcp_server(std::size_t port);
         ~Tcp_server() = default;
         std::vector<std::shared_ptr<asio::ip::tcp::socket>> &getClientsConnected();
         asio::io_context &getIoContext();

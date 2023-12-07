@@ -24,10 +24,10 @@
 class Udp_server {
     public:
         Udp_server(asio::io_context& io_context, std::size_t port);
-    private:
         void start_receive();
         void handle_receive(const asio::error_code& error, std::size_t bytes_transferred);
         void handle_send(std::shared_ptr<std::string> message, const asio::error_code& error, std::size_t bytes_transferred);
+    private:
 
         asio::ip::udp::socket socket_;
         asio::ip::udp::endpoint remote_endpoint_;
