@@ -9,12 +9,14 @@
 #define SPARSE_ARRAY_HPP_
 
 #include <iostream>
+#include <optional>
+#include <vector>
 
 template <typename Component> // You can also mirror the definition of std :: vector ,
 
 class Sparse_array {
     public:
-        using value_type = std::Optional<Component>;
+        using value_type = std::optional<Component>;
         using reference_type = value_type &;
         using const_reference_type = value_type const &;
         using container_t = std::vector<value_type>; // optionally add your allocator
@@ -48,8 +50,5 @@ class Sparse_array {
         private:
             container_t _data;
 };
-
-
-
 
 #endif /* !SPARSE_ARRAY_HPP_ */
