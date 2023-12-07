@@ -7,12 +7,12 @@
 
 #include "udp.hpp"
 
-Udp_server::Udp_server(asio::io_context &io_context, std::size_t port)
-    : socket_(io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
+Udp_server::Udp_server(std::size_t port)
+    : socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
 {
     std::cout << "Constructing Udp_server..." << port << std::endl;
     start_receive();
-    io_context.run();
+    _io_context.run();
 }
 
 void Udp_server::start_receive()
