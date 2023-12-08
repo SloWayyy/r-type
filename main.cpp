@@ -6,6 +6,10 @@
 struct Position
 {
     Position(int x, int y) : x(x), y(y) {};
+    void print()
+    {
+        std::cout << "x: " << x << " y: " << y << std::endl;
+    };
     int x;
     int y;
 };
@@ -13,11 +17,8 @@ struct Position
 int main()
 {
     
-    registry reg;
-    reg.addComponent<Position>();
-    std::cout << reg.getComponent<Position>().size() << std::endl;
-    reg.getComponent<Position>().emplace_at(0, 1, 2);
-    std::cout << reg.getComponent<Position>().size() << std::endl;
+
+    
     return 0;
 
 }

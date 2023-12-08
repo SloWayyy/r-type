@@ -68,6 +68,12 @@ class Sparse_array {
         size_type size() {
             return _data.size();
         };
+
+        reference_type push_back(value_type const &component = value_type()) {
+            _data.push_back(component);
+            return _data.back();
+        };
+
         reference_type insert_at(size_type pos, Component const &component) {
             _data.insert(_data.begin() + pos, component);
             return _data[pos];
