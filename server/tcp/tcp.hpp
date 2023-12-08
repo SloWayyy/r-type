@@ -18,7 +18,8 @@ class TCPServer {
         void createSocket();
         void startAccept();
         void handleRead(std::shared_ptr<asio::ip::tcp::socket> client);
-        void run();
+        void handleSend();
+        void sendMessageToClients(const std::string &message);
     private:
         std::size_t _port;
         asio::io_context _ioContext;

@@ -15,7 +15,4 @@ Server::Server(std::size_t Port)
 
 void Server::run()
 {
-    
-    tcpServer->createSocket();
-    tcpServer->run();
 }

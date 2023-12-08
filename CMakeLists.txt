@@ -29,6 +29,7 @@ include_directories(client/include)
 set(SRC_CLIENT client/main.cpp
               server/tcp/tcp.cpp
               server/udp/udp.cpp
+              client/tcp/tcp.cpp
 )
 
 add_executable(r-type_client ${SRC_CLIENT})
