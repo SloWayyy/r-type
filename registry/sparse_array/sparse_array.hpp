@@ -27,29 +27,75 @@ class Sparse_array {
 
     public:
         Sparse_array() = default;                         // You can add more constructors .
-        Sparse_array(Sparse_array const &);     // copy constructor
+        Sparse_array(Sparse_array const &other): _data(other._data) {}; // copy constructor
         Sparse_array(Sparse_array &&) = default; // move constructor
         ~Sparse_array() = default;
-        Sparse_array &operator=(Sparse_array const &);     // copy assignment operator
-        Sparse_array &operator=(Sparse_array &&) noexcept; // move assignment operator
-        reference_type operator[](size_t idx);
-        const_reference_type operator[](size_t idx) const;
-        iterator begin();
-        const_iterator begin() const;
-        const_iterator cbegin() const;
-        iterator end();
-        const_iterator end() const;
-        const_iterator cend() const;
-        size_type size() const;
-        size_type size();
-        reference_type insert_at(size_type pos, Component const &);
-        reference_type insert_at(size_type pos, Component &&);
+        Sparse_array &operator=(Sparse_array const &other) {
+            _data = other._data;
+            return *this;
+        };
+        Sparse_array &operator=(Sparse_array &&other) noexcept {
+            _data = std::move(other._data);
+            return *this;
+        };
+        reference_type operator[](size_t idx) {
+            return _data[idx];
+        };
+        const_reference_type operator[](size_t idx) const {
+            return _data[idx];
+        };
+        iterator begin() {
+            return _data.begin();
+        };
+        const_iterator begin() const {
+            return _data.begin();
+        };
+        const_iterator cbegin() const {
+            return _data.cbegin();
+        };
+        iterator end() {
+            return _data.end();
+        };
+        const_iterator end() const {
+            return _data.end();
+        };
+        const_iterator cend() const {
+            return _data.cend();
+        };
+        size_type size() const {
+            return _data.size();
+        };
+        size_type size() {
+            return _data.size();
+        };
+        reference_type insert_at(size_type pos, Component const &component) {
+            _data.insert(_data.begin() + pos, component);
+            return _data[pos];
+        };
+        reference_type insert_at(size_type pos, Component &&component) {
+            _data.insert(_data.begin() + pos, std::forward<Component>(component));
+            return _data[pos];
+        };
+
         template <class... Params>
-        reference_type emplace_at(size_type pos, Params &&...); // optional
-        void erase(size_type pos);
-        size_type get_index(value_type const &) const;
+        reference_type emplace_at(size_type pos, Params &&... params) {
+            Component component(std::forward<Params>(params)...);
+            _data.insert(_data.begin() + pos, std::move(component));
+            return _data[pos];
+        }; // optional
+        void erase(size_type pos) {
+            _data.erase(_data.begin() + pos);
+        };
+        size_type get_index(value_type const &component) const {
+            for (size_type i = 0; i < _data.size(); i++) {
+                if (_data[i] == component)
+                    return i;
+            }
+            return -1;
+        };
         private:
             container_t _data;
 };
+
 
 #endif /* !SPARSE_ARRAY_HPP_ */

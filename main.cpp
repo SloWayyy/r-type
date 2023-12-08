@@ -5,6 +5,7 @@
 
 struct Position
 {
+    Position(int x, int y) : x(x), y(y) {};
     int x;
     int y;
 };
@@ -13,9 +14,10 @@ int main()
 {
     
     registry reg;
-    Sparse_array<Position> pos;
-    reg.add_component(&pos);
-    auto test = std::any_cast<Sparse_array<Position>>(reg._component_arrays[std::type_index(typeid(pos))]);
-    std::cout << sizeof(test) << std::endl;
+    reg.addComponent<Position>();
+    std::cout << reg.getComponent<Position>().size() << std::endl;
+    reg.getComponent<Position>().emplace_at(0, 1, 2);
+    std::cout << reg.getComponent<Position>().size() << std::endl;
     return 0;
+
 }

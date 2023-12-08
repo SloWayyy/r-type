@@ -16,16 +16,15 @@ registry::~registry()
 {
 }
 
-void registry::add_component(std::any component)
+void registry::addComponent(std::any component)
 {
     std::type_index type = std::type_index(component.type());
-    if (_component_arrays.find(type) == _component_arrays.end())
+    if (_components.find(type) == _components.end())
     {
-        _component_arrays.insert(std::pair{type, &component});
+        _components.insert(std::pair{type, std::move(component)});
     }
     else
     {
         std::cerr << "Component already exists" << std::endl;
     }
 }
-

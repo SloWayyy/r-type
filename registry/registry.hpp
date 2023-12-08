@@ -21,10 +21,32 @@ class registry
 public:
     registry();
     ~registry();
-    void add_component(std::any component);
-    std::unordered_map<std::type_index, std::any> _component_arrays;
-private:
-    int _entity_count;
+    void addComponent(std::any component);
+    template <typename T>
+    void addComponent()
+    {
+        std::any component = Sparse_array<T>();
 
+        std::type_index type = std::type_index(component.type());
+        if (_components.find(type) == _components.end())
+        {
+            _components.insert(std::pair{type, std::move(component)});
+        }
+        else
+        {
+            std::cerr << "Component already exists" << std::endl;
+        }
+    };
+    template <typename T>
+    Sparse_array<T> &getComponent()
+    {
+        std::type_index type = std::type_index(typeid(Sparse_array<T>));
+        auto &t = std::any_cast<Sparse_array<T> &>(_components[type]);
+        return t;
+    };
+
+private:
+    std::unordered_map<std::type_index, std::any> _components;
+    int _entity_count;
 };
 #endif /* !REGISTRY_HPP_ */
