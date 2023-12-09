@@ -1,22 +1,17 @@
-#include "entity/entity.hpp"
 #include "registry/registry.hpp"
-#include "registry/sparse_array/sparse_array.hpp"
-// #include "component/component.cpp"
-#include "system/move.cpp"
+#include "system/system.hpp"
+#include <iostream>
 
 int main()
 {
     registry r;
-    r.addComponent<Position>();
-    r.addComponent<Velocity>();
-    r.addComponent<Drawable>();
-    r.addComponent<Controller>();
+    System s(r);
+    r.addAllComponents();
 
-    int player_id = r.addEntity();
-    int player_id2 = r.addEntity();
+    int first_entity = r.addEntity();
+    int second_entity = r.addEntity();
 
-    auto &pos = r.getComponent<Position>();
-
-    pos[player_id2] = Position(10, 12);
-    std::cout << pos[player_id2] << std::endl;
+    Sparse_array<Drawable> &obj = r.getComponent<Drawable>();
+    obj[first_entity] = Drawable(true);
+    s.display_drawable();
 }
