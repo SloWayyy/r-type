@@ -1,4 +1,6 @@
 #include <iostream>
+#include <SFML/Audio.hpp>
+#include <SFML/Graphics.hpp>
 
 struct Position {
     Position(int x = 0, int y = 0)
@@ -9,6 +11,13 @@ struct Position {
     };
     int x;
     int y;
+};
+
+struct Size {
+    Size(float width = 0, float height = 0)
+        : w(width), h(height){};
+    float w;
+    float h;
 };
 
 struct Velocity {
@@ -33,4 +42,18 @@ struct Controller {
     Controller(bool controller = true)
         : isController(controller){};
     bool isController;
+};
+
+struct Sprite {
+    Sprite(std::string path = "") {
+        if (path == "")
+            return;
+        sf::Texture texture;
+        if (!texture.loadFromFile(path)) {
+            std::cerr << "Error loading texture" << std::endl;
+        }
+        sprite.setTexture(texture);
+        std::cout << "Sprite created with path: " << path << std::endl;
+    }
+    sf::Sprite sprite;
 };

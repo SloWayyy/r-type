@@ -1,12 +1,16 @@
 #include "system.hpp"
 
-void System::display_drawable()
+void System::drawEntity(sf::RenderWindow &window)
 {
-    auto &draw = reg.getComponent<Drawable>();
+    auto &sprite = reg.getComponent<Sprite>();
+    auto &position = reg.getComponent<Position>();
+    auto &size = reg.getComponent<Size>();
 
-    for (auto &i : draw) {
-        if (i) {
-            std::cout << "Drable entity: " << i.value().isDrawable << std::endl;
+    for (int i = 0; i < sprite.size(); i++) {
+        if (sprite[i] && position[i] && size[i]) {
+            sprite[i].value().sprite.setPosition(position[i].value().x, position[i].value().y);
+            sprite[i].value().sprite.setScale(size[i].value().w, size[i].value().h);
+            window.draw(sprite[i].value().sprite);
         }
     }
 }

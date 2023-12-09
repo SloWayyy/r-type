@@ -73,10 +73,13 @@
         };
 
         void addAllComponents() {
-            addComponent<Position>();
-            addComponent<Velocity>();
-            addComponent<Drawable>();
-            addComponent<Controller>();
+            std::cout << "Every components added" << std::endl;
+        };
+
+        template <typename T, typename... Params>
+        void addAllComponents(T types, Params... params) {
+            addComponent<T>();
+            addAllComponents(params...);
         };
 
         template <typename T>

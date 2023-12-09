@@ -14,7 +14,7 @@
         public:
             System(registry &reg) : reg(reg) {};
             ~System() = default;
-            void display_drawable();
+            void drawEntity(sf::RenderWindow &window);
         private:
             registry &reg;
     };
