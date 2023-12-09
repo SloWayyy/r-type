@@ -15,18 +15,21 @@ class TCPServer {
     public:
         TCPServer(std::size_t port);
         ~TCPServer() = default;
-        void createSocket();
+        int createSocket();
+        void run();
         void startAccept();
         void handleRead(std::shared_ptr<asio::ip::tcp::socket> client);
-        void handleSend();
-        void sendMessageToClients(const std::string &message);
+        void sendMessageToAllClients(const std::string &message);
+        void sendMessageToAClient(const std::string &message, std::shared_ptr<asio::ip::tcp::socket> client);
+        size_t getNbrClientsConnected() const { return _clientsConnected.size(); }
+        std::vector<std::shared_ptr<asio::ip::tcp::socket>> _clientsConnected;
+
     private:
         std::size_t _port;
         asio::io_context _ioContext;
         asio::ip::tcp::endpoint _endpoint;
         asio::ip::tcp::acceptor _acceptor;
         asio::streambuf buffer;
-        std::vector<std::shared_ptr<asio::ip::tcp::socket>> _clientsConnected;
         asio::error_code _ec;
     protected:
 };

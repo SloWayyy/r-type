@@ -34,6 +34,5 @@ int main(int ac, char const **av)
         return 84;
     }
     Server server(std::atoi(av[1]));
-    server.run();
     return 0;
 }

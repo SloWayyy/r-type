@@ -7,12 +7,21 @@
 
 #include "server.hpp"
 
-// , udpServer(std::make_shared<UDPSERVER>(Port + 1)
 Server::Server(std::size_t Port)
     : tcpServer(std::make_shared<TCPServer>(Port))
 {
+    std::thread serverThread([&]() {
+        tcpServer->run();
+    });
+    run();
+    serverThread.join();
 }
 
 void Server::run()
 {
+    while (1) {
+        if (tcpServer->getNbrClientsConnected() >= 1)
+            tcpServer->sendMessageToAllClients("MAR THOMAS");
+        std::cout << "Number of clients connected: " << tcpServer->getNbrClientsConnected() << std::endl;
+    }   
 }
