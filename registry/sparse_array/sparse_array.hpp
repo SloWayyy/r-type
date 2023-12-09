@@ -88,7 +88,7 @@ class Sparse_array {
             Component component(std::forward<Params>(params)...);
             _data.insert(_data.begin() + pos, std::move(component));
             return _data[pos];
-        }; // optional
+        };
         void erase(size_type pos) {
             _data.erase(_data.begin() + pos);
         };
