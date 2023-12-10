@@ -72,20 +72,18 @@
             }
         };
 
-        void addAllComponents() {
-            std::cout << "Every components added" << std::endl;
-        };
-
         template <typename T, typename... Params>
-        void addAllComponents(T types, Params... params) {
+        void addAllComponents() {
             addComponent<T>();
-            addAllComponents(params...);
+            if constexpr (sizeof...(Params) > 0) {
+                addAllComponents<Params...>();
+            }
         };
 
         template <typename T>
         Sparse_array<T> &getComponent() {
             std::type_index type = std::type_index(typeid(Sparse_array<T>));
-            auto &t = std::any_cast<Sparse_array<T> &>(_components[type]);
+            auto &t = std::any_cast<Sparse_array<T> &>(_components.at(type));
             return t;
         };
 

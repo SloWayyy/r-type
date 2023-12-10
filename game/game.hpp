@@ -24,7 +24,6 @@
             GameEntity &gameEntity;
             registry &reg;
             System &sys;
-            bool isRunning = true;
      };
 
 #endif /* !GAME_HPP_ */

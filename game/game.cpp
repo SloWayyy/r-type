@@ -9,7 +9,7 @@
 
 void Game::init()
 {
-    reg.addAllComponents(Position(), Sprite(), Size());
+    reg.addAllComponents<Position, Sprite, Size>();
     gameEntity.setShip(reg.addEntity());
     size_t ship = gameEntity.getShip();
 
@@ -17,9 +17,9 @@ void Game::init()
     auto &sprite = reg.getComponent<Sprite>();
     auto &size = reg.getComponent<Size>();
 
-    position.emplace_at(ship, Position(500, 100));
-    sprite.emplace_at(ship, Sprite("game/assets/ship.png"));
-    size.emplace_at(ship, Size(0.1, 0.1));
+    position.emplace_at(ship, 500, 100);
+    sprite.emplace_at(ship, "game/assets/ship.png");
+    size.emplace_at(ship, 0.5, 0.1);
 }
 
 void Game::run()

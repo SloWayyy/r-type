@@ -45,15 +45,13 @@ struct Controller {
 };
 
 struct Sprite {
-    Sprite(std::string path = "") {
-        if (path == "")
-            return;
-        sf::Texture texture;
+    Sprite(std::string path) {
         if (!texture.loadFromFile(path)) {
             std::cerr << "Error loading texture" << std::endl;
         }
         sprite.setTexture(texture);
         std::cout << "Sprite created with path: " << path << std::endl;
     }
+    sf::Texture texture;
     sf::Sprite sprite;
 };
