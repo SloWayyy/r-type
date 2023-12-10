@@ -7,7 +7,7 @@
 
 #include "tcp.hpp"
 
-TCPServer::TCPServer(std::size_t port) : _port(port),  _ioContext(), _endpoint(asio::ip::tcp::v4(), port), _acceptor(_ioContext, _endpoint), buffer()
+TCPServer::TCPServer(std::size_t port, std::size_t portUDP) : _port(port), _portUDP(portUDP),  _ioContext(), _endpoint(asio::ip::tcp::v4(), port), _acceptor(_ioContext, _endpoint), buffer()
 {
     this->createSocket();
     this->startAccept();
@@ -29,6 +29,7 @@ int TCPServer::createSocket()
 void TCPServer::run()
 {
     std::cout << "Server is running on port " << this->_port << std::endl;
+    std::cout << "Server is running on port UDP " << this->_portUDP << std::endl;
     this->_ioContext.run();
 }
 

@@ -16,7 +16,7 @@
 
 class TCPServer {
     public:
-        TCPServer(std::size_t port);
+        TCPServer(std::size_t port, std::size_t portUDP);
         ~TCPServer() = default;
         int createSocket();
         void run();
@@ -28,6 +28,7 @@ class TCPServer {
 
     private:
         std::size_t _port;
+        std::size_t _portUDP;
         asio::io_context _ioContext;
         asio::ip::tcp::endpoint _endpoint;
         asio::ip::tcp::acceptor _acceptor;

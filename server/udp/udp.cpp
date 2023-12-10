@@ -10,6 +10,7 @@
 UDPServer::UDPServer(std::size_t port)
     : socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
 {
+    this->_port = socket_.local_endpoint().port();
     start_receive();
     // send("test");
     // _io_context.run();
@@ -63,4 +64,9 @@ void UDPServer::send(std::string message, asio::ip::udp::endpoint endpoint)
 void UDPServer::handle_send(std::shared_ptr<std::string> message, const asio::error_code& error, std::size_t bytes_transferred)
 {
     std::cout << "Message envoyé" << std::endl;
+}
+
+size_t UDPServer::getPort() const
+{
+    return this->_port;
 }

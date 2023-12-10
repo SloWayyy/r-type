@@ -20,8 +20,8 @@ public:
     void run();
 
 private:
-    std::shared_ptr<TCPServer> tcpServer;
     std::shared_ptr<UDPServer> udpServer;
+    std::shared_ptr<TCPServer> tcpServer;
     std::size_t _PortServerUDP;
 };
 

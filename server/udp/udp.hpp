@@ -23,6 +23,7 @@ class UDPServer {
         void response(std::string message);
         void send(std::string message, asio::ip::udp::endpoint endpoint);
         void run();
+        size_t getPort() const;
     private:
         std::size_t _port;
         asio::io_context _io_context;
