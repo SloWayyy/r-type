@@ -10,6 +10,7 @@
 
     #include <SFML/Audio.hpp>
     #include <SFML/Graphics.hpp>
+    #include <functional>
     #include "gameEntity.hpp"
     #include "../ecs/registry/registry.hpp"
     #include "../ecs/system/system.hpp"
