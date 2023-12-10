@@ -11,6 +11,9 @@
 #include "tcp/tcp.hpp"
 #include "udp/udp.hpp"
 
+static constexpr int SUCCESS = 0;
+static constexpr int FAILURE = 84;
+
 class Server {
 public:
     Server(std::size_t Port);
