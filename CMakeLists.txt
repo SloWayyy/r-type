@@ -27,9 +27,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 include_directories(client/include)
 
 set(SRC_CLIENT client/main.cpp
-              server/tcp/tcp.cpp
-              server/udp/udp.cpp
               client/tcp/tcp.cpp
+              client/GameLoop.cpp
 )
 
 add_executable(r-type_client ${SRC_CLIENT})

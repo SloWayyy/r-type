@@ -5,12 +5,8 @@
 ** main
 */
 
-#include <asio.hpp>
 #include <iostream>
-#include <functional>
-#include <array>
-#include <memory>
-#include "tcp/tcp.hpp"
+#include "GameLoop.hpp"
 
 int main(int ac, char **av)
 {
@@ -19,10 +15,7 @@ int main(int ac, char **av)
         return 84;
     }
     try {
-        TCPClient client(std::atoi(av[1]));
-        while (1) {
-            // start game sfml interface
-        }
+        GameLoop gameLoop(std::stoi(av[1]));
     }
     catch (std::exception &e) {
         std::cerr << "Erreur : " << e.what() << std::endl;

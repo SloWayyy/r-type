@@ -1,10 +1,17 @@
-#ifndef TCP_CLIENT_HPP_
-#define TCP_CLIENT_HPP_
+/*
+** EPITECH PROJECT, 2023
+** rtype
+** File description:
+** tcp.hpp
+*/
 
-#include <asio.hpp>
-#include <iostream>
-#include <thread>
-#include <functional>
+#ifndef TCP_CLIENT_HPP_
+    #define TCP_CLIENT_HPP_
+
+    #include <asio.hpp>
+    #include <iostream>
+    #include <thread>
+    #include <functional>
 
 class TCPClient {
 public:
