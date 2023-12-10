@@ -51,6 +51,7 @@ void TCPServer::handleRead(std::shared_ptr<asio::ip::tcp::socket> client)
         } else {
             std::cerr << "client " << client->remote_endpoint() << " is disconnected."  << std::endl;
             _clientsConnected.erase(std::remove(_clientsConnected.begin(), _clientsConnected.end(), client), _clientsConnected.end());
+            sendMessageToAllClients("(RFC) PLAYER DISCONNECTED " + std::to_string(std::find (_clientsConnected.begin(), _clientsConnected.end(), client) - _clientsConnected.begin()));
         }
     });
 }
