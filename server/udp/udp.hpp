@@ -14,26 +14,22 @@
     #include <functional>
     #include <memory>
 
-// std::string make_daytime_string()
-// {
-//   using namespace std; // For time_t, time and ctime;
-//   time_t now = time(0);
-//   return ctime(&now);
-// }
-
-class UDPSERVER {
+class UDPServer {
     public:
-        UDPSERVER(std::size_t port);
+        UDPServer(std::size_t port);
         void start_receive();
         void handle_receive(const asio::error_code& error, std::size_t bytes_transferred);
         void handle_send(std::shared_ptr<std::string> message, const asio::error_code& error, std::size_t bytes_transferred);
         void response(std::string message);
-        void send(std::string message);
+        void send(std::string message, asio::ip::udp::endpoint endpoint);
+        void run();
     private:
+        std::size_t _port;
         asio::io_context _io_context;
         asio::ip::udp::socket socket_;
         asio::ip::udp::endpoint remote_endpoint_;
         std::array<char, 1024> recv_buffer_;
+        asio::ip::udp::endpoint _endpointClient;
 };
 
 #endif /* !UDP_HPP_ */

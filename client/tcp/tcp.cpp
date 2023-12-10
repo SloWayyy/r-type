@@ -28,7 +28,7 @@ void TCPClient::createClient()
     }
 }
 
-void TCPClient::handleSend(const asio::error_code &error, std::size_t bytes_transferred)
+void TCPClient::handleSend(const asio::error_code &error, std::size_t)
 {
     if (!error) {
         std::cout << "Message sent" << std::endl;
@@ -51,9 +51,7 @@ void TCPClient::sendToServer()
 
 void TCPClient::handleReceive()
 {
-    // std::cout << "Waiting for message..." << std::endl;
-    asio::async_read_until(this->_socket, this->buffer, "\n", [this](const asio::error_code &error, std::size_t bytes_transferred) {
-        // std::cout << "Message received" << std::endl;
+    asio::async_read_until(this->_socket, this->buffer, "\n", [this](const asio::error_code &error, std::size_t) {
         if (!error) {
             std::istream input_stream(&this->buffer);
             std::string data;

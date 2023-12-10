@@ -16,14 +16,13 @@ static constexpr int FAILURE = 84;
 
 class Server {
 public:
-    Server(std::size_t Port);
+    Server(std::size_t PortServerTCP, std::size_t PortServerUDP);
     void run();
 
 private:
     std::shared_ptr<TCPServer> tcpServer;
-    std::size_t _PortServerUDP = 5558;
-    // std::shared_ptr<UDPSERVER> udpServer;
-    // asio::io_context ioContext;
+    std::shared_ptr<UDPServer> udpServer;
+    std::size_t _PortServerUDP;
 };
 
 #endif /* !SERVER_HPP_ */

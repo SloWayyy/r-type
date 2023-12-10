@@ -15,7 +15,7 @@ int main(int ac, char **av)
         return 84;
     }
     try {
-        GameLoop gameLoop(std::stoi(av[1]));
+        GameLoop gameLoop(std::stoi(av[1]), 4243);
         gameLoop.run();
     }
     catch (std::exception &e) {

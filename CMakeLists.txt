@@ -28,6 +28,7 @@ include_directories(client/include)
 
 set(SRC_CLIENT client/main.cpp
               client/tcp/tcp.cpp
+              client/udp/udp.cpp
               client/GameLoop.cpp
 )
 

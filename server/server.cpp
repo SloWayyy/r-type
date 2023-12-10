@@ -7,14 +7,18 @@
 
 #include "server.hpp"
 
-Server::Server(std::size_t Port)
-    : tcpServer(std::make_shared<TCPServer>(Port))
+Server::Server(std::size_t PortServerTCP, std::size_t PortServerUDP)
+    : _PortServerUDP(PortServerUDP), tcpServer(std::make_shared<TCPServer>(PortServerTCP)), udpServer(std::make_shared<UDPServer>(PortServerUDP))
 {
     std::thread serverThread([&]() {
         tcpServer->run();
     });
+    std::thread clientThread([&]() {
+        udpServer->run();
+    });
     run();
     serverThread.join();
+    clientThread.join();
 }
 
 void Server::run()
