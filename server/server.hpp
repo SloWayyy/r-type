@@ -18,6 +18,7 @@ public:
 
 private:
     std::shared_ptr<TCPServer> tcpServer;
+    std::size_t _PortServerUDP = 5558;
     // std::shared_ptr<UDPSERVER> udpServer;
     // asio::io_context ioContext;
 };

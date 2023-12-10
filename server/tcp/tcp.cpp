@@ -41,11 +41,11 @@ void TCPServer::handleRead(std::shared_ptr<asio::ip::tcp::socket> client)
             std::getline(input, data);
             std::cout << "Client: " << client->remote_endpoint().address() << ":" << client->remote_endpoint().port() << " Send: " << data << std::endl;
 
-            if (data == "First co") {
-                // sendMessageToAllClients("New client connected");
-                sendMessageToAClient("New client connected", client);
-                // sendMessageToClients("New client connected");
-            }
+            // if (data == "First co") {
+            //     // sendMessageToAllClients("New client connected");
+            //     sendMessageToAClient("New client connected", client);
+            //     // sendMessageToClients("New client connected");
+            // }
 
             handleRead(client);
         } else {
@@ -89,11 +89,15 @@ void TCPServer::startAccept()
             _clientsConnected.push_back(newClient);
             std::cout << "Accepted connection from: " << newClient->remote_endpoint() << std::endl;
             handleRead(newClient);
-
                 std::cout << "Sending welcome message to client..." << std::endl;
-                std::string messageFromServer("Welcome");
-                sendMessageToAllClients(messageFromServer);
-
+                sendMessageToAClient("(RFC) HELLO PORT UPD " + std::to_string(_port) + " YOUR ID " + std::to_string(std::find (_clientsConnected.begin(), _clientsConnected.end(), newClient) - _clientsConnected.begin()), newClient);
+                std::cout << _clientsConnected.size() << std::endl;
+                for (const auto &client : _clientsConnected) 
+                    if (client != newClient)
+                        sendMessageToAClient("(RFC) PLAYER ID " + std::to_string(std::find (_clientsConnected.begin(), _clientsConnected.end(), client) - _clientsConnected.begin()), newClient);
+                for (const auto &client : _clientsConnected) {
+                    sendMessageToAClient("(RFC) PLAYER ID " + std::to_string(std::find (_clientsConnected.begin(), _clientsConnected.end(), newClient) - _clientsConnected.begin()), client);
+                }
             startAccept();
         } else {
             std::cerr << "Error accepting connection: " << ec.message() << std::endl;

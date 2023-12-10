@@ -20,6 +20,9 @@ int main(int ac, char **av)
     }
     try {
         TCPClient client(std::atoi(av[1]));
+        while (1) {
+            // start game sfml interface
+        }
     }
     catch (std::exception &e) {
         std::cerr << "Erreur : " << e.what() << std::endl;

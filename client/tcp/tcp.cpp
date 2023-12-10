@@ -27,40 +27,34 @@ void TCPClient::handleSend(const asio::error_code &error, std::size_t bytes_tran
 
 void TCPClient::sendToServer()
 {
-    std::string message("First co");
+    std::string message("RECU");
     asio::async_write(this->_socket, asio::buffer(message + "\n"), std::bind(&TCPClient::handleSend, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void TCPClient::handleReceive()
 {
-    std::cout << "Waiting for message..." << std::endl;
+    // std::cout << "Waiting for message..." << std::endl;
     asio::async_read_until(this->_socket, this->buffer, "\n", [this](const asio::error_code &error, std::size_t bytes_transferred) {
-        std::cout << "Message received" << std::endl;
+        // std::cout << "Message received" << std::endl;
         if (!error) {
             std::istream input_stream(&this->buffer);
             std::string data;
             std::getline(input_stream, data);
-            std::cout << "Received message: " << data << std::endl;
-            if (data == "Welcome") {
-                this->sendToServer();
-                // exit(84);
-            }
-            if (data == "New client connected") {
-                    std::string message("DEUXIMEME MESGGGA");
-    // std::getline(std::cin, message);
-                asio::async_write(this->_socket, asio::buffer(message + "\n"), std::bind(&TCPClient::handleSend, this, std::placeholders::_1, std::placeholders::_2));
-            }
+            // std::cout << data << std::endl;
+            if (data.find("RFC") != std::string::npos)
+                std::cout << "RFC FROM SERVER RECEIVER: " + data << std::endl;
             handleReceive();
         } else {
             std::cerr << "Error reading from server: " << error.message() << std::endl;
+            exit(0);
         }
     });
 }
 
 void TCPClient::startAsyncOperations()
 {
-    while (true) {
+    // while (true) {
         this->handleReceive();
         _ioContext.run();
-    }
+    // }
 }
