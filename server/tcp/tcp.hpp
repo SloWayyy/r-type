@@ -10,6 +10,9 @@
 
     #include <asio.hpp>
     #include <iostream>
+    #include <unordered_map>
+    #include <functional>
+    #include <memory>
 
 class TCPServer {
     public:
@@ -21,8 +24,7 @@ class TCPServer {
         void handleRead(std::shared_ptr<asio::ip::tcp::socket> client);
         void sendMessageToAllClients(const std::string &message);
         void sendMessageToAClient(const std::string &message, std::shared_ptr<asio::ip::tcp::socket> client);
-        size_t getNbrClientsConnected() const { return _clientsConnected.size(); }
-        std::vector<std::shared_ptr<asio::ip::tcp::socket>> _clientsConnected;
+        std::unordered_map<size_t, std::shared_ptr<asio::ip::tcp::socket>> _clientsInfo;
 
     private:
         std::size_t _port;

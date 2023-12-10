@@ -40,18 +40,11 @@ void TCPServer::handleRead(std::shared_ptr<asio::ip::tcp::socket> client)
             std::string data;
             std::getline(input, data);
             std::cout << "Client: " << client->remote_endpoint().address() << ":" << client->remote_endpoint().port() << " Send: " << data << std::endl;
-
-            // if (data == "First co") {
-            //     // sendMessageToAllClients("New client connected");
-            //     sendMessageToAClient("New client connected", client);
-            //     // sendMessageToClients("New client connected");
-            // }
-
             handleRead(client);
         } else {
             std::cerr << "client " << client->remote_endpoint() << " is disconnected."  << std::endl;
-            _clientsConnected.erase(std::remove(_clientsConnected.begin(), _clientsConnected.end(), client), _clientsConnected.end());
-            sendMessageToAllClients("(RFC) PLAYER DISCONNECTED " + std::to_string(std::find (_clientsConnected.begin(), _clientsConnected.end(), client) - _clientsConnected.begin()));
+            _clientsInfo.erase(client->remote_endpoint().port());
+            sendMessageToAllClients("(RFC) PLAYER DISCONNECTED " + std::to_string(client->remote_endpoint().port()));
         }
     });
 }
@@ -59,12 +52,12 @@ void TCPServer::handleRead(std::shared_ptr<asio::ip::tcp::socket> client)
 
 void TCPServer::sendMessageToAllClients(const std::string &message)
 {
-    for (const auto &client : _clientsConnected) {
-        client->async_send(asio::buffer(message + "\n"), [this, client](const asio::error_code& ec, std::size_t bytesSent) {
+    for (const auto &client : _clientsInfo) {
+        client.second->async_send(asio::buffer(message + "\n"), [this, client](const asio::error_code& ec, std::size_t bytesSent) {
             if (!ec) {
-                std::cout << "Message sent to client " << client->remote_endpoint() << std::endl;
+                std::cout << "Message sent to client " << client.second->remote_endpoint() << std::endl;
             } else {
-                std::cerr << "Error sending message to client " << client->remote_endpoint() << ": " << ec.message() << std::endl;
+                std::cerr << "Error sending message to client " << client.second->remote_endpoint() << ": " << ec.message() << std::endl;
             }
         });
     }
@@ -87,18 +80,16 @@ void TCPServer::startAccept()
 
     _acceptor.async_accept(*newClient, [this, newClient](const asio::error_code& ec) {
         if (!ec) {
-            _clientsConnected.push_back(newClient);
-            std::cout << "Accepted connection from: " << newClient->remote_endpoint() << std::endl;
             handleRead(newClient);
-                std::cout << "Sending welcome message to client..." << std::endl;
-                sendMessageToAClient("(RFC) HELLO PORT UPD " + std::to_string(_port) + " YOUR ID " + std::to_string(std::find (_clientsConnected.begin(), _clientsConnected.end(), newClient) - _clientsConnected.begin()), newClient);
-                std::cout << _clientsConnected.size() << std::endl;
-                for (const auto &client : _clientsConnected) 
-                    if (client != newClient)
-                        sendMessageToAClient("(RFC) PLAYER ID " + std::to_string(std::find (_clientsConnected.begin(), _clientsConnected.end(), client) - _clientsConnected.begin()), newClient);
-                for (const auto &client : _clientsConnected) {
-                    sendMessageToAClient("(RFC) PLAYER ID " + std::to_string(std::find (_clientsConnected.begin(), _clientsConnected.end(), newClient) - _clientsConnected.begin()), client);
+            _clientsInfo[newClient->remote_endpoint().port()] = newClient;
+            std::cout << "Accepted connection from: " << newClient->remote_endpoint() << std::endl;
+            sendMessageToAClient("(RFC) HELLO PORT UPD " + std::to_string(_port) + " YOUR ID " + std::to_string(newClient->remote_endpoint().port()), newClient);
+            sendMessageToAllClients("(RFC) PLAYER ID " + std::to_string(newClient->remote_endpoint().port()));
+            for (const auto &client : _clientsInfo) {
+                if (client.first != newClient->remote_endpoint().port()) {
+                    sendMessageToAClient("(RFC) PLAYER ID " + std::to_string(client.first), newClient);
                 }
+            }
             startAccept();
         } else {
             std::cerr << "Error accepting connection: " << ec.message() << std::endl;
