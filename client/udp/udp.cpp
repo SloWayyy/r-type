@@ -8,7 +8,7 @@
 #include "udp.hpp"
 
 UDPClient::UDPClient(std::size_t port)
-    : _port(port), _endpointServer(asio::ip::make_address("127.0.0.1"), 4242), socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
+    : _port(port), _endpointServer(asio::ip::make_address("127.0.0.1"), 4242), socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0))
 {
     start_receive();
     send("salut serveur", _endpointServer);
@@ -35,6 +35,7 @@ void UDPClient::handle_receive(const asio::error_code &error, std::size_t bytes_
 void UDPClient::run()
 {
     std::cout << "Server is running on port " << this->_port << std::endl;
+    _io_context.run();
 }
 
 void UDPClient::send(std::string message, asio::ip::udp::endpoint endpoint)
