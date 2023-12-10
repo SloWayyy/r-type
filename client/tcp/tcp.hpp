@@ -16,6 +16,7 @@
 class TCPClient {
     public:
         TCPClient(std::size_t port);
+        void run();
     private:
         void createClient();
         void handleSend(const asio::error_code &error, std::size_t bytes_transferred);

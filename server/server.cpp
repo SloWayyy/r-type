@@ -19,9 +19,6 @@ Server::Server(std::size_t Port)
 
 void Server::run()
 {
-    // while (1) {
-    //     if (tcpServer->getNbrClientsConnected() >= 1)
-    //         tcpServer->sendMessageToAllClients("MAR THOMAS");
-    //     std::cout << "Number of clients connected: " << tcpServer->getNbrClientsConnected() << std::endl;
-    // }   
+    while (1) {
+    }
 }

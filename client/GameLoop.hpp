@@ -17,7 +17,7 @@ class GameLoop {
         void run();
     protected:
     private:
-        TCPClient _client;
+        TCPClient _TCPclient;
 };
 
 #endif /* !GAMELOOP_HPP_ */

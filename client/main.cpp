@@ -16,6 +16,7 @@ int main(int ac, char **av)
     }
     try {
         GameLoop gameLoop(std::stoi(av[1]));
+        gameLoop.run();
     }
     catch (std::exception &e) {
         std::cerr << "Erreur : " << e.what() << std::endl;

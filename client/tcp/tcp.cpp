@@ -37,6 +37,12 @@ void TCPClient::handleSend(const asio::error_code &error, std::size_t bytes_tran
     }
 }
 
+void TCPClient::run()
+{
+    std::cout << "Client is running on port " << this->_port << std::endl;
+    this->_ioContext.run();
+}
+
 void TCPClient::sendToServer()
 {
     std::string message("RECU");
@@ -58,7 +64,7 @@ void TCPClient::handleReceive()
             }
             handleReceive();
         } else {
-            std::cerr << "Error reading from server: " << error.message() << std::endl;
+            std::cerr << "Server is disconected." << std::endl;
             exit(0);
         }
     });
@@ -66,8 +72,5 @@ void TCPClient::handleReceive()
 
 void TCPClient::startAsyncOperations()
 {
-    // while (true) {
-        this->handleReceive();
-        _ioContext.run();
-    // }
+    this->handleReceive();
 }
