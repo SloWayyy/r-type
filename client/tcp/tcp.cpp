@@ -6,6 +6,11 @@ TCPClient::TCPClient(std::size_t port) : _port(port), _ioContext(), _socket(_ioC
     this->startAsyncOperations();
 }
 
+std::vector<std::string> TCPClient::getServerMessages()
+{
+    return this->_ServerMessages;
+}
+
 void TCPClient::createClient()
 {
     try {
@@ -40,9 +45,10 @@ void TCPClient::handleReceive()
             std::istream input_stream(&this->buffer);
             std::string data;
             std::getline(input_stream, data);
-            // std::cout << data << std::endl;
-            if (data.find("RFC") != std::string::npos)
+            if (data.find("RFC") != std::string::npos) {
                 std::cout << "RFC FROM SERVER RECEIVER: " + data << std::endl;
+                this->_ServerMessages.push_back(data); // stocker toutes les commades reçues du serveur et ensuite recuperer ce vector en faisant un getter pour le passer au game
+            }
             handleReceive();
         } else {
             std::cerr << "Error reading from server: " << error.message() << std::endl;
