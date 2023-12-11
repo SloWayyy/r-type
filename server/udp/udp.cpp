@@ -58,7 +58,11 @@ void UDPServer::response(std::string message)
 
 void UDPServer::send(std::string message, asio::ip::udp::endpoint endpoint)
 {
-    socket_.send_to(asio::buffer(message), _endpointClient);
+    try {
+        socket_.send_to(asio::buffer(message), endpoint);
+    } catch (const asio::system_error& ec) {
+        std::cerr << "ERROR UDP sending message" << ec.what() << std::endl;
+    }
 }
 
 void UDPServer::handle_send(std::shared_ptr<std::string> message, const asio::error_code& error, std::size_t bytes_transferred)
