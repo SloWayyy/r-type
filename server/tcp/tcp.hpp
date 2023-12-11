@@ -25,6 +25,7 @@ class TCPServer {
         void sendMessageToAllClients(const std::string &message);
         void sendMessageToAClient(const std::string &message, std::shared_ptr<asio::ip::tcp::socket> client);
         std::unordered_map<size_t, std::shared_ptr<asio::ip::tcp::socket>> _clientsInfo;
+        std::vector<std::string> _ClientMessages;
 
     private:
         std::size_t _port;
