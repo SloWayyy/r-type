@@ -29,7 +29,7 @@ void UDPClient::handle_receive(const asio::error_code &error, std::size_t bytes_
 {
     if (!error) {
         std::string received_message(recv_buffer_.data(), bytes_transferred);
-        // std::cout << "Message reçu : " << received_message << std::endl;
+        std::cout << received_message << std::endl;
         start_receive();
     }
 }
