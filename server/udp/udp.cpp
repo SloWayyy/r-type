@@ -12,8 +12,6 @@ UDPServer::UDPServer(std::size_t port)
 {
     this->_port = socket_.local_endpoint().port();
     start_receive();
-    // send("test");
-    // _io_context.run();
 }
 
 void UDPServer::start_receive()

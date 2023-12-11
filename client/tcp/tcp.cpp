@@ -7,7 +7,13 @@
 
 #include "tcp.hpp"
 
-TCPClient::TCPClient(std::size_t port) : _port(port), _ioContext(), _socket(_ioContext), _resolver(_ioContext), _endpoint(asio::ip::make_address("127.0.0.1"), this->_port), buffer()
+TCPClient::TCPClient(std::size_t port)
+    : _port(port),
+    _ioContext(),
+    _socket(_ioContext),
+    _resolver(_ioContext),
+    _endpoint(asio::ip::make_address("127.0.0.1"), this->_port),
+    buffer()
 {
     this->createClient();
     this->startAsyncOperations();

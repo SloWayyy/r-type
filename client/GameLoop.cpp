@@ -8,7 +8,10 @@
 #include "GameLoop.hpp"
 
 GameLoop::GameLoop(std::size_t TCPport, std::size_t UDPport)
-    : _TCPclient(TCPport), _UDPclient(UDPport), _TCPport(TCPport), _UDPport(UDPport)
+    : _TCPclient(TCPport), 
+    _UDPclient(UDPport),
+    _TCPport(TCPport),
+    _UDPport(UDPport)
 {
     std::thread clientThread([&]() {
         this->_TCPclient.run();

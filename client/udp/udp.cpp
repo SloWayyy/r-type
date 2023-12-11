@@ -8,7 +8,9 @@
 #include "udp.hpp"
 
 UDPClient::UDPClient(std::size_t port)
-    : _port(port), _endpointServer(asio::ip::make_address("127.0.0.1"), 4242), socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0))
+    : _port(port),
+    _endpointServer(asio::ip::make_address("127.0.0.1"), 4242),
+    socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0))
 {
     start_receive();
     send("salut serveur", _endpointServer);
