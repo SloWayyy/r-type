@@ -17,7 +17,6 @@ Server::Server(std::size_t PortServerTCP, std::size_t PortServerUDP)
     std::thread clientThread([&]() {
         udpServer->run();
     });
-    run();
     serverThread.join();
     clientThread.join();
 }
