@@ -13,6 +13,7 @@
     #include <array>
     #include <functional>
     #include <memory>
+    #include <unordered_map>
 
 class UDPServer {
     public:
@@ -24,6 +25,7 @@ class UDPServer {
         void send(std::string message, asio::ip::udp::endpoint endpoint);
         void run();
         size_t getPort() const;
+        std::unordered_map<size_t, asio::ip::udp::endpoint> _clientsUDP;
     private:
         std::size_t _port;
         asio::io_context _io_context;

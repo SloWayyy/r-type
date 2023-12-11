@@ -28,10 +28,10 @@ void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_
     if (!error) {
         std::string received_message(recv_buffer_.data(), bytes_transferred);
         std::cout << "Message reçu : " << received_message << " de " << remote_endpoint_.address() << " " << remote_endpoint_.port() << std::endl;
-        // if (received_message == "test") {
-        //     std::string message = "Hello, client!";
-            response("Hello, client!");
-        // }
+        if (_clientsUDP.find(remote_endpoint_.port()) == _clientsUDP.end()) {
+            _clientsUDP[remote_endpoint_.port()] = remote_endpoint_;
+        }
+        // response("Hello, client!");
         start_receive();
     }
 }
