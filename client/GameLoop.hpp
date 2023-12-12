@@ -13,7 +13,7 @@
 
 class GameLoop {
     public:
-        GameLoop(std::size_t TCPport, std::size_t UDPport);
+        GameLoop(std::size_t TCPport, std::size_t UDPport, std::string ip);
         ~GameLoop();
         void run();
     protected:

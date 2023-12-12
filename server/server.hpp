@@ -16,7 +16,7 @@ static constexpr int FAILURE = 84;
 
 class Server {
 public:
-    Server(std::size_t PortServerTCP, std::size_t PortServerUDP);
+    Server(std::size_t PortServerTCP, std::size_t PortServerUDP, std::string ip);
     void run();
 
 private:

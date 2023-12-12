@@ -7,8 +7,8 @@
 
 #include "udp.hpp"
 
-UDPServer::UDPServer(std::size_t port)
-    : socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
+UDPServer::UDPServer(std::size_t port, std::string ip)
+    : socket_(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), port))
 {
     this->_port = socket_.local_endpoint().port();
     start_receive();

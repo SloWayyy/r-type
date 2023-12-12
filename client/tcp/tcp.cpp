@@ -7,12 +7,13 @@
 
 #include "tcp.hpp"
 
-TCPClient::TCPClient(std::size_t port)
+TCPClient::TCPClient(std::size_t port, std::string ip)
     : _port(port),
     _ioContext(),
     _socket(_ioContext),
     _resolver(_ioContext),
-    _endpoint(asio::ip::make_address("127.0.0.1"), this->_port),
+    _endpoint(asio::ip::make_address(ip), this->_port),
+    _ip(ip),
     buffer()
 {
     this->createClient();
@@ -27,7 +28,7 @@ std::vector<std::string> TCPClient::getServerMessages()
 void TCPClient::createClient()
 {
     try {
-        asio::connect(this->_socket, this->_resolver.resolve("127.0.0.1", std::to_string(this->_port)));
+        asio::connect(this->_socket, this->_resolver.resolve(_ip, std::to_string(this->_port)));
         std::cout << "Connected to " << this->_endpoint << " successfully!\n";
     } catch (const std::exception& e) {
         std::cerr << "Connection error: " << e.what() << std::endl;

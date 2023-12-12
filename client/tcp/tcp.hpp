@@ -15,7 +15,7 @@
 
 class TCPClient {
     public:
-        TCPClient(std::size_t port);
+        TCPClient(std::size_t port, std::string ip);
         void run();
     private:
         void createClient();
@@ -30,6 +30,7 @@ class TCPClient {
         asio::ip::tcp::socket _socket;
         asio::ip::tcp::resolver _resolver;
         asio::ip::tcp::endpoint _endpoint;
+        std::string _ip;
         asio::streambuf buffer;
         std::vector<std::string> _ServerMessages;
 };

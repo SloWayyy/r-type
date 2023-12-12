@@ -7,13 +7,14 @@
 
 #include "tcp.hpp"
 
-TCPServer::TCPServer(std::size_t port, std::size_t portUDP)
+TCPServer::TCPServer(std::size_t port, std::size_t portUDP, std::string ip)
     : _port(port),
     _portUDP(portUDP), 
     _ioContext(),
-    _endpoint(asio::ip::tcp::v4(), port),
+    _endpoint(asio::ip::make_address(ip), port),
     _acceptor(_ioContext,
     _endpoint),
+    _ip(ip),
     buffer()
 {
     this->createSocket();

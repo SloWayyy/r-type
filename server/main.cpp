@@ -27,7 +27,7 @@ int main(int ac, char const **av)
         std::cerr << "Error: Port must be a digit" << std::endl;
         return FAILURE;
     }
-    Server server(std::atoi(av[1]), 4242);
+    Server server(std::atoi(av[1]), 4242, "127.0.0.1");
     server.run();
     return SUCCESS;
 }

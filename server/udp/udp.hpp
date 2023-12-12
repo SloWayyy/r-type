@@ -17,7 +17,7 @@
 
 class UDPServer {
     public:
-        UDPServer(std::size_t port);
+        UDPServer(std::size_t port, std::string ip);
         void start_receive();
         void handle_receive(const asio::error_code& error, std::size_t bytes_transferred);
         void handle_send(std::shared_ptr<std::string> message, const asio::error_code& error, std::size_t bytes_transferred);

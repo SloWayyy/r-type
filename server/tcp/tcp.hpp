@@ -16,7 +16,7 @@
 
 class TCPServer {
     public:
-        TCPServer(std::size_t port, std::size_t portUDP);
+        TCPServer(std::size_t port, std::size_t portUDP, std::string ip);
         ~TCPServer() = default;
         int createSocket();
         void run();
@@ -34,6 +34,7 @@ class TCPServer {
         asio::ip::tcp::endpoint _endpoint;
         asio::ip::tcp::acceptor _acceptor;
         asio::streambuf buffer;
+        std::string _ip;
         asio::error_code _ec;
     protected:
 };

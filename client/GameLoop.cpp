@@ -7,9 +7,9 @@
 
 #include "GameLoop.hpp"
 
-GameLoop::GameLoop(std::size_t TCPport, std::size_t UDPport)
-    : _TCPclient(TCPport), 
-    _UDPclient(UDPport),
+GameLoop::GameLoop(std::size_t TCPport, std::size_t UDPport, std::string ip)
+    : _TCPclient(TCPport, ip),
+    _UDPclient(UDPport, ip),
     _TCPport(TCPport),
     _UDPport(UDPport)
 {
