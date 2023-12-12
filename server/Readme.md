@@ -10,6 +10,7 @@ Communication protocols are essential in the field of computer networks to enabl
   <p>TCP is a connection-oriented and reliable protocol. It is often used in situations where data loss is not acceptable, such as file transfer or web browsing.</p>
   <p>In the R-Type project, we use TCP to keep a connection between the client and the server. With that, if the client is disconnected, the server will be notified and will be able to remove the client from the game.
 </p>
+<img src="docs/TCP.png" alt="TCP Handshake">
 </details>
 
 ## UDP (User Datagram Protocol)
@@ -18,6 +19,7 @@ Communication protocols are essential in the field of computer networks to enabl
   <summary><code>UDP</code></summary>
   <p>UDP is a connectionless and unreliable protocol. It is often used in situations where data loss is acceptable, such as video streaming or online gaming. (like our project)</p>
   <p>UDP is a connectionless and unreliable protocol. It is often used in situations where data loss is acceptable, such as video streaming or online gaming.</p>
+  <img src="docs/UDP.png" alt="UDP Handshake">
 </details>
 
 ## Communication
