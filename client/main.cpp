@@ -10,12 +10,12 @@
 
 int main(int ac, char **av)
 {
-    if (ac != 2) {
-        std::cerr << "USAGE: ./r-type_client port" << std::endl;
+    if (ac != 3) {
+        std::cerr << "USAGE: ./r-type_client port ip" << std::endl;
         return 84;
     }
     try {
-        GameLoop gameLoop(std::stoi(av[1]), 4243, "127.0.0.1");
+        GameLoop gameLoop(std::stoi(av[1]), 4243, av[2]);
         gameLoop.run();
     }
     catch (std::exception &e) {

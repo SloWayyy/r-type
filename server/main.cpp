@@ -18,8 +18,8 @@ bool isDigit(const std::string &port)
 
 int main(int ac, char const **av)
 {
-    if (ac != 2) {
-        std::cerr << "USAGE: ./r-type_server port" << std::endl;
+    if (ac != 3) {
+        std::cerr << "USAGE: ./r-type_server port ip" << std::endl;
         return FAILURE;
     }
     std::string portStr = av[1];
@@ -27,7 +27,7 @@ int main(int ac, char const **av)
         std::cerr << "Error: Port must be a digit" << std::endl;
         return FAILURE;
     }
-    Server server(std::atoi(av[1]), 4242, "127.0.0.1");
+    Server server(std::atoi(av[1]), 4242, av[2]);
     server.run();
     return SUCCESS;
 }
