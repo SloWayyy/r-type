@@ -13,11 +13,16 @@ FetchContent_Declare(asio-cmake
   GIT_TAG        origin/master
 )
 
+FetchContent_Declare(SFML
+  GIT_REPOSITORY https://github.com/SFML/SFML.git
+  GIT_TAG        2.5.x
+)
+
 set(ASIO_CMAKE_ASIO_TAG asio-1-12-2)
+set(SFML_CMAKE_SFML_TAG 2.5.x)
 
 FetchContent_MakeAvailable(asio-cmake)
 
-find_package(SFML COMPONENTS system window graphics audio REQUIRED)
 set(CMAKE_CXX_STANDARD 17)
 if (LINUX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
