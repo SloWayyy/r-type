@@ -28,6 +28,6 @@ int main(int ac, char const **av)
         return FAILURE;
     }
     Server server(std::atoi(av[1]), 4242, av[2]);
-    server.run();
+    // server.run();
     return SUCCESS;
 }
