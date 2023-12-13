@@ -23,6 +23,7 @@ class UDPServer {
         void handle_send(std::shared_ptr<std::string> message, const asio::error_code& error, std::size_t bytes_transferred);
         void response(std::string message);
         void send(std::string message, asio::ip::udp::endpoint endpoint);
+        void sendToAll(std::string message);
         void run();
         size_t getPort() const;
         std::unordered_map<size_t, asio::ip::udp::endpoint> _clientsUDP;

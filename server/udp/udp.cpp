@@ -73,3 +73,10 @@ size_t UDPServer::getPort() const
 {
     return this->_port;
 }
+
+void UDPServer::sendToAll(std::string message)
+{
+    for (auto &client : _clientsUDP) {
+        send(message, client.second);
+    }
+}
