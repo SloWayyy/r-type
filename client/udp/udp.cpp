@@ -10,7 +10,7 @@
 UDPClient::UDPClient(std::size_t port, std::string ip)
     : _port(port),
     _endpointServer(asio::ip::make_address(ip), 4242),
-    socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
+    socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0))
 {
     start_receive();
     send("salut serveur", _endpointServer);
