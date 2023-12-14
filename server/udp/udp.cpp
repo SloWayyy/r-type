@@ -135,3 +135,11 @@ size_t UDPServer::getPort() const
 {
     return this->_port;
 }
+
+void UDPServer::sendToAll(std::string message)
+{
+    for (auto &client : _clientsUDP) {
+        // send(message, client.second);
+        sendTest(Position{15.0, 15.0}, 1);
+    }
+}

@@ -40,6 +40,7 @@ std::string UDPClient::unpack(Packet &packet)
         std::memcpy(&packet, _recv_buffer.data(), sizeof(Packet));
         std::string component;
         std::memcpy(&component, _recv_buffer.data() + sizeof(Packet), sizeof(component));
+        // std::cout << "TOTO packet.magic_number: " << packet.magic_number << " packet.entity_id: " << packet.entity_id << " packet.type_index: " << packet.type_index << std::endl;
         return component;
     } catch (const std::exception& e) {
         std::cerr << "ERROR: " << e.what() << std::endl;
@@ -47,28 +48,27 @@ std::string UDPClient::unpack(Packet &packet)
     }
 }
 
+
+//         using reference_type = value_type &;
+//         using const_reference_type = value_type const &;
+// using value_type = std::optional<Component>;
+// using container_t = std::vector<value_type>;
+// std::unordered_map<std::type_index, std::any> _components;
+        // Packet packet;
+        // std::string compo = unpack(packet);
+        // std::type_index Index = _typeIndex[packet.type_index];
+        // container_t components = _components[Index];
+        // components[packet.entity_id] = std::any_cast<value_type>(compo);
+
 void UDPClient::handle_receive(const asio::error_code &error, std::size_t bytes_transferred)
 {
     if (!error) {
         std::cout << "bytes transferred: " << bytes_transferred << std::endl;
-            // const uint32_t* bufferPtr = reinterpret_cast<const uint32_t*>(recv_buffer_.data());
-            // std::cout << "bufferPtr: " << recv_buffer_.data() << std::endl;
-
-    // Copie les données dans la structure
         Packet packet;
-        // std::string compo = unpack(packet);
-        // auto compo = static_cast<typeid(Position)>(compo);
-        // // if (component == nullptr)
-        // //     return;
-        // std::cout << "TOTO packet.magic_number: " << packet.magic_number << " packet.entity_id: " << packet.entity_id << " packet.type_index: " << packet.type_index << "x: " << std::endl;
         std::memcpy(&packet, _recv_buffer.data(), sizeof(packet));
         std::cout << "TOTO packet.magic_number: " << packet.magic_number << " packet.entity_id: " << packet.entity_id << " packet.type_index: " << packet.type_index << std::endl;
-        Position pos ;
+        Position pos;
         std::memcpy(&pos, _recv_buffer.data() + sizeof(packet), sizeof(pos));
-        // = std::any_cast<Position>(packet.component);
-
-        std::cout << "pos.x: " << pos.x << " pos.y: " << pos.y << std::endl;
-
         start_receive();
     }
 }

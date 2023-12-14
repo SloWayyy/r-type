@@ -33,5 +33,6 @@ void GameLoop::run()
 {
     sf::Window window(sf::VideoMode(800, 600), "R-Type");
     while (1) {
+        // std::cout << "Game is running" << std::endl;
     }
 }
