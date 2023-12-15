@@ -23,6 +23,8 @@ class Server {
         std::size_t _PortServerUDP;
         std::shared_ptr<UDPServer> udpServer;
         std::shared_ptr<TCPServer> tcpServer;
+        std::chrono::time_point<std::chrono::system_clock> start;
+        std::chrono::time_point<std::chrono::system_clock> end;
 };
 
 #endif /* !SERVER_HPP_ */

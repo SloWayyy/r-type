@@ -8,6 +8,7 @@
 #include "server.hpp"
 #include <thread>
 #include <typeinfo>
+#include <iomanip>
 
 Server::Server(std::size_t PortServerTCP, std::size_t PortServerUDP, std::string ip)
     : _PortServerUDP(PortServerUDP), udpServer(std::make_shared<UDPServer>(PortServerUDP, ip)),
@@ -33,13 +34,15 @@ void Server::run()
         std::chrono::duration<double> elapsed_seconds = end - start;
         if (elapsed_seconds.count() >= 1) {
             auto now = std::chrono::system_clock::to_time_t(end);
-            std::cout << "JE SUIS LA ! - Timestamp: " << std::ctime(&now);
+            std::time_t result = std::time(nullptr);
+            std::cout << result << " seconds since the Epoch" << std::endl;
+
+            std::cout << "JE SUIS LA !! - Timestamp: " << std::put_time(std::localtime(&now), "%F %T") << std::endl;
+
             std::string message = "JE SUIS LA ! - Timestamp: ";
             message += std::ctime(&now);
-            std::cout << "ici " << sizeof(now) << std::endl;
             this->udpServer->sendToAll(message);
             start = std::chrono::system_clock::now();
         }
     }
-    
 }

@@ -16,12 +16,18 @@
 #include <unordered_map>
 #include <any>
 #include <typeindex>
+#include <ctime>
 
 struct Packet
 {
     uint32_t magic_number;
     uint32_t entity_id;
     uint32_t type_index;
+    long timestamp;
+};
+
+struct ConfirmationPacket {
+    uint32_t confirmation;
 };
 
 class UDPServer {

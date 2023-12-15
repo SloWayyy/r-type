@@ -26,6 +26,10 @@ struct Packet
     long timestamp;
 };
 
+struct ConfirmationPacket {
+    uint32_t confirmation;
+};
+
 class UDPClient {
     public:
         UDPClient(std::size_t port, std::string ip);
@@ -35,6 +39,9 @@ class UDPClient {
         void send(std::string message, asio::ip::udp::endpoint endpoint);
         void run();
         std::string unpack(Packet &packet);
+        void sendConfirmation(uint32_t confirmation);
+        template <typename T>
+        std::string pack(const T &component, uint32_t entity_id);
 
     private:
         std::size_t _port;
@@ -43,6 +50,8 @@ class UDPClient {
         asio::ip::udp::socket socket_;
         asio::ip::udp::endpoint remote_endpoint_;
         std::array<char, 1024> _recv_buffer;
+        long _last_timestamp;
+        uint32_t _magic_number;
 };
 
 #endif /* !UDP_HPP_ */
