@@ -11,6 +11,7 @@
 #include <iostream>
 #include <optional>
 #include <vector>
+#include <cstring>
 
 template <typename Component> // You can also mirror the definition of std :: vector ,
 
@@ -92,6 +93,12 @@ class Sparse_array {
         void erase(size_type pos) {
             _data.erase(_data.begin() + pos);
         };
+         void insert_packet(size_t pos, std::string packet) {
+            Component test;
+            std::memcpy(&test, packet.c_str(), sizeof(Component));
+            _data.insert(_data.begin() + pos, test);
+        };
+
         size_type get_index(value_type const &component) const {
             for (size_type i = 0; i < _data.size(); i++) {
                 if (_data[i] == component)

@@ -18,11 +18,20 @@ void Game::init()
     auto &size = reg.getComponent<Size>();
     auto &velocity = reg.getComponent<Velocity>();
 
+    Position pos = {10, 100};
+
+    std::string test = std::string(reinterpret_cast<char*>(&pos));
+
+ 
+
+
     position.emplace_at(ship, 50, 50);
+    position.insert_packet(ship, test);
+
     sprite.emplace_at(ship, "game/assets/spaceShip.png", sf::IntRect(198, 0, 32, 32));
     velocity.emplace_at(ship, 0, 0, 0, 10, 0);
     size.emplace_at(ship, 1.5, 1.5);
-    reg.add_system(moveEntity);
+    // reg.add_system(moveEntity);
     reg.add_system(animeEntity, 32, 198);
 }
 

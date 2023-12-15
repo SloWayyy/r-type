@@ -24,7 +24,6 @@
         registry() = default;
         ~registry() = default;
         template <typename T>
-
         void addComponent(Sparse_array<T> component)
         {
             std::any tmp = component;

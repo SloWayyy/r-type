@@ -40,6 +40,7 @@ void drawEntity(registry &reg, sf::RenderWindow &window)
 
         // sprite_value.sprite.setTexture(sprite_value.texture);
         sprite_value.sprite.setTextureRect(sprite_value.rect);
+        printf("%d %d\n", pos_value.x, pos_value.y);
         sprite_value.sprite.setPosition(pos_value.x, pos_value.y);
         sprite_value.sprite.setScale(size_value.w, size_value.h);
 
