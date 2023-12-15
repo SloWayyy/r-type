@@ -40,7 +40,6 @@ std::string UDPClient::unpack(Packet &packet)
         std::memcpy(&packet, _recv_buffer.data(), sizeof(Packet));
         std::string component;
         std::memcpy(&component, _recv_buffer.data() + sizeof(Packet), sizeof(component));
-        // std::cout << "TOTO packet.magic_number: " << packet.magic_number << " packet.entity_id: " << packet.entity_id << " packet.type_index: " << packet.type_index << std::endl;
         return component;
     } catch (const std::exception& e) {
         std::cerr << "ERROR: " << e.what() << std::endl;

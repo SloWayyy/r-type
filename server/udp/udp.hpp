@@ -18,12 +18,19 @@
 #include <typeindex>
 #include <ctime>
 
+enum PacketType {
+    DATA_PACKET = '0',
+    REPEAT_PACKET = '1',
+    RESPONSE_PACKET = '2',
+};
+
 struct Packet
 {
     uint32_t magic_number;
+    PacketType packet_type;
+    long timestamp;
     uint32_t entity_id;
     uint32_t type_index;
-    long timestamp;
 };
 
 struct ConfirmationPacket {
@@ -39,12 +46,12 @@ class UDPServer {
         void response(std::string message);
         void send(std::string message, asio::ip::udp::endpoint endpoint);
         template <typename T>
-        void sendTest(const T &component, uint32_t entity_id);
+        void sendTest(const T &component, uint32_t entity_id, PacketType packet_type = 0);
         void run();
         size_t getPort() const;
         void sendToAll(std::string message);
         template <typename T>
-        std::string pack(const T &component, uint32_t entity_id);
+        std::string pack(const T &component, uint32_t entity_id, PacketType repeat_packet = 0);
         std::unordered_map<size_t, asio::ip::udp::endpoint> _clientsUDP;
 
     private:

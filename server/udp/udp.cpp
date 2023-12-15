@@ -35,7 +35,7 @@ std::unordered_map<uint32_t, std::type_index> _typeIndex = {
     {2, typeid(Position)}};
 
 template <typename T>
-std::string UDPServer::pack(const T &component, uint32_t entity_id)
+std::string UDPServer::pack(const T &component, uint32_t entity_id, PacketType packet_type = 0)
 {
     std::type_index targetType = typeid(T);
     int type_index = -1;
@@ -50,7 +50,7 @@ std::string UDPServer::pack(const T &component, uint32_t entity_id)
         std::cerr << "ERROR: type_index not found message not send" << std::endl;
         return "";
     } else {
-        Packet packet = {_magic_number, entity_id, static_cast<u_int32_t>(type_index), std::time(nullptr)};
+        Packet packet = {_magic_number, packet_type, std::time(nullptr), entity_id, static_cast<u_int32_t>(type_index)};
         try {
             return std::string(reinterpret_cast<char *>(&packet), sizeof(packet)) + std::string(reinterpret_cast<const char *>(&component), sizeof(component));
         } catch (const std::exception &e) {
@@ -62,22 +62,13 @@ std::string UDPServer::pack(const T &component, uint32_t entity_id)
 
 void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_transferred)
 {
-    // std::cout << "Message reçu" << std::endl;
-    // if (!error) {
-    //     if (_clientsUDP.find(remote_endpoint_.port()) == _clientsUDP.end()) {
-    //         _clientsUDP[remote_endpoint_.port()] = remote_endpoint_;
-    //     }
-    //     Position pos = {15.0, 15.0};
-    //     sendTest(pos, 1);
-    //     start_receive();
-    // }
     if (!error) {
         std::cout << "bytes transferred to serv: " << bytes_transferred << std::endl;
         ConfirmationPacket confirmation;
         std::memcpy(&confirmation, _recv_buffer.data(), sizeof(ConfirmationPacket));
         std::cout << "Confirmation: " << confirmation.confirmation << std::endl;
         Position pos = {15.0, 15.0};
-        sendTest(pos, 1);
+        sendTest(pos, 1 , DATA_PACKET);
         start_receive();
     }
     //     std::cout << "bytes transferred: " << bytes_transferred << std::endl;
@@ -117,9 +108,9 @@ void UDPServer::send(std::string message, asio::ip::udp::endpoint endpoint)
 }
 
 template <typename T>
-void UDPServer::sendTest(const T &component, uint32_t entity_id)
+void UDPServer::sendTest(const T &component, uint32_t entity_id, PacketType packet_type = 0)
 {
-    std::string data = pack(component, entity_id);
+    std::string data = pack(component, entity_id, DATA_PACKET);
     if (data.empty())
         return;
     try {
