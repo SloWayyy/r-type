@@ -49,6 +49,7 @@ class UDPServer {
         std::string pack(const T &component, uint32_t entity_id, PacketType packet_type = 0);
         std::string unpack(Packet &packet);
         std::unordered_map<size_t, asio::ip::udp::endpoint> _clientsUDP;
+        std::vector<std::pair<asio::ip::udp::endpoint, std::string>> _queries;
 
     private:
         std::size_t _port;

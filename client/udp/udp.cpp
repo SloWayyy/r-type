@@ -68,7 +68,7 @@ void UDPClient::handle_receive(const asio::error_code &error, std::size_t bytes_
         std::memcpy(&pos, _recv_buffer.data() + sizeof(packet), sizeof(pos));
         //
         if (packet.timestamp >= this->_last_timestamp) {
-            send(pos, packet.entity_id, RESPONSE_PACKET);
+            // send(pos, packet.entity_id, RESPONSE_PACKET);
             _last_timestamp = packet.timestamp;
             // traiter l'information et stocker l'info pour que le game loop puisse l'utiliser
                 //exemple

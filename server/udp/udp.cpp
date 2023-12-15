@@ -93,7 +93,18 @@ void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_
             return;
         }
         if (receivedPacket.packet_type == RESPONSE_PACKET) {
-            std::cout << "RESPONSE_PACKET" << std::endl;
+            Position pos;
+            std::memcpy(&pos, _recv_buffer.data() + sizeof(receivedPacket), sizeof(pos));
+            std::string search = std::string(reinterpret_cast<char *>(&receivedPacket), sizeof(receivedPacket)) + receivedComponent;
+            std::cout << "RESPONSE_PACKET pos.x: " << pos.x << " pos.y: " << pos.y << std::endl;
+            // trouver la query dans la map et la supprimer mais pb ça match pas !!!!!
+            // QUERY.SECOND et SEARCH sont identiques mais ça match pas (à check)
+            for (const auto &query : _queries) {
+                if (query.first == remote_endpoint_ && query.second == search) {
+                    std::cout << "Query found" << std::endl;
+                    _queries.erase(std::remove(_queries.begin(), _queries.end(), query), _queries.end());
+                }
+            }
         }
         start_receive();
     }
@@ -128,12 +139,19 @@ template <typename T>
 void UDPServer::sendToAll(const T &component, uint32_t entity_id, PacketType packet_type)
 {
     std::string data = pack(component, entity_id, packet_type);
+    // std::string data2 = pack(component, entity_id, RESPONSE_PACKET);
+
     if (data.empty())
         return;
     try {
         for (const auto &client : _clientsUDP) {
             std::cout << "Message sent to client: " << client.first << std::endl;
             socket_.send_to(asio::buffer(data), client.second);
+            if (packet_type == DATA_PACKET) {
+                data[4] = RESPONSE_PACKET;
+                // stocker les queries dans une map
+                // _queries.push_back(std::make_pair(client.second, data));
+            }
         }
     } catch (const asio::system_error &ec) {
         std::cerr << "ERROR UDP sending message" << ec.what() << std::endl;
