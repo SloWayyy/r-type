@@ -11,7 +11,7 @@
     #include "../registry/registry.hpp"
 
     void moveEntity(registry &reg);
-    void animeEntity(size_t incrementLeft, size_t maxWidth, registry &reg);
-    void drawEntity(sf::RenderWindow &window, registry &reg);
+    void animeEntity(registry &reg, size_t incrementLeft, size_t maxWidth);
+    void drawEntity(registry &reg, sf::RenderWindow &window);
 
 #endif /* !SYSTEM_HPP_ */

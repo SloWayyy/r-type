@@ -1,6 +1,6 @@
 #include "system.hpp"
 
-void animeEntity(size_t incrementLeft, size_t maxWidth, registry &reg)
+void animeEntity(registry &reg, size_t incrementLeft, size_t maxWidth)
 {
     auto &sprite = reg.getComponent<Sprite>();
 
@@ -24,7 +24,7 @@ void moveEntity(registry &reg) {
     }
 }
 
-void drawEntity(sf::RenderWindow &window, registry &reg)
+void drawEntity(registry &reg, sf::RenderWindow &window)
 {
     auto &sprite = reg.getComponent<Sprite>();
     auto &position = reg.getComponent<Position>();

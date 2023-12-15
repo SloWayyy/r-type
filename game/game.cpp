@@ -23,11 +23,13 @@ void Game::init()
     velocity.emplace_at(ship, 0, 0, 0, 10, 0);
     size.emplace_at(ship, 1.5, 1.5);
     reg.add_system(moveEntity);
+    reg.add_system(animeEntity, 32, 198);
 }
 
 void Game::run()
 {
     sf::RenderWindow window(sf::VideoMode(800, 600), "SFML window");
+    reg.add_system(drawEntity, std::ref(window));
     window.setFramerateLimit(5);
     sf::Event event;
 
@@ -38,9 +40,6 @@ void Game::run()
                 window.close();
         }
         window.clear();
-
-        animeEntity(32, 198, reg);
-        drawEntity(window, reg);
         reg.run_system();
         window.display();
     }

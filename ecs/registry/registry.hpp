@@ -112,10 +112,10 @@
             return _entity_count - 1;
         };
 
-        template<typename Function>
-        void add_system(Function && f) {
-            _system.push_back([f, this]() {
-                f(*this);
+        template<typename Function, typename ...Params>
+        void add_system(Function && f, Params && ...params) {
+            _system.push_back([f, this, params...]() mutable {
+                f(*this, params...);
             });
         };
 
