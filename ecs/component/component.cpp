@@ -21,12 +21,13 @@ struct Size {
 };
 
 struct Velocity {
-    Velocity(int velocity = 0, int time = 0, int acc = 0)
-        : v(velocity), t(time), a(acc){};
+    Velocity(int velocity = 0, int time = 0, int acc = 0, int x_speed = 0, int y_speed = 0): v(velocity), t(time), a(acc), x_speed(x_speed), y_speed(y_speed){};
     void print()
     {
         std::cout << "Velocity v: " << v << "\nVelocity t: " << t << "\nVelocity a: " << a << std::endl;
     };
+    int x_speed;
+    int y_speed;
     int v;
     int t;
     int a;
@@ -56,4 +57,13 @@ struct Sprite {
     sf::IntRect rect;
     sf::Texture texture;
     sf::Sprite sprite;
+
+    Sprite(const Sprite &other)
+    {
+        rect = other.rect;
+        texture = other.texture;
+        sprite = other.sprite;
+        sprite.setTexture(texture);
+    }
+
 };

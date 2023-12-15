@@ -10,28 +10,8 @@
 
     #include "../registry/registry.hpp"
 
-    class System {
-        public:
-            System(registry &reg) : reg(reg) {};
-            ~System() = default;
-            void drawEntity(sf::RenderWindow &window);
-            void animeEntity(size_t incrementLeft, size_t maxWidth);
-
-            template <typename T>
-            void moveEntity(int x, int y) {
-                T op;
-                auto &position = reg.getComponent<Position>();
-
-                for (int i = 0; i < position.size(); i++) {
-                    if (position[i]) {
-                        position[i].value().x = op(position[i].value().x, x);
-                        position[i].value().y = op(position[i].value().y, y);
-                    }
-                }
-            }
-
-        private:
-            registry &reg;
-    };
+    void moveEntity(registry &reg);
+    void animeEntity(size_t incrementLeft, size_t maxWidth, registry &reg);
+    void drawEntity(sf::RenderWindow &window, registry &reg);
 
 #endif /* !SYSTEM_HPP_ */

@@ -112,7 +112,21 @@
             return _entity_count - 1;
         };
 
+        template<typename Function>
+        void add_system(Function && f) {
+            _system.push_back([f, this]() {
+                f(*this);
+            });
+        };
+
+        void run_system() {
+            for (auto &func : _system) {
+                func();
+            }
+        };
+
     private:
+        std::vector<std::function<void()>> _system;
         std::unordered_map<std::type_index, std::any> _components;
         std::vector<Entity> _entity_graveyard;
         std::vector<std::function<void(registry &, Entity const &)>> _eraseFunction;

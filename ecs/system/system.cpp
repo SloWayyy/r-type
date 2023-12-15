@@ -1,6 +1,6 @@
 #include "system.hpp"
 
-void System::animeEntity(size_t incrementLeft, size_t maxWidth)
+void animeEntity(size_t incrementLeft, size_t maxWidth, registry &reg)
 {
     auto &sprite = reg.getComponent<Sprite>();
 
@@ -13,7 +13,18 @@ void System::animeEntity(size_t incrementLeft, size_t maxWidth)
     }
 }
 
-void System::drawEntity(sf::RenderWindow &window)
+void moveEntity(registry &reg) {
+    auto &position = reg.getComponent<Position>();
+    auto &velocity = reg.getComponent<Velocity>();
+    for (int i = 0; i < position.size(); i++) {
+        if (position[i] && velocity[i]) {
+            position[i].value().x += velocity[i].value().x_speed;
+            position[i].value().y += velocity[i].value().y_speed;
+        }
+    }
+}
+
+void drawEntity(sf::RenderWindow &window, registry &reg)
 {
     auto &sprite = reg.getComponent<Sprite>();
     auto &position = reg.getComponent<Position>();
@@ -27,7 +38,7 @@ void System::drawEntity(sf::RenderWindow &window)
         auto &pos_value = position[i].value();
         auto &size_value = size[i].value();
 
-        sprite_value.sprite.setTexture(sprite_value.texture);
+        // sprite_value.sprite.setTexture(sprite_value.texture);
         sprite_value.sprite.setTextureRect(sprite_value.rect);
         sprite_value.sprite.setPosition(pos_value.x, pos_value.y);
         sprite_value.sprite.setScale(size_value.w, size_value.h);

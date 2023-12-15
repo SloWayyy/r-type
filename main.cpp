@@ -7,8 +7,7 @@ int main()
 {
     GameEntity gameEntity;
     registry reg;
-    System system(reg);
 
-    Game game(gameEntity, reg, system);
+    Game game(gameEntity, reg);
     game.run();
 }

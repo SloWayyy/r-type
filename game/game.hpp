@@ -17,14 +17,13 @@
 
     class Game {
         public:
-           Game(GameEntity &gameEntity, registry &reg, System &sys) : gameEntity(gameEntity), reg(reg), sys(sys) {};
+           Game(GameEntity &gameEntity, registry &reg) : gameEntity(gameEntity), reg(reg) {};
            ~Game() = default;
            void run();
            void init();
         private:
-            GameEntity &gameEntity;
             registry &reg;
-            System &sys;
+            GameEntity &gameEntity;
      };
 
 #endif /* !GAME_HPP_ */
