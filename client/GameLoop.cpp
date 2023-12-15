@@ -32,7 +32,10 @@ GameLoop::~GameLoop()
 void GameLoop::run()
 {
     sf::Window window(sf::VideoMode(800, 600), "R-Type");
+    Position position = {0, 0};
+    _UDPclient.send(position, 1, DATA_PACKET);
     while (1) {
+
         // std::cout << "Game is running" << std::endl;
     }
 }

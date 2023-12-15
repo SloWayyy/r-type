@@ -22,8 +22,8 @@ enum PacketType {
     DATA_PACKET = '0',
     REPEAT_PACKET = '1',
     RESPONSE_PACKET = '2',
+    NEW_CONNECTION = '3',
 };
-
 struct Packet
 {
     uint32_t magic_number;
@@ -47,6 +47,7 @@ class UDPServer {
         size_t getPort() const;
         template <typename T>
         std::string pack(const T &component, uint32_t entity_id, PacketType packet_type = 0);
+        std::string unpack(Packet &packet);
         std::unordered_map<size_t, asio::ip::udp::endpoint> _clientsUDP;
 
     private:

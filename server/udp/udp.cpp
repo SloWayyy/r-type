@@ -67,10 +67,34 @@ void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_
     if (!error) {
         std::cout << "bytes transferred to serv: " << bytes_transferred << std::endl;
         Packet receivedPacket;
-        std::memcpy(&receivedPacket, _recv_buffer.data(), sizeof(Packet));
-        std::cout << "Packet Type : " << receivedPacket.packet_type << std::endl;
-        Position pos = {15.0, 15.0};
-        sendToAll(pos, 1 , DATA_PACKET);
+        std::string receivedComponent = unpack(receivedPacket);
+        std::cout << sizeof(receivedComponent) << std::endl;
+        if (receivedComponent.empty()) {
+            std::cout << "ERROR: receivedComponent empty" << std::endl;
+            start_receive();
+            return;
+        }
+        if (receivedPacket.packet_type == NEW_CONNECTION) {
+            _clientsUDP[receivedPacket.entity_id] = remote_endpoint_;
+            std::cout << "New player connected from " << remote_endpoint_.address() << " " << remote_endpoint_.port() << std::endl;
+            start_receive();
+            return;
+        }
+        if (receivedPacket.magic_number != _magic_number) {
+            std::cout << "ERROR: magic number not valid in received packet" << std::endl;
+            start_receive();
+            return;
+        }
+        if (receivedPacket.packet_type == DATA_PACKET) {
+            Position pos = {12, 12};
+            std::cout << "NEW POSITION pos.x: " << pos.x << " pos.y: " << pos.y << std::endl;
+            sendToAll(pos, receivedPacket.entity_id, DATA_PACKET);
+            start_receive();
+            return;
+        }
+        if (receivedPacket.packet_type == RESPONSE_PACKET) {
+            std::cout << "RESPONSE_PACKET" << std::endl;
+        }
         start_receive();
     }
 }
@@ -108,10 +132,23 @@ void UDPServer::sendToAll(const T &component, uint32_t entity_id, PacketType pac
         return;
     try {
         for (const auto &client : _clientsUDP) {
+            std::cout << "Message sent to client: " << client.first << std::endl;
             socket_.send_to(asio::buffer(data), client.second);
         }
     } catch (const asio::system_error &ec) {
         std::cerr << "ERROR UDP sending message" << ec.what() << std::endl;
+    }
+}
+
+std::string UDPServer::unpack(Packet &packet)
+{
+    try {
+        std::memcpy(&packet, _recv_buffer.data(), sizeof(Packet));
+        std::string component(_recv_buffer.data() + sizeof(Packet), _recv_buffer.data() + sizeof(Packet) + sizeof(component));
+        return component;
+    } catch (const std::exception &e) {
+        std::cerr << "ERROR unpack: " << e.what() << std::endl;
+        return nullptr;
     }
 }
 

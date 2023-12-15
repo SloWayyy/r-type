@@ -41,7 +41,7 @@ void Server::run()
 
             std::string message = "JE SUIS LA ! - Timestamp: ";
             message += std::ctime(&now);
-            this->udpServer->sendToAll(message);
+            // this->udpServer->sendToAll(message);
             start = std::chrono::system_clock::now();
         }
     }
