@@ -50,7 +50,7 @@ std::string UDPServer::pack(const T &component, uint32_t entity_id)
         std::cerr << "ERROR: type_index not found message not send" << std::endl;
         return "";
     } else {
-        Packet packet = {_magic_number, entity_id, static_cast<u_int32_t>(type_index), std::time(nullptr)};
+        Packet packet = {_magic_number, entity_id, static_cast<u_int32_t>(type_index), 'S',std::time(nullptr)};
         try {
             return std::string(reinterpret_cast<char *>(&packet), sizeof(packet)) + std::string(reinterpret_cast<const char *>(&component), sizeof(component));
         } catch (const std::exception &e) {
@@ -73,9 +73,12 @@ void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_
     // }
     if (!error) {
         std::cout << "bytes transferred to serv: " << bytes_transferred << std::endl;
-        ConfirmationPacket confirmation;
-        std::memcpy(&confirmation, _recv_buffer.data(), sizeof(ConfirmationPacket));
-        std::cout << "Confirmation: " << confirmation.confirmation << std::endl;
+        Packet packet;
+        std::memcpy(&packet, _recv_buffer.data(), sizeof(Packet));
+        std::cout << "packet.magic_number: " << packet.magic_number << " packet.entity_id: " << packet.entity_id << " packet.type_index: " << packet.type_index << "CONFIRMATION: " << packet.confirmation << " timestamp: " << packet.timestamp << std::endl;
+        Position pos2;
+        std::memcpy(&pos2, _recv_buffer.data() + sizeof(Packet), sizeof(pos2));
+        std::cout << "RECV pos.x: " << pos2.x << " pos.y: " << pos2.y << std::endl;
         Position pos = {15.0, 15.0};
         sendTest(pos, 1);
         start_receive();
@@ -124,6 +127,7 @@ void UDPServer::sendTest(const T &component, uint32_t entity_id)
         return;
     try {
         socket_.send_to(asio::buffer(data), remote_endpoint_);
+        _packets.push_back(data);
     } catch (const asio::system_error &ec) {
         std::cerr << "ERROR UDP sending message" << ec.what() << std::endl;
     }

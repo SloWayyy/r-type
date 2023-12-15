@@ -17,12 +17,14 @@
 #include <any>
 #include <typeindex>
 #include <ctime>
+#include <vector>
 
 struct Packet
 {
     uint32_t magic_number;
     uint32_t entity_id;
     uint32_t type_index;
+    uint8_t confirmation;
     long timestamp;
 };
 
@@ -46,6 +48,7 @@ class UDPServer {
         template <typename T>
         std::string pack(const T &component, uint32_t entity_id);
         std::unordered_map<size_t, asio::ip::udp::endpoint> _clientsUDP;
+        std::vector<std::string> _packets;
 
     private:
         std::size_t _port;

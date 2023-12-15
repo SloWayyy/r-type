@@ -23,6 +23,7 @@ struct Packet
     uint32_t magic_number;
     uint32_t entity_id;
     uint32_t type_index;
+    uint8_t confirmation;
     long timestamp;
 };
 
@@ -39,9 +40,11 @@ class UDPClient {
         void send(std::string message, asio::ip::udp::endpoint endpoint);
         void run();
         std::string unpack(Packet &packet);
-        void sendConfirmation(uint32_t confirmation);
         template <typename T>
-        std::string pack(const T &component, uint32_t entity_id);
+        void sendConfirmation(Packet packet, const T &component, uint8_t sequence_number);
+        template <typename T>
+        std::string pack(Packet confirmPacket, T &component, uint32_t entity_id);
+
 
     private:
         std::size_t _port;
