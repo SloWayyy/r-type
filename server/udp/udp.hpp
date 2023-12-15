@@ -33,10 +33,6 @@ struct Packet
     uint32_t type_index;
 };
 
-struct ConfirmationPacket {
-    uint32_t confirmation;
-};
-
 class UDPServer {
     public:
         UDPServer(std::size_t port, std::string ip);
@@ -46,12 +42,11 @@ class UDPServer {
         void response(std::string message);
         void send(std::string message, asio::ip::udp::endpoint endpoint);
         template <typename T>
-        void sendTest(const T &component, uint32_t entity_id, PacketType packet_type = 0);
+        void sendToAll(const T &component, uint32_t entity_id, PacketType packet_type = 0);
         void run();
         size_t getPort() const;
-        void sendToAll(std::string message);
         template <typename T>
-        std::string pack(const T &component, uint32_t entity_id, PacketType repeat_packet = 0);
+        std::string pack(const T &component, uint32_t entity_id, PacketType packet_type = 0);
         std::unordered_map<size_t, asio::ip::udp::endpoint> _clientsUDP;
 
     private:

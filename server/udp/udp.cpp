@@ -35,7 +35,7 @@ std::unordered_map<uint32_t, std::type_index> _typeIndex = {
     {2, typeid(Position)}};
 
 template <typename T>
-std::string UDPServer::pack(const T &component, uint32_t entity_id, PacketType packet_type = 0)
+std::string UDPServer::pack(const T &component, uint32_t entity_id, PacketType packet_type)
 {
     std::type_index targetType = typeid(T);
     int type_index = -1;
@@ -52,7 +52,9 @@ std::string UDPServer::pack(const T &component, uint32_t entity_id, PacketType p
     } else {
         Packet packet = {_magic_number, packet_type, std::time(nullptr), entity_id, static_cast<u_int32_t>(type_index)};
         try {
-            return std::string(reinterpret_cast<char *>(&packet), sizeof(packet)) + std::string(reinterpret_cast<const char *>(&component), sizeof(component));
+            return std::string(reinterpret_cast<char *>(&packet),
+            sizeof(packet)) + std::string(reinterpret_cast<const char *>(&component),
+            sizeof(component));
         } catch (const std::exception &e) {
             std::cerr << "ERROR: " << e.what() << std::endl;
             return "";
@@ -64,22 +66,13 @@ void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_
 {
     if (!error) {
         std::cout << "bytes transferred to serv: " << bytes_transferred << std::endl;
-        ConfirmationPacket confirmation;
-        std::memcpy(&confirmation, _recv_buffer.data(), sizeof(ConfirmationPacket));
-        std::cout << "Confirmation: " << confirmation.confirmation << std::endl;
+        Packet receivedPacket;
+        std::memcpy(&receivedPacket, _recv_buffer.data(), sizeof(Packet));
+        std::cout << "Packet Type : " << receivedPacket.packet_type << std::endl;
         Position pos = {15.0, 15.0};
-        sendTest(pos, 1 , DATA_PACKET);
+        sendToAll(pos, 1 , DATA_PACKET);
         start_receive();
     }
-    //     std::cout << "bytes transferred: " << bytes_transferred << std::endl;
-    //     Packet packet;
-    //     std::memcpy(&packet, _recv_buffer.data(), sizeof(Packet));
-    //     std::cout << "TOTO packet.magic_number: " << packet.magic_number << " packet.entity_id: " << packet.entity_id << " packet.type_index: " << packet.type_index << " timestamp: " << packet.timestamp << std::endl;
-    //     Position pos;
-    //     std::memcpy(&pos, _recv_buffer.data() + sizeof(Packet), sizeof(pos));
-    //     std::cout << "TOTO pos.x: " << pos.x << " pos.y: " << pos.y << std::endl;
-    //     start_receive();
-    // }
 }
 
 void UDPServer::run()
@@ -108,13 +101,15 @@ void UDPServer::send(std::string message, asio::ip::udp::endpoint endpoint)
 }
 
 template <typename T>
-void UDPServer::sendTest(const T &component, uint32_t entity_id, PacketType packet_type = 0)
+void UDPServer::sendToAll(const T &component, uint32_t entity_id, PacketType packet_type)
 {
-    std::string data = pack(component, entity_id, DATA_PACKET);
+    std::string data = pack(component, entity_id, packet_type);
     if (data.empty())
         return;
     try {
-        socket_.send_to(asio::buffer(data), remote_endpoint_);
+        for (const auto &client : _clientsUDP) {
+            socket_.send_to(asio::buffer(data), client.second);
+        }
     } catch (const asio::system_error &ec) {
         std::cerr << "ERROR UDP sending message" << ec.what() << std::endl;
     }
@@ -128,12 +123,4 @@ void UDPServer::handle_send(std::shared_ptr<std::string> message, const asio::er
 size_t UDPServer::getPort() const
 {
     return this->_port;
-}
-
-void UDPServer::sendToAll(std::string message)
-{
-    for (auto &client : _clientsUDP) {
-        // send(message, client.second);
-        // sendTest(Position{15.0, 15.0}, 1);
-    }
 }
