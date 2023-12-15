@@ -78,6 +78,21 @@ void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_
         std::cout << "packet.magic_number: " << packet.magic_number << " packet.entity_id: " << packet.entity_id << " packet.type_index: " << packet.type_index << "CONFIRMATION: " << packet.confirmation << " timestamp: " << packet.timestamp << std::endl;
         Position pos2;
         std::memcpy(&pos2, _recv_buffer.data() + sizeof(Packet), sizeof(pos2));
+        if (packet.confirmation == 'R') {
+            Packet searchPacket = {packet.magic_number, packet.entity_id, packet.type_index, 'S', packet.timestamp};
+            std::string data = std::string(reinterpret_cast<char *>(&searchPacket), sizeof(searchPacket));
+            data += std::string(reinterpret_cast<const char *>(&pos2), sizeof(pos2));
+            std::cout << "packet size " << _packets.size() << std::endl;
+            for (auto &packet : _packets) {
+                if (packet == data) {
+                    std::cout << "packet trouvé" << std::endl;
+                    std::cout << packet << std::endl;
+                    _packets.erase(std::remove(_packets.begin(), _packets.end(), packet), _packets.end());
+                }
+            }
+            std::cout << "packet size " << _packets.size() << std::endl;
+
+        }
         std::cout << "RECV pos.x: " << pos2.x << " pos.y: " << pos2.y << std::endl;
         Position pos = {15.0, 15.0};
         sendTest(pos, 1);
@@ -147,6 +162,6 @@ void UDPServer::sendToAll(std::string message)
 {
     for (auto &client : _clientsUDP) {
         // send(message, client.second);
-        // sendTest(Position{15.0, 15.0}, 1);
+        sendTest(Position{15.0, 15.0}, 1);
     }
 }
