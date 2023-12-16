@@ -28,7 +28,11 @@ UDPServer::UDPServer(std::size_t port, std::string ip)
     : socket_(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), port)), _magic_number(4242)
 {
     this->_port = socket_.local_endpoint().port();
-    start_receive();
+}
+
+UDPServer::~UDPServer()
+{
+    _thread.join();
 }
 
 void UDPServer::start_receive()

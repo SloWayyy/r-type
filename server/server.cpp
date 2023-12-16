@@ -18,15 +18,6 @@ Server::Server(std::size_t PortServerTCP, std::size_t PortServerUDP, std::string
     : _PortServerUDP(PortServerUDP), udpServer(std::make_shared<UDPServer>(PortServerUDP, ip)),
         tcpServer(std::make_shared<TCPServer>(PortServerTCP, udpServer->getPort(), ip))
 {
-    std::thread serverThread([&]() {
-        tcpServer->run();
-    });
-    std::thread clientThread([&]() {
-        udpServer->run();
-    });
-    this->run();
-    serverThread.join();
-    clientThread.join();
 }
 
 void Server::run()

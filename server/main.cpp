@@ -28,6 +28,10 @@ int main(int ac, char const **av)
         return FAILURE;
     }
     Server server(std::atoi(av[1]), 4242, av[2]);
-    // server.run();
+    server.tcpServer->_thread = std::thread(&TCPServer::run, server.tcpServer);
+    server.tcpServer->startAccept();
+    server.udpServer->start_receive();
+    server.udpServer->_thread = std::thread(&UDPServer::run, server.udpServer);
+    server.run();
     return SUCCESS;
 }

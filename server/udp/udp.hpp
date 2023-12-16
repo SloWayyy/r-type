@@ -36,6 +36,7 @@ struct Packet
 class UDPServer {
     public:
         UDPServer(std::size_t port, std::string ip);
+        ~UDPServer();
         void start_receive();
         void handle_receive(const asio::error_code &error, std::size_t bytes_transferred);
         void handle_send(std::shared_ptr<std::string> message, const asio::error_code &error, std::size_t bytes_transferred);
@@ -50,6 +51,7 @@ class UDPServer {
         std::string unpack(Packet &packet, std::array<uint8_t, 1024> query);
         std::unordered_map<size_t, asio::ip::udp::endpoint> _clientsUDP;
         std::vector<std::pair<asio::ip::udp::endpoint, std::string>> _queries;
+        std::thread _thread;
 
     private:
         std::size_t _port;

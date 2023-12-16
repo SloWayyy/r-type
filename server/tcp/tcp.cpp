@@ -18,7 +18,11 @@ TCPServer::TCPServer(std::size_t port, std::size_t portUDP, std::string ip)
     buffer()
 {
     this->createSocket();
-    this->startAccept();
+}
+
+TCPServer::~TCPServer()
+{
+    _thread.join();
 }
 
 int TCPServer::createSocket()
