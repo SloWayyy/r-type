@@ -108,9 +108,20 @@ void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_
             for (const auto &query : _queries) {
                 Packet queryPacket;
                 // ATTENTION UNPACK lui renseigner la string de la query à FAIRE
-                std::string queryComponent = unpack(queryPacket);
-                std::cout << "COMPARE COMPONENT " << receivedComponent.compare(queryComponent) << std::endl;
-                if (query.first == remote_endpoint_ && queryPacket == receivedPacket && queryComponent == receivedComponent) {
+                // std::string queryComponent = unpack(queryPacket);
+                std::cout << "QUERY PACKET " << query.second << std::endl;
+                std::cout << "BUUFER DATA " << _recv_buffer.data() << std::endl;
+                std::string queryComponent = unpackQuery(queryPacket, query.second);
+                std::cout << queryComponent << " | " << receivedComponent << std::endl;
+                // Position pos2;
+                // std::memcpy(&pos2, query.second.data() + sizeof(queryPacket), sizeof(pos2));
+                // std::cout << "QUERY PACKET pos.x: " << pos2.x << " pos.y: " << pos2.y << std::endl;
+                for (int i = 0; i < queryComponent.length(); i++) {
+                    std::cout << queryComponent[i] << " | " << receivedComponent[i] << std::endl;
+                }
+                if (queryPacket == receivedPacket)
+                    std::cout << "PACKET EQUAL" << std::endl;
+                if (query.first == remote_endpoint_ && queryPacket == receivedPacket && queryComponent.find(receivedComponent) != std::string::npos) {
                     std::cout << "Query found" << std::endl;
                     _queries.erase(std::remove(_queries.begin(), _queries.end(), query), _queries.end());
                 }
@@ -160,6 +171,8 @@ void UDPServer::sendToAll(const T &component, uint32_t entity_id, PacketType pac
             if (packet_type == DATA_PACKET) {
                 data[4] = RESPONSE_PACKET;
                 _queries.push_back(std::make_pair(client.second, data));
+                std::string component2(data.data() + sizeof(Packet), data.data() + sizeof(Packet) + sizeof(component2));
+                std::cout << "COMPONENT2 " << component2 << std::endl;
             }
         }
     } catch (const asio::system_error &ec) {
@@ -172,6 +185,18 @@ std::string UDPServer::unpack(Packet &packet)
     try {
         std::memcpy(&packet, _recv_buffer.data(), sizeof(Packet));
         std::string component(_recv_buffer.data() + sizeof(Packet), _recv_buffer.data() + sizeof(Packet) + sizeof(component));
+        return component;
+    } catch (const std::exception &e) {
+        std::cerr << "ERROR unpack: " << e.what() << std::endl;
+        return nullptr;
+    }
+}
+
+std::string UDPServer::unpackQuery(Packet &packet, std::string query)
+{
+    try {
+        std::memcpy(&packet, query.data(), sizeof(Packet));
+        std::string component(query.data() + sizeof(Packet), query.data() + sizeof(Packet) + sizeof(component));
         return component;
     } catch (const std::exception &e) {
         std::cerr << "ERROR unpack: " << e.what() << std::endl;
