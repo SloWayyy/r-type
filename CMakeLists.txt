@@ -35,6 +35,8 @@ set(SRC_CLIENT client/main.cpp
               client/tcp/tcp.cpp
               client/udp/udp.cpp
               client/GameLoop.cpp
+              ecs/system/system.cpp
+              ecs/component/component.cpp
 )
 
 add_executable(r-type_client ${SRC_CLIENT})
@@ -59,12 +61,17 @@ set(SRC_SERVER server/main.cpp
                 server/tcp/tcp.cpp
                 server/udp/udp.cpp
                 server/server.cpp
+                ecs/system/system.cpp
+                ecs/component/component.cpp
 )
 
 add_executable(r-type_server ${SRC_SERVER})
 
 target_link_libraries(r-type_server
     PRIVATE asio
+    PRIVATE sfml-system
+    PRIVATE sfml-window
+    PRIVATE sfml-graphics
 )
 
 

@@ -18,6 +18,7 @@ void moveEntity(registry &reg) {
     auto &velocity = reg.getComponent<Velocity>();
     for (int i = 0; i < position.size(); i++) {
         if (position[i] && velocity[i]) {
+            std::cout << "position: " << position[i].value().x << " " << position[i].value().y << std::endl;
             position[i].value().x += velocity[i].value().x_speed;
             position[i].value().y += velocity[i].value().y_speed;
         }
@@ -38,9 +39,9 @@ void drawEntity(registry &reg, sf::RenderWindow &window)
         auto &pos_value = position[i].value();
         auto &size_value = size[i].value();
 
+
         // sprite_value.sprite.setTexture(sprite_value.texture);
         sprite_value.sprite.setTextureRect(sprite_value.rect);
-        printf("%d %d\n", pos_value.x, pos_value.y);
         sprite_value.sprite.setPosition(pos_value.x, pos_value.y);
         sprite_value.sprite.setScale(size_value.w, size_value.h);
 

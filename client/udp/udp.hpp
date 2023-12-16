@@ -18,11 +18,6 @@
 #include <unordered_map>
 #include <optional>
 
-struct Position {
-    float x;
-    float y;
-};
-
 enum PacketType {
     DATA_PACKET = '0',
     REPEAT_PACKET = '1',

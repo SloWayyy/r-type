@@ -25,9 +25,9 @@ void UDPClient::start_receive()
                   std::placeholders::_2));
 }
 
-std::unordered_map<uint32_t, std::type_index> _typeIndex = {
-    {2, typeid(Position)}
-};
+// std::unordered_map<uint32_t, std::type_index> _typeIndex = {
+//     {2, typeid(Position)}
+// };
 
 std::string UDPClient::unpack(Packet &packet)
 {
@@ -64,21 +64,17 @@ void UDPClient::handle_receive(const asio::error_code &error, std::size_t bytes_
             return;
         }
         // rendre generique
-        Position pos;
-        std::memcpy(&pos, _recv_buffer.data() + sizeof(packet), sizeof(pos));
         //
-        if (packet.timestamp >= this->_last_timestamp) {
+        if (packet.timestamp >= _last_timestamp) {
             // send(pos, packet.entity_id, RESPONSE_PACKET);
             _last_timestamp = packet.timestamp;
             // traiter l'information et stocker l'info pour que le game loop puisse l'utiliser
                 //exemple
-                if (pos.x == 12) {
-                    send(pos, packet.entity_id, RESPONSE_PACKET);
-                }
+
+            send(receivedComponent, packet.entity_id, RESPONSE_PACKET);
         } else {
             std::cout << "je ne traite pas l'information mais j envoi qd meme au serv" << std::endl;
-            send(pos, packet.entity_id, RESPONSE_PACKET);
-            return;
+            send(receivedComponent, packet.entity_id, RESPONSE_PACKET);
         }
         start_receive();
     }
