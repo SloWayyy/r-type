@@ -76,7 +76,7 @@ void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_
     if (!error) {
         std::cout << "bytes transferred to serv: " << bytes_transferred << std::endl;
         Packet receivedPacket;
-        std::string receivedComponent = unpack(receivedPacket);
+        std::string receivedComponent = unpack(receivedPacket, _recv_buffer);
         std::cout << sizeof(receivedComponent) << std::endl;
         if (receivedComponent.empty()) {
             std::cout << "ERROR: receivedComponent empty" << std::endl;
@@ -110,7 +110,7 @@ void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_
                 // convert query.second to std::array<uint8_t, 1024> because if we dont do that, not matching with receivedComponent
                 std::array<uint8_t, 1024> queryPacket2;
                 std::memcpy(queryPacket2.data(), query.second.data(), query.second.size());
-                std::string queryComponent = unpackQuery(queryPacket, queryPacket2);
+                std::string queryComponent = unpack(queryPacket, queryPacket2);
                 std::cout << queryComponent << " | " << receivedComponent << std::endl;
                 if (query.first == remote_endpoint_ && queryPacket == receivedPacket && queryComponent.find(receivedComponent) != std::string::npos) {
                     std::cout << "Query found" << std::endl;
@@ -169,19 +169,7 @@ void UDPServer::sendToAll(const T &component, uint32_t entity_id, PacketType pac
     }
 }
 
-std::string UDPServer::unpack(Packet &packet)
-{
-    try {
-        std::memcpy(&packet, _recv_buffer.data(), sizeof(Packet));
-        std::string component(_recv_buffer.data() + sizeof(Packet), _recv_buffer.data() + sizeof(Packet) + sizeof(component));
-        return component;
-    } catch (const std::exception &e) {
-        std::cerr << "ERROR unpack: " << e.what() << std::endl;
-        return nullptr;
-    }
-}
-
-std::string UDPServer::unpackQuery(Packet &packet, std::array<uint8_t, 1024> query)
+std::string UDPServer::unpack(Packet &packet, std::array<uint8_t, 1024> query)
 {
     try {
         std::memcpy(&packet, query.data(), sizeof(Packet));
