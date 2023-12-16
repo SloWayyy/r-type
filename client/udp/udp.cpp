@@ -12,6 +12,8 @@ UDPClient::UDPClient(std::size_t port, std::string ip)
     _endpointServer(asio::ip::make_address(ip), 4242),
     socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0)), _last_timestamp(0)
 {
+    _thread = std::thread(&UDPClient::run, this);
+    start_receive();
     send(" ", 2, NEW_CONNECTION);
 }
 

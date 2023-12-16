@@ -17,6 +17,8 @@ TCPClient::TCPClient(std::size_t port, std::string ip)
     buffer()
 {
     this->createClient();
+    this->_thread = std::thread(&TCPClient::run, this);
+    this->startAsyncOperations();
 }
 
 TCPClient::~TCPClient()
