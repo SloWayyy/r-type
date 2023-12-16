@@ -123,10 +123,12 @@ template <typename T>
 void UDPClient::send(const T &component, uint32_t entity_id, PacketType packet_type)
 {
     std::string data = pack(component, entity_id, packet_type);
-    if (data.empty())
+    if (data.empty()) {
+        std::cout << "ERROR: data empty" << std::endl;
         return;
+    }
     try {
-        std::cout << "Message sent to server: "  << std::endl;
+        std::cout << "Message sent to server UDP: " << " on adress " << _endpointServer.address() << " on port " << _endpointServer.port() << std::endl;
         socket_.send_to(asio::buffer(data), _endpointServer);
     } catch (const asio::system_error &ec) {
         std::cerr << "ERROR UDP sending message" << ec.what() << std::endl;

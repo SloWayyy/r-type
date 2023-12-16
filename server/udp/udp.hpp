@@ -60,7 +60,7 @@ class UDPServer {
         asio::ip::udp::endpoint remote_endpoint_;
         std::array<uint8_t, 1024> _recv_buffer;
         asio::ip::udp::endpoint _endpointClient;
-        uint32_t _magic_number;
+        uint32_t _magic_number = 4242;
     };
 
 #endif /* !UDP_HPP_ */

@@ -28,10 +28,14 @@ UDPServer::UDPServer(std::size_t port, std::string ip)
     : socket_(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), port)), _magic_number(4242)
 {
     this->_port = socket_.local_endpoint().port();
+    _thread = std::thread(&UDPServer::run, this);
+    start_receive();
 }
 
 UDPServer::~UDPServer()
 {
+    std::cout << "Server is closing" << std::endl;
+    // _thread.detach();
     _thread.join();
 }
 
@@ -51,7 +55,7 @@ template <typename T>
 std::string UDPServer::pack(const T &component, uint32_t entity_id, PacketType packet_type)
 {
     std::type_index targetType = typeid(T);
-    int type_index = -1;
+    int type_index = 2;
 
     for (const auto &entry : _typeIndex) {
         if (entry.second == targetType) {
@@ -90,6 +94,7 @@ void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_
         if (receivedPacket.packet_type == NEW_CONNECTION) {
             _clientsUDP[receivedPacket.entity_id] = remote_endpoint_;
             std::cout << "New player connected from " << remote_endpoint_.address() << " " << remote_endpoint_.port() << std::endl;
+            sendToAll(receivedPacket, 0, NEW_CONNECTION);
             start_receive();
             return;
         }
@@ -161,7 +166,7 @@ void UDPServer::sendToAll(const T &component, uint32_t entity_id, PacketType pac
         return;
     try {
         for (const auto &client : _clientsUDP) {
-            std::cout << "Message sent to client: " << client.first << std::endl;
+            std::cout << "Message sent to client UDP: " << client.first << std::endl;
             socket_.send_to(asio::buffer(data), client.second);
             if (packet_type == DATA_PACKET) {
                 data[4] = RESPONSE_PACKET;
