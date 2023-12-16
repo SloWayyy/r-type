@@ -102,21 +102,21 @@ void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_
             return;
         }
         if (receivedPacket.packet_type == RESPONSE_PACKET) {
-            Position pos;
-            std::memcpy(&pos, _recv_buffer.data() + sizeof(receivedPacket), sizeof(pos));
-            std::cout << "RESPONSE_PACKET pos.x: " << pos.x << " pos.y: " << pos.y << std::endl;
-            for (const auto &query : _queries) {
-                Packet queryPacket;
-                // convert query.second to std::array<uint8_t, 1024> because if we dont do that, not matching with receivedComponent
-                std::array<uint8_t, 1024> queryPacket2;
-                std::memcpy(queryPacket2.data(), query.second.data(), query.second.size());
-                std::string queryComponent = unpack(queryPacket, queryPacket2);
-                std::cout << queryComponent << " | " << receivedComponent << std::endl;
-                if (query.first == remote_endpoint_ && queryPacket == receivedPacket && queryComponent.find(receivedComponent) != std::string::npos) {
-                    std::cout << "Query found" << std::endl;
-                    _queries.erase(std::remove(_queries.begin(), _queries.end(), query), _queries.end());
-                }
-            }
+            // Position pos;
+            // std::memcpy(&pos, _recv_buffer.data() + sizeof(receivedPacket), sizeof(pos));
+            // std::cout << "RESPONSE_PACKET pos.x: " << pos.x << " pos.y: " << pos.y << std::endl;
+            // for (const auto &query : _queries) {
+            //     Packet queryPacket;
+            //     // convert query.second to std::array<uint8_t, 1024> because if we dont do that, not matching with receivedComponent
+            //     std::array<uint8_t, 1024> queryPacket2;
+            //     std::memcpy(queryPacket2.data(), query.second.data(), query.second.size());
+            //     std::string queryComponent = unpack(queryPacket, queryPacket2);
+            //     std::cout << queryComponent << " | " << receivedComponent << std::endl;
+            //     if (query.first == remote_endpoint_ && queryPacket == receivedPacket && queryComponent.find(receivedComponent) != std::string::npos) {
+            //         std::cout << "Query found" << std::endl;
+            //         _queries.erase(std::remove(_queries.begin(), _queries.end(), query), _queries.end());
+            //     }
+            // }
         }
         start_receive();
     }

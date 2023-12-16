@@ -13,7 +13,11 @@ UDPClient::UDPClient(std::size_t port, std::string ip)
     socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0)), _last_timestamp(0)
 {
     send(" ", 2, NEW_CONNECTION);
-    start_receive();
+}
+
+UDPClient::~UDPClient()
+{
+    _thread.join();
 }
 
 void UDPClient::start_receive()
@@ -86,12 +90,12 @@ std::string UDPClient::pack(const T &component, uint32_t entity_id, PacketType p
     std::type_index targetType = typeid(T);
     int type_index = 2;
 
-    for (const auto &entry : _typeIndex) {
-        if (entry.second == targetType) {
-            type_index = entry.first;
-            break;
-        }
-    }
+    // for (const auto &entry : _typeIndex) {
+    //     if (entry.second == targetType) {
+    //         type_index = entry.first;
+    //         break;
+    //     }
+    // }
     if ((type_index) == -1) {
         std::cerr << "ERROR: type_index not found message not send" << std::endl;
         return "";

@@ -17,7 +17,11 @@ TCPClient::TCPClient(std::size_t port, std::string ip)
     buffer()
 {
     this->createClient();
-    this->startAsyncOperations();
+}
+
+TCPClient::~TCPClient()
+{
+    this->_thread.join();
 }
 
 std::vector<std::string> TCPClient::getServerMessages()

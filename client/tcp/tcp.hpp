@@ -16,15 +16,17 @@
 class TCPClient {
     public:
         TCPClient(std::size_t port, std::string ip);
+        ~TCPClient();
         void run();
+        std::thread _thread;
+        void startAsyncOperations();
+
     private:
         void createClient();
         void handleSend(const asio::error_code &error, std::size_t bytes_transferred);
         void sendToServer();
         void handleReceive();
-        void startAsyncOperations();
         std::vector<std::string> getServerMessages();
-
         std::size_t _port;
         asio::io_context _ioContext;
         asio::ip::tcp::socket _socket;

@@ -37,6 +37,7 @@ struct Packet
 class UDPClient {
     public:
         UDPClient(std::size_t port, std::string ip);
+        ~UDPClient();
         void start_receive();
         void handle_receive(const asio::error_code &error, std::size_t bytes_transferred);
         void handle_send(std::shared_ptr<std::string> message, const asio::error_code &error, std::size_t bytes_transferred);
@@ -46,6 +47,7 @@ class UDPClient {
         template <typename T>
         std::string pack(const T &component, uint32_t entity_id, PacketType packet_type);
         std::string unpack(Packet &packet);
+        std::thread _thread;
 
     private:
         std::size_t _port;

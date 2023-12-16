@@ -16,10 +16,10 @@ class GameLoop {
         GameLoop(std::size_t TCPport, std::size_t UDPport, std::string ip);
         ~GameLoop();
         void run();
-    protected:
-    private:
         TCPClient _TCPclient;
         UDPClient _UDPclient;
+    protected:
+    private:
         std::size_t _TCPport;
         std::size_t _UDPport;
 };
