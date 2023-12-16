@@ -13,11 +13,16 @@ FetchContent_Declare(asio-cmake
   GIT_TAG        origin/master
 )
 
+FetchContent_Declare(SFML
+  GIT_REPOSITORY https://github.com/SFML/SFML.git
+  GIT_TAG        2.5.x
+)
+
 set(ASIO_CMAKE_ASIO_TAG asio-1-12-2)
+set(SFML_CMAKE_SFML_TAG 2.5.x)
 
 FetchContent_MakeAvailable(asio-cmake)
 
-find_package(SFML COMPONENTS system window graphics audio REQUIRED)
 set(CMAKE_CXX_STANDARD 17)
 if (LINUX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
@@ -27,6 +32,9 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 include_directories(client/include)
 
 set(SRC_CLIENT client/main.cpp
+              client/tcp/tcp.cpp
+              client/udp/udp.cpp
+              client/GameLoop.cpp
 )
 
 add_executable(r-type_client ${SRC_CLIENT})
@@ -47,7 +55,10 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(server/include)
 
-set(SRC_SERVER server/main.cpp server/src/socket.cpp
+set(SRC_SERVER server/main.cpp
+                server/tcp/tcp.cpp
+                server/udp/udp.cpp
+                server/server.cpp
 )
 
 add_executable(r-type_server ${SRC_SERVER})
