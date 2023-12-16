@@ -24,7 +24,6 @@
         registry() = default;
         ~registry() = default;
         template <typename T>
-
         void addComponent(Sparse_array<T> component)
         {
             std::any tmp = component;
@@ -41,6 +40,13 @@
                     auto &tmp = reg.getComponent<T>();
                     tmp.push_back();
                 });
+
+                _addPacketFunction.push_back([](registry &reg, size_t const &entity, char *packet) {
+                    auto &tmp = reg.getComponent<T>();
+                    tmp.insert_packet(entity, packet);
+                });
+
+
                 _components.insert(std::pair{type, std::move(tmp)});
             }
             else
@@ -64,6 +70,11 @@
                     auto &tmp = reg.getComponent<T>();
                     tmp.push_back();
                 });
+
+                _addPacketFunction.push_back([](registry &reg, int const &entity, char *packet) {
+                    auto &tmp = reg.getComponent<T>();
+                    tmp.insert_packet(entity, packet);
+                });
                 _components.insert(std::pair{type, std::move(component)});
             }
 
@@ -72,17 +83,18 @@
             }
         };
 
+        template <typename T, typename... Params>
         void addAllComponents() {
-            addComponent<Position>();
-            addComponent<Velocity>();
-            addComponent<Drawable>();
-            addComponent<Controller>();
+            addComponent<T>();
+            if constexpr (sizeof...(Params) > 0) {
+                addAllComponents<Params...>();
+            }
         };
 
         template <typename T>
         Sparse_array<T> &getComponent() {
             std::type_index type = std::type_index(typeid(Sparse_array<T>));
-            auto &t = std::any_cast<Sparse_array<T> &>(_components[type]);
+            auto &t = std::any_cast<Sparse_array<T> &>(_components.at(type));
             return t;
         };
 
@@ -111,11 +123,30 @@
             return _entity_count - 1;
         };
 
+        template<typename Function, typename ...Params>
+        void add_system(Function && f, Params && ...params) {
+            _system.push_back([f, this, params...]() mutable {
+                f(*this, params...);
+            });
+        };
+
+        void run_system() {
+            for (auto &func : _system) {
+                func();
+            }
+        };
+
+        void registerPacket(size_t type, size_t entity, char *packet) {
+            _addPacketFunction.at(type)(*this, entity, packet);
+        };
+
     private:
+        std::vector<std::function<void()>> _system;
         std::unordered_map<std::type_index, std::any> _components;
         std::vector<Entity> _entity_graveyard;
         std::vector<std::function<void(registry &, Entity const &)>> _eraseFunction;
         std::vector<std::function<void(registry &, Entity const &)>> _addFunction;
+        std::vector<std::function<void(registry &, size_t const &, char *)>> _addPacketFunction;
         Entity _entity_count = Entity(0);
         std::map<std::string, Entity> _linker;
     };

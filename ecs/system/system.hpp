@@ -10,13 +10,8 @@
 
     #include "../registry/registry.hpp"
 
-    class System {
-        public:
-            System(registry &reg) : reg(reg) {};
-            ~System() = default;
-            void display_drawable();
-        private:
-            registry &reg;
-    };
+    void moveEntity(registry &reg);
+    void animeEntity(registry &reg, size_t incrementLeft, size_t maxWidth);
+    void drawEntity(registry &reg, sf::RenderWindow &window);
 
 #endif /* !SYSTEM_HPP_ */
