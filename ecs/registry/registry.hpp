@@ -40,6 +40,13 @@
                     auto &tmp = reg.getComponent<T>();
                     tmp.push_back();
                 });
+
+                _addPacketFunction.push_back([](registry &reg, size_t const &entity, char *packet) {
+                    auto &tmp = reg.getComponent<T>();
+                    tmp.insert_packet(entity, packet);
+                });
+
+
                 _components.insert(std::pair{type, std::move(tmp)});
             }
             else
@@ -62,6 +69,11 @@
                 _addFunction.push_back([](registry &reg, int const &entity) {
                     auto &tmp = reg.getComponent<T>();
                     tmp.push_back();
+                });
+
+                _addPacketFunction.push_back([](registry &reg, int const &entity, char *packet) {
+                    auto &tmp = reg.getComponent<T>();
+                    tmp.insert_packet(entity, packet);
                 });
                 _components.insert(std::pair{type, std::move(component)});
             }
@@ -124,12 +136,17 @@
             }
         };
 
+        void registerPacket(size_t type, size_t entity, char *packet) {
+            _addPacketFunction.at(type)(*this, entity, packet);
+        };
+
     private:
         std::vector<std::function<void()>> _system;
         std::unordered_map<std::type_index, std::any> _components;
         std::vector<Entity> _entity_graveyard;
         std::vector<std::function<void(registry &, Entity const &)>> _eraseFunction;
         std::vector<std::function<void(registry &, Entity const &)>> _addFunction;
+        std::vector<std::function<void(registry &, size_t const &, char *)>> _addPacketFunction;
         Entity _entity_count = Entity(0);
         std::map<std::string, Entity> _linker;
     };

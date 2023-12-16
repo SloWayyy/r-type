@@ -24,9 +24,10 @@ void Game::init()
     Position pos2 = reinterpret_cast<Position&>(*test);
 
     Sprite spr = {"game/assets/spaceShip.png", sf::IntRect(198, 0, 32, 32)};
-
     char *test2 = reinterpret_cast<char*>(&spr);
-    sprite.insert_packet(0, test2);
+
+
+    reg.registerPacket(1, ship, test2);
     // Sprite spr2 = reinterpret_cast<Sprite&>(*test2);
 
 
@@ -37,7 +38,7 @@ void Game::init()
     // sprite.emplace_at(ship, "game/assets/spaceShip.png", sf::IntRect(198, 0, 32, 32));
     velocity.emplace_at(ship, 0, 0, 0, 10, 0);
     size.emplace_at(ship, 1.5, 1.5);
-    // reg.add_system(moveEntity);
+    reg.add_system(moveEntity);
     reg.add_system(animeEntity, 32, 198);
 }
 
