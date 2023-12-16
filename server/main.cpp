@@ -13,6 +13,18 @@
 #include "../ecs/registry/registry.hpp"
 #include "../ecs/system/system.hpp"
 
+void network(registry &reg, UDPServer &server, TCPServer &server2)
+{
+    auto &position = reg.getComponent<Position>();
+
+    for (auto &quer : server._queries) {
+        server.send(quer.second, quer.first);
+    }
+    server.sendToAll(position[0].value(), static_cast<uint32_t>(0), PacketType::DATA_PACKET);
+
+}
+
+
 bool isDigit(const std::string &port)
 {
     return std::all_of(port.begin(), port.end(), ::isdigit);
@@ -34,9 +46,9 @@ int main(int ac, char const **av)
     UDPServer udpServer(4242, av[2]);
     TCPServer tcpServer(std::atoi(av[1]), udpServer.getPort(), av[2]);
 
-    std::chrono::time_point<std::chrono::system_clock> start, end;
-    start = std::chrono::system_clock::now();
+
     registry reg;
+
 
     reg.addAllComponents<Position, Velocity, Sprite, Size>();
     auto &position = reg.getComponent<Position>();
@@ -45,21 +57,15 @@ int main(int ac, char const **av)
     position.emplace_at(test, 50, 50);
     velocity.emplace_at(test, 0, 0, 0, 1, 0);
     reg.add_system(moveEntity);
+    reg.add_system(network, std::ref(udpServer), std::ref(tcpServer));
 
     while (1) {
-        end = std::chrono::system_clock::now();
-        std::chrono::duration<double> elapsed_seconds = end - start;
-        if (elapsed_seconds.count() >= 0.2) {
-            for (auto &quer : udpServer._queries) {
-                udpServer.send(quer.second, quer.first);
-            }
-            start = std::chrono::system_clock::now();
-            reg.run_system();
-            udpServer.sendToAll(position[0].value(), static_cast<uint32_t>(0), PacketType::DATA_PACKET);
-        }
+        sleep(1);
+        reg.run_system();
       
     }
     
     // std::cout << "UDP server portdsfsdfsdfsfsdf: " << udpServer.getPort() << std::endl;
     return SUCCESS;
 }
+
