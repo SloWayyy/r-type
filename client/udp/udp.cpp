@@ -75,10 +75,11 @@ void UDPClient::handle_receive(const asio::error_code &error, std::size_t bytes_
             // traiter l'information et stocker l'info pour que le game loop puisse l'utiliser
                 //exemple
 
-            send(receivedComponent, packet.entity_id, RESPONSE_PACKET);
+                // std::cout << "je traite l'information" << receivedComponent << std::endl;
+            // send(receivedComponent, packet.entity_id, RESPONSE_PACKET);
         } else {
             std::cout << "je ne traite pas l'information mais j envoi qd meme au serv" << std::endl;
-            send(receivedComponent, packet.entity_id, RESPONSE_PACKET);
+            // send(receivedComponent, packet.entity_id, RESPONSE_PACKET);
         }
         start_receive();
     }

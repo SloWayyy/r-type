@@ -20,7 +20,7 @@ int main(int ac, char **av)
         gameLoop._TCPclient.startAsyncOperations();
         gameLoop._UDPclient.start_receive();
         gameLoop._UDPclient._thread = std::thread(&UDPClient::run, &gameLoop._UDPclient);
-        gameLoop.run();
+        // gameLoop.run();
     }
     catch (std::exception &e) {
         std::cerr << "Erreur : " << e.what() << std::endl;

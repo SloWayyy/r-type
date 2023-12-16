@@ -75,6 +75,7 @@ void TCPClient::handleReceive()
             handleReceive();
         } else {
             std::cerr << "Server is disconected." << std::endl;
+            // return;
             exit(0);
         }
     });
