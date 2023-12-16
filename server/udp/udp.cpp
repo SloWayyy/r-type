@@ -15,6 +15,15 @@ struct Position {
     float y;
 };
 
+bool operator==(const Packet &lhs, const Packet &rhs)
+{
+    return lhs.magic_number == rhs.magic_number 
+            && lhs.packet_type == rhs.packet_type
+            && lhs.timestamp == rhs.timestamp
+            && lhs.entity_id == rhs.entity_id
+            && lhs.type_index == rhs.type_index;
+}
+
 UDPServer::UDPServer(std::size_t port, std::string ip)
     : socket_(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), port)), _magic_number(4242)
 {
@@ -95,12 +104,12 @@ void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_
         if (receivedPacket.packet_type == RESPONSE_PACKET) {
             Position pos;
             std::memcpy(&pos, _recv_buffer.data() + sizeof(receivedPacket), sizeof(pos));
-            std::string search = std::string(reinterpret_cast<char *>(&receivedPacket), sizeof(receivedPacket)) + receivedComponent;
             std::cout << "RESPONSE_PACKET pos.x: " << pos.x << " pos.y: " << pos.y << std::endl;
-            // trouver la query dans la map et la supprimer mais pb ça match pas !!!!!
-            // QUERY.SECOND et SEARCH sont identiques mais ça match pas (à check)
             for (const auto &query : _queries) {
-                if (query.first == remote_endpoint_ && query.second == search) {
+                Packet queryPacket;
+                std::string queryComponent = unpack(queryPacket);
+                std::cout << "COMPARE COMPONENT " << receivedComponent.compare(queryComponent) << std::endl;
+                if (query.first == remote_endpoint_ && queryPacket == receivedPacket && queryComponent == receivedComponent) {
                     std::cout << "Query found" << std::endl;
                     _queries.erase(std::remove(_queries.begin(), _queries.end(), query), _queries.end());
                 }
@@ -149,8 +158,7 @@ void UDPServer::sendToAll(const T &component, uint32_t entity_id, PacketType pac
             socket_.send_to(asio::buffer(data), client.second);
             if (packet_type == DATA_PACKET) {
                 data[4] = RESPONSE_PACKET;
-                // stocker les queries dans une map
-                // _queries.push_back(std::make_pair(client.second, data));
+                _queries.push_back(std::make_pair(client.second, data));
             }
         }
     } catch (const asio::system_error &ec) {
