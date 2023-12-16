@@ -93,10 +93,8 @@ class Sparse_array {
         void erase(size_type pos) {
             _data.erase(_data.begin() + pos);
         };
-         void insert_packet(size_t pos, std::string packet) {
-            Component test;
-            std::memcpy(&test, packet.c_str(), sizeof(Component));
-            _data.insert(_data.begin() + pos, test);
+         void insert_packet(size_t pos, char *packet) {
+            _data.insert(_data.begin() + pos, reinterpret_cast<Component&>(*packet));
         };
 
         size_type get_index(value_type const &component) const {

@@ -20,15 +20,21 @@ void Game::init()
 
     Position pos = {10, 100};
 
-    std::string test = std::string(reinterpret_cast<char*>(&pos));
+    char *test = reinterpret_cast<char*>(&pos);
+    Position pos2 = reinterpret_cast<Position&>(*test);
 
- 
+    Sprite spr = {"game/assets/spaceShip.png", sf::IntRect(198, 0, 32, 32)};
+
+    char *test2 = reinterpret_cast<char*>(&spr);
+    sprite.insert_packet(0, test2);
+    // Sprite spr2 = reinterpret_cast<Sprite&>(*test2);
 
 
+    pos2.print();
     position.emplace_at(ship, 50, 50);
     position.insert_packet(ship, test);
 
-    sprite.emplace_at(ship, "game/assets/spaceShip.png", sf::IntRect(198, 0, 32, 32));
+    // sprite.emplace_at(ship, "game/assets/spaceShip.png", sf::IntRect(198, 0, 32, 32));
     velocity.emplace_at(ship, 0, 0, 0, 10, 0);
     size.emplace_at(ship, 1.5, 1.5);
     // reg.add_system(moveEntity);
