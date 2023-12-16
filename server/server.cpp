@@ -32,16 +32,10 @@ void Server::run()
     while (1) {
         end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
-        if (elapsed_seconds.count() >= 1) {
-            auto now = std::chrono::system_clock::to_time_t(end);
-            std::time_t result = std::time(nullptr);
-            std::cout << result << " seconds since the Epoch" << std::endl;
-
-            std::cout << "JE SUIS LA !! - Timestamp: " << std::put_time(std::localtime(&now), "%F %T") << std::endl;
-
-            std::string message = "JE SUIS LA ! - Timestamp: ";
-            message += std::ctime(&now);
-            // this->udpServer->sendToAll(message);
+        if (elapsed_seconds.count() >= 0.2) {
+            for (auto &quer : udpServer->_queries) {
+                this->udpServer->send(quer.second, quer.first);
+            }
             start = std::chrono::system_clock::now();
         }
     }
