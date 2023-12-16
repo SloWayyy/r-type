@@ -107,6 +107,7 @@ void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_
             std::cout << "RESPONSE_PACKET pos.x: " << pos.x << " pos.y: " << pos.y << std::endl;
             for (const auto &query : _queries) {
                 Packet queryPacket;
+                // ATTENTION UNPACK lui renseigner la string de la query à FAIRE
                 std::string queryComponent = unpack(queryPacket);
                 std::cout << "COMPARE COMPONENT " << receivedComponent.compare(queryComponent) << std::endl;
                 if (query.first == remote_endpoint_ && queryPacket == receivedPacket && queryComponent == receivedComponent) {
