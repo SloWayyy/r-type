@@ -25,9 +25,9 @@ void network(registry &reg, UDPClient &server, TCPClient &server2)
         server._queue.erase(server._queue.begin());
         server.mtx.unlock();
         auto header = packet.first;
-        std::cout << "Packet received: " << header.magic_number << std::endl;
-        std::cout << "Packet received: " << header.packet_type << std::endl;
-        std::cout << "Packet received: " << header.timestamp << std::endl;
+        // std::cout << "Packet received: " << header.magic_number << std::endl;
+        // std::cout << "Packet received: " << header.packet_type << std::endl;
+        // std::cout << "Packet received: " << header.timestamp << std::endl;
         auto body = packet.second;
         position.insert_packet(0, body.c_str());
     }

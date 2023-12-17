@@ -67,7 +67,9 @@ std::string UDPServer::pack(const T &component, uint32_t entity_id, PacketType p
         std::cerr << "ERROR: type_index not found message not send" << std::endl;
         return "";
     } else {
-        Packet packet = {_magic_number, packet_type, std::time(nullptr), entity_id, static_cast<u_int32_t>(type_index)};
+        std::array<char, 37> uuid = generate_uuid();
+        std::cout << "UUID SERVER du packet: " << uuid.data() << std::endl;
+        Packet packet = {_magic_number, packet_type, std::time(nullptr), entity_id, static_cast<u_int32_t>(type_index), uuid};
         try {
             return std::string(reinterpret_cast<char *>(&packet),
             sizeof(packet)) + std::string(reinterpret_cast<const char *>(&component),
@@ -77,6 +79,20 @@ std::string UDPServer::pack(const T &component, uint32_t entity_id, PacketType p
             return "";
         }
     }
+}
+
+std::array<char, 37> UDPServer::generate_uuid() {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, 15);
+    std::array<char, 37> uuid;
+    std::string hexChars = "0123456789abcdef";
+
+
+    for (int i = 0; i < 37; i++) {
+        uuid[i] = hexChars[dis(gen)];
+    }
+    return uuid;
 }
 
 void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_transferred)
@@ -111,21 +127,16 @@ void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_
             return;
         }
         if (receivedPacket.packet_type == RESPONSE_PACKET) {
-            // Position pos;
-            // std::memcpy(&pos, _recv_buffer.data() + sizeof(receivedPacket), sizeof(pos));
-            // std::cout << "RESPONSE_PACKET pos.x: " << pos.x << " pos.y: " << pos.y << std::endl;
-            // for (const auto &query : _queries) {
-            //     Packet queryPacket;
-            //     // convert query.second to std::array<uint8_t, 1024> because if we dont do that, not matching with receivedComponent
-            //     std::array<uint8_t, 1024> queryPacket2;
-            //     std::memcpy(queryPacket2.data(), query.second.data(), query.second.size());
-            //     std::string queryComponent = unpack(queryPacket, queryPacket2);
-            //     std::cout << queryComponent << " | " << receivedComponent << std::endl;
-            //     if (query.first == remote_endpoint_ && queryPacket == receivedPacket && queryComponent.find(receivedComponent) != std::string::npos) {
-            //         std::cout << "Query found" << std::endl;
-            //         _queries.erase(std::remove(_queries.begin(), _queries.end(), query), _queries.end());
-            //     }
-            // }
+            for (const auto &query : _queries) {
+                Packet queryPacket;
+                std::memcpy(&queryPacket, query.second.data(), sizeof(Packet));
+                if (receivedPacket.uuid == queryPacket.uuid) {
+                    std::cout << "Query found" << std::endl;
+                    // mtx.lock();
+                    // _queries.erase(std::remove(_queries.begin(), _queries.end(), query), _queries.end());
+                    // mtx.unlock();
+                }
+            }
         }
         start_receive();
     }
@@ -160,7 +171,6 @@ template <typename T>
 void UDPServer::sendToAll(const T &component, uint32_t entity_id, PacketType packet_type)
 {
     std::string data = pack(component, entity_id, packet_type);
-    // std::string data2 = pack(component, entity_id, RESPONSE_PACKET);
 
     if (data.empty())
         return;

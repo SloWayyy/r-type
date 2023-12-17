@@ -72,6 +72,7 @@ void UDPClient::handle_receive(const asio::error_code &error, std::size_t bytes_
         // rendre generique
         //
         if (packet.timestamp >= _last_timestamp) {
+            std::cout << packet.uuid.data() << std::endl;
             // send(pos, packet.entity_id, RESPONSE_PACKET);
             _last_timestamp = packet.timestamp;
             mtx.lock();
@@ -101,7 +102,9 @@ std::string UDPClient::pack(const T &component, uint32_t entity_id, PacketType p
         std::cerr << "ERROR: type_index not found message not send" << std::endl;
         return "";
     } else {
-        Packet packet = {_magic_number, packet_type, std::time(nullptr), entity_id, static_cast<u_int32_t>(type_index)};
+        std::array<char, 37> uuid = generate_uuid();
+        std::cout << "UUID CLIENT du packet: " << uuid.data() << std::endl;
+        Packet packet = {_magic_number, packet_type, std::time(nullptr), entity_id, static_cast<u_int32_t>(type_index), uuid};
         try {
             return std::string(reinterpret_cast<char *>(&packet),
             sizeof(packet)) + std::string(reinterpret_cast<const char *>(&component),
@@ -138,4 +141,18 @@ void UDPClient::send(const T &component, uint32_t entity_id, PacketType packet_t
 void UDPClient::handle_send(std::shared_ptr<std::string>, const asio::error_code&, std::size_t)
 {
     std::cout << "Message envoyé" << std::endl;
+}
+
+std::array<char, 37> UDPClient::generate_uuid() {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, 15);
+    std::array<char, 37> uuid;
+    std::string hexChars = "0123456789abcdef";
+
+
+    for (int i = 0; i < 37; i++) {
+        uuid[i] = hexChars[dis(gen)];
+    }
+    return uuid;
 }

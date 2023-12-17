@@ -18,6 +18,8 @@
 #include <unordered_map>
 #include <optional>
 #include <mutex>
+#include <random>
+#include <array>
 
 enum PacketType {
     DATA_PACKET = '0',
@@ -32,6 +34,7 @@ struct Packet {
     long timestamp;
     uint32_t entity_id;
     uint32_t type_index;
+    std::array<char, 37> uuid;
 };
 
 class UDPClient {
@@ -44,6 +47,7 @@ class UDPClient {
         template <typename T>
         void send(const T &component, uint32_t entity_id, PacketType packet_type);
         void run();
+        std::array<char, 37> generate_uuid();
         template <typename T>
         std::string pack(const T &component, uint32_t entity_id, PacketType packet_type);
         std::string unpack(Packet &packet);

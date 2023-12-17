@@ -17,6 +17,8 @@
 #include <any>
 #include <typeindex>
 #include <ctime>
+#include <array>
+#include <random>
 
 enum PacketType {
     DATA_PACKET = '0',
@@ -31,6 +33,7 @@ struct Packet
     long timestamp;
     uint32_t entity_id;
     uint32_t type_index;
+    std::array<char, 37> uuid;
 };
 
 class UDPServer {
@@ -46,6 +49,7 @@ class UDPServer {
         void sendToAll(const T &component, uint32_t entity_id, PacketType packet_type = 0);
         void run();
         size_t getPort() const;
+        std::array<char, 37>  generate_uuid();
         template <typename T>
         std::string pack(const T &component, uint32_t entity_id, PacketType packet_type = 0);
         std::string unpack(Packet &packet, std::array<uint8_t, 1024> query);
