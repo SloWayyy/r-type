@@ -87,10 +87,9 @@ void UDPClient::handle_receive(const asio::error_code &error, std::size_t bytes_
 }
 
 template <typename T>
-std::string UDPClient::pack(const T &component, uint32_t entity_id, PacketType packet_type)
+std::string UDPClient::pack(const T &component, uint32_t entity_id, PacketType packet_type, int type_index)
 {
     std::type_index targetType = typeid(T);
-    int type_index = 2;
 
     // for (const auto &entry : _typeIndex) {
     //     if (entry.second == targetType) {

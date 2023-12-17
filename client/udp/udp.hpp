@@ -35,6 +35,16 @@ struct Packet {
     uint32_t entity_id;
     uint32_t type_index;
     std::array<char, 37> uuid;
+
+    void display_packet()
+    {
+        std::cout << "magic_number: " << magic_number << std::endl;
+        std::cout << "packet_type: " << packet_type << std::endl;
+        std::cout << "timestamp: " << timestamp << std::endl;
+        std::cout << "entity_id: " << entity_id << std::endl;
+        std::cout << "type_index: " << type_index << std::endl;
+        std::cout << "uuid: " << uuid.data() << std::endl;
+    }
 };
 
 class UDPClient {
@@ -49,10 +59,11 @@ class UDPClient {
         void run();
         std::array<char, 37> generate_uuid();
         template <typename T>
-        std::string pack(const T &component, uint32_t entity_id, PacketType packet_type);
+        std::string pack(const T &component, uint32_t entity_id, PacketType packet_type, int type_index);
         std::string unpack(Packet &packet);
         std::thread _thread;
-        std::vector<std::pair<Packet,std::string>> _queue;
+        std::vector<std::pair<Packet, std::string>> _queue;
+        std::vector<Packet> _queue2;
         std::mutex mtx;
     private:
         std::size_t _port;

@@ -24,7 +24,6 @@ void network(registry &reg, UDPServer &server, TCPServer &server2)
 
 }
 
-
 bool isDigit(const std::string &port)
 {
     return std::all_of(port.begin(), port.end(), ::isdigit);
@@ -57,14 +56,13 @@ int main(int ac, char const **av)
     position.emplace_at(test, 50, 50);
     velocity.emplace_at(test, 0, 0, 0, 1, 0);
     reg.add_system(moveEntity);
-    reg.add_system(network, std::ref(udpServer), std::ref(tcpServer));
+    // reg.add_system(network, std::ref(udpServer), std::ref(tcpServer));
 
     while (1) {
         usleep(50000);
         reg.run_system();
-      
+
     }
-    
     // std::cout << "UDP server portdsfsdfsdfsfsdf: " << udpServer.getPort() << std::endl;
     return SUCCESS;
 }

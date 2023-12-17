@@ -15,12 +15,38 @@
 
 // #include "GameLoop.hpp"
 
+// void network(registry &reg, UDPClient &server, TCPClient &server2)
+// {
+//     auto &position = reg.getComponent<Position>();
+
+//     while (server._queue.size() > 0) {
+//         auto packet = server._queue.front();
+//         server.mtx.lock();
+//         server._queue.erase(server._queue.begin());
+//         server.mtx.unlock();
+//         auto header = packet.first;
+//         // std::cout << "Packet received: " << header.magic_number << std::endl;
+//         // std::cout << "Packet received: " << header.packet_type << std::endl;
+//         // std::cout << "Packet received: " << header.timestamp << std::endl;
+//         auto body = packet.second;
+//         position.insert_packet(0, body.c_str());
+//     }
+// }
+
 void network(registry &reg, UDPClient &server, TCPClient &server2)
 {
-    auto &position = reg.getComponent<Position>();
+    // auto &position = reg.getComponent<Position>();
 
-    while (server._queue.size() > 0) {
-        auto packet = server._queue.front();
+    while (server._queue2.size() > 0) {
+        auto packet = server._queue2.front();
+
+        for (auto &quer : reg._typeIndex) {
+            if (quer.second == packet.type_index) {
+                auto &component = reg.getComponent(quer.first);
+                component.insert_packet(packet.entity_id, packet.uuid.data());
+            }
+        }
+
         server.mtx.lock();
         server._queue.erase(server._queue.begin());
         server.mtx.unlock();
@@ -56,12 +82,20 @@ int main(int ac, char **av)
     size.emplace_at(tmp, 1.5, 1.5);
     reg.add_system(drawEntity, std::ref(window));
     reg.add_system(network, std::ref(udpClient), std::ref(tcpClient));
-    // reg.add_system(animeEntity, 32, 198);
+    reg.add_system(moveEntity);
+    reg.add_system(animeEntity, 32, 198);
 
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+                std::cout << "-------------right---------------" << std::endl;
+                auto vel = velocity.emplace_at(tmp, 0, 0, 0, 1, 0);
+                auto index = reg._typeIndex.at(typeid(Velocity));
+                Packet packet = {4242, PacketType::DATA_PACKET, 0, tmp, index, 845485485124856245};
+                udpClient._queue2.push_back(packet);
+            }
         }
         window.clear();
         reg.run_system();

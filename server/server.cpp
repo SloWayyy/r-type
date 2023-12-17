@@ -27,6 +27,7 @@ void Server::run()
     registry reg;
 
     reg.addAllComponents<Position, Velocity, Sprite, Size>();
+
     auto &position = reg.getComponent<Position>();
     auto &velocity = reg.getComponent<Velocity>();
     auto test = reg.addEntity();
@@ -45,6 +46,5 @@ void Server::run()
             reg.run_system();
             udpServer->sendToAll(position[0].value(), static_cast<uint32_t>(0), PacketType::DATA_PACKET);
         }
-      
     }
 }

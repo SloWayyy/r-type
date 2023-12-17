@@ -61,6 +61,9 @@
             std::type_index type = std::type_index(component.type());
 
             if (_components.find(type) == _components.end()) {
+
+                _typeIndex.insert(std::pair{type, _typeIndex.size()});
+
                 _eraseFunction.push_back([](registry &reg, int const &entity) {
                     auto &tmp = reg.getComponent<T>();
                     tmp[entity] = std::optional<T>();
@@ -139,6 +142,7 @@
         void registerPacket(size_t type, size_t entity, char *packet) {
             _addPacketFunction.at(type)(*this, entity, packet);
         };
+        std::unordered_map<std::type_index, size_t> _typeIndex;
 
     private:
         std::vector<std::function<void()>> _system;
