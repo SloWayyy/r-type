@@ -74,11 +74,7 @@ void UDPClient::handle_receive(const asio::error_code &error, std::size_t bytes_
         if (packet.timestamp >= _last_timestamp) {
             // send(pos, packet.entity_id, RESPONSE_PACKET);
             _last_timestamp = packet.timestamp;
-            // traiter l'information et stocker l'info pour que le game loop puisse l'utiliser
-                //exemple
-
-                // std::cout << "je traite l'information" << receivedComponent << std::endl;
-            // send(receivedComponent, packet.entity_id, RESPONSE_PACKET);
+            _queue.push_back(std::make_pair(packet, receivedComponent));
         } else {
             std::cout << "je ne traite pas l'information mais j envoi qd meme au serv" << std::endl;
             // send(receivedComponent, packet.entity_id, RESPONSE_PACKET);

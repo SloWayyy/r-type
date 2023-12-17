@@ -31,7 +31,7 @@ void Server::run()
     auto &velocity = reg.getComponent<Velocity>();
     auto test = reg.addEntity();
     position.emplace_at(test, 50, 50);
-    velocity.emplace_at(test, 0, 0, 0, 1, 0);
+    velocity.emplace_at(test, 0, 0, 0, 10, 0);
     reg.add_system(moveEntity);
 
     while (1) {

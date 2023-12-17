@@ -49,6 +49,7 @@ class UDPClient {
         std::string unpack(Packet &packet);
         std::thread _thread;
 
+        std::vector<std::pair<Packet,std::string>> _queue;
     private:
         std::size_t _port;
         asio::ip::udp::endpoint _endpointServer;

@@ -93,8 +93,8 @@ class Sparse_array {
         void erase(size_type pos) {
             _data.erase(_data.begin() + pos);
         };
-         void insert_packet(size_t pos, char *packet) {
-            _data.insert(_data.begin() + pos, reinterpret_cast<Component&>(*packet));
+         void insert_packet(size_t pos, const char *packet) {
+            _data.insert(_data.begin() + pos, reinterpret_cast<const Component&>(*packet));
         };
 
         size_type get_index(value_type const &component) const {

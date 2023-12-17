@@ -60,7 +60,7 @@ int main(int ac, char const **av)
     reg.add_system(network, std::ref(udpServer), std::ref(tcpServer));
 
     while (1) {
-        sleep(1);
+        usleep(50000);
         reg.run_system();
       
     }
