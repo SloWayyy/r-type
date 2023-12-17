@@ -17,6 +17,7 @@
 #include <typeindex>
 #include <unordered_map>
 #include <optional>
+#include <mutex>
 
 enum PacketType {
     DATA_PACKET = '0',
@@ -25,8 +26,7 @@ enum PacketType {
     NEW_CONNECTION = '3',
 };
 
-struct Packet
-{
+struct Packet {
     uint32_t magic_number;
     PacketType packet_type;
     long timestamp;
@@ -48,8 +48,8 @@ class UDPClient {
         std::string pack(const T &component, uint32_t entity_id, PacketType packet_type);
         std::string unpack(Packet &packet);
         std::thread _thread;
-
         std::vector<std::pair<Packet,std::string>> _queue;
+        std::mutex mtx;
     private:
         std::size_t _port;
         asio::ip::udp::endpoint _endpointServer;

@@ -170,7 +170,9 @@ void UDPServer::sendToAll(const T &component, uint32_t entity_id, PacketType pac
             socket_.send_to(asio::buffer(data), client.second);
             if (packet_type == DATA_PACKET) {
                 data[4] = RESPONSE_PACKET;
+                mtx.lock();
                 _queries.push_back(std::make_pair(client.second, data));
+                mtx.unlock();
             }
         }
     } catch (const asio::system_error &ec) {

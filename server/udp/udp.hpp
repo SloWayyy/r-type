@@ -52,7 +52,7 @@ class UDPServer {
         std::unordered_map<size_t, asio::ip::udp::endpoint> _clientsUDP;
         std::vector<std::pair<asio::ip::udp::endpoint, std::string>> _queries;
         std::thread _thread;
-
+        std::mutex mtx;
     private:
         std::size_t _port;
         asio::io_context _io_context;
