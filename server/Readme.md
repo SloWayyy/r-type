@@ -27,36 +27,65 @@ Communication protocols are essential in the field of computer networks to enabl
 
 All the game information is sent through the network using a protocol that we created. This protocol is composed of 2 parts the packet and the component :
 
-- <summary><code>Magic mumber</code></summary>
-  <p>The magic number is a number that is used to identify the protocol. It is used to know if the packet received is a packet of the game or not.</p>
-
-- <summary><code>Packet type</code></summary>
-  <p>The packet type is used to know what type of packet is received. It is used to know if the what kind of packet it is.</p>
-
-- <summary><code>Entity ID</code></summary>
-  <p>The Entity ID is a unique identifier for each entity in the game. It is used to identify the entity that will receive the component.</p>
-
-- <summary><code>Timestamp</code></summary>
-  <p>The timestamp is a number that represents the time when the packet was sent. It is used to know if the packet is still valid.</p>
-
-- <summary><code>type_index</code></summary>
-  <p>The type_index is an index that represents the type of the component. It is used to know which component will be sent.</p>
-
-- <summary><code>Component</code></summary>
-  <p>The component is the data that will be sent. It is used to update the entity on the client side.</p>
-
 ```cpp
-struct Packet
-{
+struct Packet {
     uint32_t magic_number;
     PacketType packet_type;
     long timestamp;
     uint32_t entity_id;
     uint32_t type_index;
+    std::array<char, 37> uuid;
 };
 ```
 
-The <code>PacketType</code> is an enum that contains all the types of packets that can be sent. 
+<table style="width:100%">
+  <tr>
+    <th>Field</th>
+    <th>Size</th>
+    <th>Type</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>magic_number</td>
+    <td>uint32_t</td>
+    <td>4 bytes</td>
+    <td>It is used to check if the packet is valid.</td>
+  </tr>
+  <tr>
+    <td>packet_type</td>
+    <td>PacketType</td>
+    <td>1 byte</td>
+    <td>It is used to know the type of the packet.</td>
+  </tr>
+  <tr>
+    <td>timestamp</td>
+    <td>long</td>
+    <td>8 bytes</td>
+    <td>It is used to know when the packet was sent.</td>
+  </tr>
+  <tr>
+    <td>entity_id</td>
+    <td>uint32_t</td>
+    <td>4 bytes</td>
+    <td>It is used to know which entity will receive the component.</td>
+  </tr>
+  <tr>
+    <td>type_index</td>
+    <td>uint32_t</td>
+    <td>4 bytes</td>
+    <td>It is used to know which component will be sent.</td>
+  </tr>
+  <tr>
+    <td>uuid</td>
+    <td>std::array<char, 37></td>
+    <td>37 bytes</td>
+    <td>It is used to know which client will receive the component.</td>
+  </tr>
+</table>
+
+### Packet Types
+
+The following enum is used to know the type of the packet.
 ```cpp
 enum PacketType {
     DATA_PACKET = '0',
@@ -65,3 +94,39 @@ enum PacketType {
     NEW_CONNECTION = '3',
 };
 ```
+We have 4 types of packets:
+
+<table style="width:100%">
+  <tr>
+    <th>Packet Type</th>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>DATA_PACKET</td>
+    <td>'0'</td>
+    <td>It is used to send a component to a client.</td>
+  </tr>
+  <tr>
+    <td>REPEAT_PACKET</td>
+    <td>'1'</td>
+    <td>It is used to send the query again when the client does not receive the query.</td>
+  </tr>
+  <tr>
+    <td>RESPONSE_PACKET</td>
+    <td>'2'</td>
+    <td>The client sends this packet to the server to notify that it has received the query.</td>
+  </tr>
+  <tr>
+    <td>NEW_CONNECTION</td>
+    <td>'3'</td>
+    <td>It is used to notify the server that a new client has connected.</td>
+  </tr>
+</table>
+
+### Routine
+
+The server sends a packet to the client every 0.2 second.<br>
+The client must respond to the server within 100ms.
+If the client does not respond within 100ms, the server will send the packet again.<br>
+But if the client receive a packet with a timestamp older than the last one, the client must ignore the packet because it is an old packet but the client must respond to the server with a RESPONSE_PACKET to notify that it has received the packet.
