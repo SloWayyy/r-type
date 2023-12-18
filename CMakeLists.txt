@@ -22,6 +22,7 @@ set(ASIO_CMAKE_ASIO_TAG asio-1-12-2)
 set(SFML_CMAKE_SFML_TAG 2.5.x)
 
 FetchContent_MakeAvailable(asio-cmake)
+FetchContent_MakeAvailable(SFML)
 
 set(CMAKE_CXX_STANDARD 17)
 if (LINUX)
