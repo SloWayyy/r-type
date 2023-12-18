@@ -132,3 +132,6 @@ Table of Contents
         With the following header:
 
             PACKET_TYPE = REPEAT_PACKET
+
+
+                            R-Type Protocols
