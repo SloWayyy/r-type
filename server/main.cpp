@@ -12,15 +12,21 @@
 #include "../ecs/registry/registry.hpp"
 #include "../ecs/system/system.hpp"
 
-void network(registry &reg, UDPServer &server, TCPServer &server2)
+void network(registry &reg, UDPServer &serverUDP, TCPServer &server2)
 {
     std::cout << "network-----------------------------------------------" << std::endl;
     auto &position = reg.getComponent<Position>();
 
-    for (auto &quer : server._queries) {
-        server.send(quer.second, quer.first);
+    serverUDP.mtxSendPacket.lock();
+    // verif si les clients ont tous repondu au packet sionn on renvoi
+    serverUDP.mtxSendPacket.unlock();
+    serverUDP.mtxQueue.lock();
+    while (serverUDP._queue.size() > 0) {
+        std::cout << "Queue, il y a des choses a traiter" << std::endl;
+        // traiter les packets
+        // ajouter dans la queueSendPacket aussi
     }
-    server.sendToAll(position[0].value(), static_cast<uint32_t>(0), PacketType::DATA_PACKET);
+    serverUDP.mtxQueue.unlock();
 }
 
 bool isDigit(const std::string &port)
@@ -39,14 +45,9 @@ int main(int ac, char const **av)
         std::cerr << "Error: Port must be a digit" << std::endl;
         return -1;
     }
-    // Server server(std::atoi(av[1]), 4242, av[2]);
-    // server.run();
     registry reg;
     UDPServer udpServer(4242, av[2], reg);
     TCPServer tcpServer(std::atoi(av[1]), udpServer.getPort(), av[2]);
-
-
-
 
     reg.addAllComponents<Position, Velocity, Sprite, Size>();
     auto &position = reg.getComponent<Position>();
@@ -55,13 +56,11 @@ int main(int ac, char const **av)
     position.emplace_at(test, 50, 50);
     velocity.emplace_at(test, 0, 0, 0, 1, 0);
     reg.add_system(moveEntity);
-    // reg.add_system(network, std::ref(udpServer), std::ref(tcpServer));
 
     while (1) {
         usleep(50000);
         reg.run_system();
 
     }
-    // std::cout << "UDP server portdsfsdfsdfsfsdf: " << udpServer.getPort() << std::endl;
     return 1;
 }

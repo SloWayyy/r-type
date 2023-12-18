@@ -43,22 +43,22 @@ class UDPServer {
         ~UDPServer();
         void start_receive();
         void handle_receive(const asio::error_code &error, std::size_t bytes_transferred);
-        void handle_send(std::shared_ptr<std::string> message, const asio::error_code &error, std::size_t bytes_transferred);
-        void response(std::string message);
-        void send(std::string message, asio::ip::udp::endpoint endpoint);
+        void send(std::vector<uint8_t> message, asio::ip::udp::endpoint endpoint);
         template <typename T>
-        void sendToAll(const T &component, uint32_t entity_id, PacketType packet_type = 0);
+        void sendToAll(const T &component, uint32_t entity_id, PacketType packet_type = '0');
         void run();
         size_t getPort() const;
         std::array<char, 37>  generate_uuid();
         template <typename T>
-        std::string pack(const T &component, uint32_t entity_id, PacketType packet_type = 0);
-        std::string unpack(Packet &packet, std::array<uint8_t, 1024> query);
+        std::vector<uint8_t> pack(T const& component, uint32_t entity_id, PacketType packet_type);
+        std::vector<uint8_t> unpack(Packet &packet, std::array<uint8_t, 1024> query, std::size_t bytes_transferred);
         std::unordered_map<size_t, asio::ip::udp::endpoint> _clientsUDP;
-        std::vector<std::pair<asio::ip::udp::endpoint, std::string>> _queries;
-        std::thread _thread;
-        std::mutex mtx;
+        std::vector<std::pair<asio::ip::udp::endpoint, std::vector<uint8_t>>> _queueSendPacket;
+        std::vector<std::pair<Packet, std::vector<uint8_t>>> _queue;
+        std::mutex mtxSendPacket;
+        std::mutex mtxQueue;
     private:
+        std::thread _thread;
         std::size_t _port;
         asio::io_context _io_context;
         asio::ip::udp::socket socket_;

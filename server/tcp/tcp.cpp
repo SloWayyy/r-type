@@ -14,8 +14,8 @@ TCPServer::TCPServer(std::size_t port, std::size_t portUDP, std::string ip)
     _endpoint(asio::ip::make_address(ip), port),
     _acceptor(_ioContext,
     _endpoint),
-    _ip(ip),
-    buffer()
+    buffer(),
+    _ip(ip)
 {
     this->createSocket();
     _thread = std::thread(&TCPServer::run, this);
@@ -49,7 +49,7 @@ void TCPServer::run()
 
 void TCPServer::handleRead(std::shared_ptr<asio::ip::tcp::socket> client)
 {
-    asio::async_read_until(*client, buffer, "\n", [this, client](const asio::error_code& ec, std::size_t bytesRead) {
+    asio::async_read_until(*client, buffer, "\n", [this, client](const asio::error_code& ec, std::size_t) {
         if (!ec) {
             std::istream input(&this->buffer);
             std::string data;
@@ -69,7 +69,7 @@ void TCPServer::handleRead(std::shared_ptr<asio::ip::tcp::socket> client)
 void TCPServer::sendMessageToAllClients(const std::string &message)
 {
     for (const auto &client : _clientsInfo) {
-        client.second->async_send(asio::buffer(message + "\n"), [this, client](const asio::error_code& ec, std::size_t bytesSent) {
+        client.second->async_send(asio::buffer(message + "\n"), [this, client](const asio::error_code& ec, std::size_t) {
             if (!ec) {
                 std::cout << "Message sent to client " << client.second->remote_endpoint() << std::endl;
             } else {
@@ -81,7 +81,7 @@ void TCPServer::sendMessageToAllClients(const std::string &message)
 
 void TCPServer::sendMessageToAClient(const std::string &message, std::shared_ptr<asio::ip::tcp::socket> client)
 {
-    client->async_send(asio::buffer(message + "\n"), [this, client](const asio::error_code& ec, std::size_t bytesSent) {
+    client->async_send(asio::buffer(message + "\n"), [this, client](const asio::error_code& ec, std::size_t) {
         if (!ec) {
             std::cout << "Message sent to client " << client->remote_endpoint() << std::endl;
         } else {

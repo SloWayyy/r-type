@@ -60,19 +60,18 @@ class UDPClient {
         void run();
         std::array<char, 37> generate_uuid();
         template <typename T>
-        std::string pack(const T &component, uint32_t entity_id, PacketType packet_type);
-        std::string unpack(Packet &packet);
-        std::thread _thread;
-        std::vector<std::pair<Packet, std::string>> _queue;
-        std::vector<Packet> _queue2;
+        std::vector<uint8_t> pack(T const& component, uint32_t entity_id, PacketType packet_type);
+        std::vector<uint8_t> unpack(Packet &packet, std::array<uint8_t, 1024> query, std::size_t bytes_transferred);
+        std::vector<std::pair<Packet, std::vector<uint8_t>>> _queue;
         std::mutex mtx;
     private:
+        std::thread _thread;
         std::size_t _port;
         asio::ip::udp::endpoint _endpointServer;
         asio::io_context _io_context;
         asio::ip::udp::socket socket_;
         asio::ip::udp::endpoint remote_endpoint_;
-        std::array<char, 1024> _recv_buffer;
+        std::array<uint8_t, 1024> _recv_buffer;
         long _last_timestamp = 0;
         uint32_t _magic_number = 4242;
         registry &reg;
