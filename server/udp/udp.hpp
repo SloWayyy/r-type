@@ -19,6 +19,7 @@
 #include <ctime>
 #include <array>
 #include <random>
+#include "../../ecs/registry/registry.hpp"
 
 enum PacketType {
     DATA_PACKET = '0',
@@ -38,7 +39,7 @@ struct Packet
 
 class UDPServer {
     public:
-        UDPServer(std::size_t port, std::string ip);
+        UDPServer(std::size_t port, std::string ip, registry &reg);
         ~UDPServer();
         void start_receive();
         void handle_receive(const asio::error_code &error, std::size_t bytes_transferred);
@@ -65,6 +66,9 @@ class UDPServer {
         std::array<uint8_t, 1024> _recv_buffer;
         asio::ip::udp::endpoint _endpointClient;
         uint32_t _magic_number = 4242;
+        registry &reg;
     };
+
+#include "udp.cpp"
 
 #endif /* !UDP_HPP_ */

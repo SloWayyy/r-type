@@ -7,10 +7,9 @@
 
 #include "udp.hpp"
 
-UDPClient::UDPClient(std::size_t port, std::string ip)
-    : _port(port),
+UDPClient::UDPClient(std::size_t port, std::string ip, registry &reg) :
     _endpointServer(asio::ip::make_address(ip), 4242),
-    socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0)), _last_timestamp(0)
+    socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0)), _last_timestamp(0), reg(reg)
 {
     _thread = std::thread(&UDPClient::run, this);
     start_receive();
@@ -87,23 +86,21 @@ void UDPClient::handle_receive(const asio::error_code &error, std::size_t bytes_
 }
 
 template <typename T>
-std::string UDPClient::pack(const T &component, uint32_t entity_id, PacketType packet_type, int type_index)
+std::string UDPClient::pack(T const& component, uint32_t entity_id, PacketType packet_type)
 {
-    std::type_index targetType = typeid(T);
+    uint32_t type_index = 0;
 
-    // for (const auto &entry : _typeIndex) {
-    //     if (entry.second == targetType) {
-    //         type_index = entry.first;
-    //         break;
-    //     }
-    // }
+    for (; type_index < reg._typeIndex.size(); type_index++)
+        if (reg._typeIndex[type_index] == std::type_index(typeid(component)))
+            break;
+
     if ((type_index) == -1) {
         std::cerr << "ERROR: type_index not found message not send" << std::endl;
         return "";
     } else {
         std::array<char, 37> uuid = generate_uuid();
         std::cout << "UUID CLIENT du packet: " << uuid.data() << std::endl;
-        Packet packet = {_magic_number, packet_type, std::time(nullptr), entity_id, static_cast<u_int32_t>(type_index), uuid};
+        Packet packet = {_magic_number, packet_type, std::time(nullptr), entity_id, type_index, uuid};
         try {
             return std::string(reinterpret_cast<char *>(&packet),
             sizeof(packet)) + std::string(reinterpret_cast<const char *>(&component),

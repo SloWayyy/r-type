@@ -5,27 +5,26 @@
 ** udp
 */
 
-#include "udp.hpp"
 #include <typeindex>
 #include <random>
 #include <unordered_map>
 
-struct Position {
+struct Position2 {
     float x;
     float y;
 };
 
 bool operator==(const Packet &lhs, const Packet &rhs)
 {
-    return lhs.magic_number == rhs.magic_number 
+    return lhs.magic_number == rhs.magic_number
             && lhs.packet_type == rhs.packet_type
             && lhs.timestamp == rhs.timestamp
             && lhs.entity_id == rhs.entity_id
             && lhs.type_index == rhs.type_index;
 }
 
-UDPServer::UDPServer(std::size_t port, std::string ip)
-    : socket_(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), port)), _magic_number(4242)
+UDPServer::UDPServer(std::size_t port, std::string ip, registry &reg)
+    : socket_(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), port)), _magic_number(4242), reg(reg)
 {
     this->_port = socket_.local_endpoint().port();
     _thread = std::thread(&UDPServer::run, this);
@@ -49,7 +48,7 @@ void UDPServer::start_receive()
 }
 
 std::unordered_map<uint32_t, std::type_index> _typeIndex = {
-    {2, typeid(Position)}};
+    {2, typeid(Position2)}};
 
 template <typename T>
 std::string UDPServer::pack(const T &component, uint32_t entity_id, PacketType packet_type)
@@ -120,9 +119,14 @@ void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_
             return;
         }
         if (receivedPacket.packet_type == DATA_PACKET) {
-            Position pos = {12, 12};
-            std::cout << "NEW POSITION pos.x: " << pos.x << " pos.y: " << pos.y << std::endl;
-            sendToAll(pos, receivedPacket.entity_id, DATA_PACKET);
+            Position2 pos = {12, 12};
+            std::cout << "NEW Position2 pos.x: " << pos.x << " pos.y: " << pos.y << std::endl;
+
+            auto type = reg._typeIndex[receivedPacket.type_index];
+            std::cout << "type: " << type.name() << std::endl;
+            
+            // reg.registerPacket(receivedPacket.entity_id, receivedComponent.c_str(), type);
+            // sendToAll(pos, receivedPacket.entity_id, DATA_PACKET);
             start_receive();
             return;
         }

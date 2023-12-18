@@ -12,10 +12,11 @@
     #include <iostream>
     #include <thread>
     #include <functional>
+    #include "../../ecs/registry/registry.hpp"
 
 class TCPClient {
     public:
-        TCPClient(std::size_t port, std::string ip);
+        TCPClient(std::size_t port, std::string ip, registry &reg);
         ~TCPClient();
         void run();
         std::thread _thread;
@@ -35,6 +36,7 @@ class TCPClient {
         std::string _ip;
         asio::streambuf buffer;
         std::vector<std::string> _ServerMessages;
+        registry &reg;
 };
 
 #endif /* TCP_CLIENT_HPP_ */

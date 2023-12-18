@@ -13,40 +13,12 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
-// #include "GameLoop.hpp"
-
-// void network(registry &reg, UDPClient &server, TCPClient &server2)
-// {
-//     auto &position = reg.getComponent<Position>();
-
-//     while (server._queue.size() > 0) {
-//         auto packet = server._queue.front();
-//         server.mtx.lock();
-//         server._queue.erase(server._queue.begin());
-//         server.mtx.unlock();
-//         auto header = packet.first;
-//         // std::cout << "Packet received: " << header.magic_number << std::endl;
-//         // std::cout << "Packet received: " << header.packet_type << std::endl;
-//         // std::cout << "Packet received: " << header.timestamp << std::endl;
-//         auto body = packet.second;
-//         position.insert_packet(0, body.c_str());
-//     }
-// }
-
 void network(registry &reg, UDPClient &server, TCPClient &server2)
 {
-    // auto &position = reg.getComponent<Position>();
+    auto &position = reg.getComponent<Position>();
 
-    while (server._queue2.size() > 0) {
-        auto packet = server._queue2.front();
-
-        for (auto &quer : reg._typeIndex) {
-            if (quer.second == packet.type_index) {
-                auto &component = reg.getComponent(quer.first);
-                component.insert_packet(packet.entity_id, packet.uuid.data());
-            }
-        }
-
+    while (server._queue.size() > 0) {
+        auto packet = server._queue.front();
         server.mtx.lock();
         server._queue.erase(server._queue.begin());
         server.mtx.unlock();
@@ -65,14 +37,14 @@ int main(int ac, char **av)
         std::cerr << "USAGE: ./r-type_client port ip" << std::endl;
         return 84;
     }
-    TCPClient tcpClient(std::stoi(av[1]), av[2]);
-    UDPClient udpClient(4243, av[2]);
+    registry reg;
+    TCPClient tcpClient(std::stoi(av[1]), av[2], reg);
+    UDPClient udpClient(4243, av[2], reg);
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "R-Type");
     sf::Event event;
-    registry reg;
     reg.addAllComponents<Position, Velocity, Sprite, Size>();
-    auto tmp = reg.addEntity();
+    uint32_t tmp = reg.addEntity();
     auto &position = reg.getComponent<Position>();
     auto &velocity = reg.getComponent<Velocity>();
     auto &sprite = reg.getComponent<Sprite>();
@@ -91,10 +63,11 @@ int main(int ac, char **av)
                 window.close();
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
                 std::cout << "-------------right---------------" << std::endl;
-                auto vel = velocity.emplace_at(tmp, 0, 0, 0, 1, 0);
-                auto index = reg._typeIndex.at(typeid(Velocity));
-                Packet packet = {4242, PacketType::DATA_PACKET, 0, tmp, index, 845485485124856245};
-                udpClient._queue2.push_back(packet);
+                auto &vel = velocity.emplace_at(tmp, 0, 0, 0, 1, 0);
+                udpClient.send(vel.value(), tmp, DATA_PACKET);
+                // auto index = reg._typeIndex.at(typeid(Velocity));
+                // Packet packet = {4242, PacketType::DATA_PACKET, 0, tmp, index, 845485485124856245};
+                // udpClient._queue2.push_back(packet);
             }
         }
         window.clear();

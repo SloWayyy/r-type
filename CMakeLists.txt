@@ -33,8 +33,6 @@ include_directories(client/include)
 
 set(SRC_CLIENT client/main.cpp
               client/tcp/tcp.cpp
-              client/udp/udp.cpp
-              client/GameLoop.cpp
               ecs/system/system.cpp
               ecs/component/component.cpp
 )
@@ -59,8 +57,6 @@ include_directories(server/include)
 
 set(SRC_SERVER server/main.cpp
                 server/tcp/tcp.cpp
-                server/udp/udp.cpp
-                server/server.cpp
                 ecs/system/system.cpp
                 ecs/component/component.cpp
 )

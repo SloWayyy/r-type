@@ -9,19 +9,18 @@
 #include <asio.hpp>
 #include "tcp/tcp.hpp"
 #include "udp/udp.hpp"
-#include "server.hpp"
 #include "../ecs/registry/registry.hpp"
 #include "../ecs/system/system.hpp"
 
 void network(registry &reg, UDPServer &server, TCPServer &server2)
 {
+    std::cout << "network-----------------------------------------------" << std::endl;
     auto &position = reg.getComponent<Position>();
 
     for (auto &quer : server._queries) {
         server.send(quer.second, quer.first);
     }
     server.sendToAll(position[0].value(), static_cast<uint32_t>(0), PacketType::DATA_PACKET);
-
 }
 
 bool isDigit(const std::string &port)
@@ -33,20 +32,20 @@ int main(int ac, char const **av)
 {
     if (ac != 3) {
         std::cerr << "USAGE: ./r-type_server port ip" << std::endl;
-        return FAILURE;
+        return -1;
     }
     std::string portStr = av[1];
     if (!isDigit(portStr) || std::stoi(portStr) <= 0) {
         std::cerr << "Error: Port must be a digit" << std::endl;
-        return FAILURE;
+        return -1;
     }
     // Server server(std::atoi(av[1]), 4242, av[2]);
     // server.run();
-    UDPServer udpServer(4242, av[2]);
+    registry reg;
+    UDPServer udpServer(4242, av[2], reg);
     TCPServer tcpServer(std::atoi(av[1]), udpServer.getPort(), av[2]);
 
 
-    registry reg;
 
 
     reg.addAllComponents<Position, Velocity, Sprite, Size>();
@@ -64,5 +63,5 @@ int main(int ac, char const **av)
 
     }
     // std::cout << "UDP server portdsfsdfsdfsfsdf: " << udpServer.getPort() << std::endl;
-    return SUCCESS;
+    return 1;
 }

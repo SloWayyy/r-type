@@ -20,6 +20,7 @@
 #include <mutex>
 #include <random>
 #include <array>
+#include "../../ecs/registry/registry.hpp"
 
 enum PacketType {
     DATA_PACKET = '0',
@@ -49,17 +50,17 @@ struct Packet {
 
 class UDPClient {
     public:
-        UDPClient(std::size_t port, std::string ip);
+        UDPClient(std::size_t port, std::string ip, registry &reg);
         ~UDPClient();
         void start_receive();
         void handle_receive(const asio::error_code &error, std::size_t bytes_transferred);
         void handle_send(std::shared_ptr<std::string> message, const asio::error_code &error, std::size_t bytes_transferred);
         template <typename T>
-        void send(const T &component, uint32_t entity_id, PacketType packet_type);
+        void send(T const &component, uint32_t entity_id, PacketType packet_type);
         void run();
         std::array<char, 37> generate_uuid();
         template <typename T>
-        std::string pack(const T &component, uint32_t entity_id, PacketType packet_type, int type_index);
+        std::string pack(const T &component, uint32_t entity_id, PacketType packet_type);
         std::string unpack(Packet &packet);
         std::thread _thread;
         std::vector<std::pair<Packet, std::string>> _queue;
@@ -74,6 +75,9 @@ class UDPClient {
         std::array<char, 1024> _recv_buffer;
         long _last_timestamp = 0;
         uint32_t _magic_number = 4242;
+        registry &reg;
 };
+
+#include "udp.cpp"
 
 #endif /* !UDP_HPP_ */
