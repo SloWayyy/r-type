@@ -143,10 +143,10 @@
             _addPacketFunction.at(type)(*this, entity, packet);
         };
         std::vector<std::type_index> _typeIndex;
+        std::unordered_map<std::type_index, std::any> _components;
 
     private:
         std::vector<std::function<void()>> _system;
-        std::unordered_map<std::type_index, std::any> _components;
         std::vector<Entity> _entity_graveyard;
         std::vector<std::function<void(registry &, Entity const &)>> _eraseFunction;
         std::vector<std::function<void(registry &, Entity const &)>> _addFunction;

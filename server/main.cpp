@@ -12,9 +12,8 @@
 #include "../ecs/registry/registry.hpp"
 #include "../ecs/system/system.hpp"
 
-void network(registry &reg, UDPServer &serverUDP, TCPServer &server2)
+void network(registry &reg, UDPServer &serverUDP, TCPServer &serverTCP)
 {
-    std::cout << "network-----------------------------------------------" << std::endl;
     auto &position = reg.getComponent<Position>();
 
     serverUDP.mtxSendPacket.lock();
@@ -25,6 +24,7 @@ void network(registry &reg, UDPServer &serverUDP, TCPServer &server2)
         std::cout << "Queue, il y a des choses a traiter" << std::endl;
         // traiter les packets
         // ajouter dans la queueSendPacket aussi
+        serverUDP.getData();
     }
     serverUDP.mtxQueue.unlock();
 }
@@ -55,6 +55,7 @@ int main(int ac, char const **av)
     auto test = reg.addEntity();
     position.emplace_at(test, 50, 50);
     velocity.emplace_at(test, 0, 0, 0, 1, 0);
+    reg.add_system(network, std::ref(udpServer), std::ref(tcpServer));
     reg.add_system(moveEntity);
 
     while (1) {

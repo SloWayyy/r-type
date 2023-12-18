@@ -66,8 +66,10 @@ std::vector<uint8_t> UDPServer::pack(T const& component, uint32_t entity_id, Pac
         try {
             std::vector<uint8_t> result;
             result.resize(sizeof(Packet) + sizeof(T));
-            result.insert(result.end(), (uint8_t *)&packet, (uint8_t *)&packet + sizeof(Packet));
-            result.insert(result.end(), (uint8_t *)&component, (uint8_t *)&component + sizeof(T));
+            const uint8_t *packetBytes = reinterpret_cast<const uint8_t *>(&packet);
+            std::copy(packetBytes, packetBytes + sizeof(Packet), result.begin());
+            const uint8_t *componentBytes = reinterpret_cast<const uint8_t *>(&component);
+            std::copy(componentBytes, componentBytes + sizeof(T), result.begin() + sizeof(Packet));
             return result;
         } catch (const std::exception &e) {
             std::cerr << "ERROR: " << e.what() << std::endl;
@@ -186,4 +188,15 @@ std::vector<uint8_t> UDPServer::unpack(Packet &packet, std::array<uint8_t, 1024>
 size_t UDPServer::getPort() const
 {
     return this->_port;
+}
+
+void UDPServer::getData()
+{
+    for (int i = 0; i < _queue.size(); i++) {
+        Packet packet = _queue[i].first;
+        int size = _queue[i].second.size();
+        char *packet2;
+        std::memcpy(packet2, _queue[i].second.data(), size);
+        reg.registerPacket(packet.type_index, packet.entity_id, packet2);
+    }
 }

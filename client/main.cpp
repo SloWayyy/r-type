@@ -58,9 +58,9 @@ int main(int ac, char **av)
                 window.close();
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
                 std::cout << "-------------right---------------" << std::endl;
-                auto &vel = velocity.emplace_at(tmp, 0, 0, 0, 1, 0);
+                auto &vel = velocity.emplace_at(tmp, 1, 1, 1, 1, 1);
                 udpClient.send(vel.value(), tmp, DATA_PACKET);
-                // sleep(1);
+                sleep(0.8);
                 // auto index = reg._typeIndex.at(typeid(Velocity));
                 // Packet packet = {4242, PacketType::DATA_PACKET, 0, tmp, index, 845485485124856245};
             }

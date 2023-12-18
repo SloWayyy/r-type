@@ -87,12 +87,15 @@ std::vector<uint8_t> UDPClient::pack(T const& component, uint32_t entity_id, Pac
         std::array<char, 37> uuid = generate_uuid();
         std::cout << "UUID CLIENT du packet: " << uuid.data() << std::endl;
         Packet packet = {_magic_number, packet_type, std::time(nullptr), entity_id, type_index, uuid};
+        packet.display_packet();
         std::cout << "packet size: " << sizeof(Packet) << std::endl;
         try {
             std::vector<uint8_t> result;
             result.resize(sizeof(Packet) + sizeof(T));
-            result.insert(result.end(), (uint8_t *)&packet, (uint8_t *)&packet + sizeof(Packet));
-            result.insert(result.end(), (uint8_t *)&component, (uint8_t *)&component + sizeof(T));
+            const uint8_t *packetBytes = reinterpret_cast<const uint8_t *>(&packet);
+            std::copy(packetBytes, packetBytes + sizeof(Packet), result.begin());
+            const uint8_t *componentBytes = reinterpret_cast<const uint8_t *>(&component);
+            std::copy(componentBytes, componentBytes + sizeof(T), result.begin() + sizeof(Packet));
             return result;
         } catch (const std::exception &e) {
             std::cerr << "ERROR: " << e.what() << std::endl;
