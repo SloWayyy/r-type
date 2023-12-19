@@ -1,12 +1,14 @@
 #include "system.hpp"
 
-void System::display_drawable()
+void animeEntity(registry &reg, size_t incrementLeft, size_t maxWidth)
 {
-    auto &draw = reg.getComponent<Drawable>();
+    auto &sprite = reg.getComponent<Sprite>();
 
-    for (auto &i : draw) {
-        if (i) {
-            std::cout << "Drable entity: " << i.value().isDrawable << std::endl;
+    for (long unsigned int i = 0; i < sprite.size(); i++) {
+        if (sprite[i]) {
+            sprite[i].value().rect.left += incrementLeft;
+            if (sprite[i].value().rect.left >= maxWidth)
+                sprite[i].value().rect.left = 0;
         }
     }
 }
