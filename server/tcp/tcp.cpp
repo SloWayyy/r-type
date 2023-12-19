@@ -11,12 +11,19 @@ TCPServer::TCPServer(std::size_t port, std::size_t portUDP, std::string ip)
     : _port(port),
     _portUDP(portUDP), 
     _ioContext(),
-    _endpoint(asio::ip::make_address(ip), port),
+    _endpoint(asio::ip::make_address(ip), 0),
     _acceptor(_ioContext,
     _endpoint),
     buffer(),
     _ip(ip)
 {
+    try {
+        this->_endpoint = asio::ip::tcp::endpoint(asio::ip::make_address(ip), port);
+        this->_acceptor = asio::ip::tcp::acceptor(_ioContext, _endpoint);
+    } catch (const asio::system_error& ec) {
+        std::cerr << "Error opening socket: " << ec.what() << std::endl;
+        std::exit(84);
+    }
     this->createSocket();
     _thread = std::thread(&TCPServer::run, this);
     startAccept();

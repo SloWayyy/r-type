@@ -75,6 +75,7 @@ class UDPClient {
         std::array<uint8_t, 1024> _recv_buffer;
         long _last_timestamp = 0;
         uint32_t _magic_number = 4242;
+        uint32_t _entity_id = 0;
         registry &reg;
 };
 
