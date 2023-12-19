@@ -81,7 +81,7 @@ std::vector<uint8_t> UDPClient::pack(T const& component, uint32_t entity_id, Pac
             break;
     }
 
-    if (type_index == reg._typeIndex.size() and packet_type != NEW_CONNECTION) {
+    if (type_index == reg._typeIndex.size() && packet_type != NEW_CONNECTION) {
         std::cerr << "ERROR: type_index not found message not send" << std::endl;
         return {};
     } else {
