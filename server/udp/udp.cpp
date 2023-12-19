@@ -24,8 +24,14 @@ bool operator==(const Packet &lhs, const Packet &rhs)
 }
 
 UDPServer::UDPServer(std::size_t port, std::string ip, registry &reg)
-    : socket_(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), port)), _magic_number(4242), reg(reg)
+    : socket_(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), 0)), _magic_number(4242), reg(reg)
 {
+    try {
+        this->socket_  = asio::ip::udp::socket(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), port));
+    } catch (const asio::system_error &ec) {
+        std::cerr << "ERROR UDP binding socket: " << ec.what() << std::endl;
+        std::exit(84);
+    }
     this->_port = socket_.local_endpoint().port();
     _thread = std::thread(&UDPServer::run, this);
     start_receive();
