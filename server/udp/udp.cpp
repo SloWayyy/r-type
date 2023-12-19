@@ -190,7 +190,7 @@ size_t UDPServer::getPort() const
     return this->_port;
 }
 
-void UDPServer::getData()
+void UDPServer::saveData()
 {
     for (int i = 0; i < _queue.size(); i++) {
         Packet packet = _queue[i].first;
@@ -198,5 +198,11 @@ void UDPServer::getData()
         char *packet2;
         std::memcpy(packet2, _queue[i].second.data(), size);
         reg.registerPacket(packet.type_index, packet.entity_id, packet2);
+        // for (const auto &client : _clientsUDP) {
+        //     std::cout << _queue[i] << std::endl;
+        //     std::cout << "Message sent to client UDP: " << client.first << std::endl;
+            // std::vector
+            // socket_.send_to(asio::buffer(_queue[i].first), client.second);
+        }
     }
 }

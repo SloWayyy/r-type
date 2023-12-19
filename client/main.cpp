@@ -19,6 +19,7 @@ void network(registry &reg, UDPClient &server, TCPClient &server2)
     while (server._queue.size() > 0) {
         auto packet = server._queue.front();
         server.mtx.lock();
+        server.saveData();
         server._queue.erase(server._queue.begin());
         server.mtx.unlock();
         Packet header = packet.first;

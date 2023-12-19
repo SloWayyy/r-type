@@ -62,7 +62,7 @@ class UDPServer {
         template <typename T>
         std::vector<uint8_t> pack(T const& component, uint32_t entity_id, PacketType packet_type);
         std::vector<uint8_t> unpack(Packet &packet, std::array<uint8_t, 1024> query, std::size_t bytes_transferred);
-        void getData();
+        void saveData();
         std::unordered_map<size_t, asio::ip::udp::endpoint> _clientsUDP;
         std::vector<std::pair<asio::ip::udp::endpoint, std::vector<uint8_t>>> _queueSendPacket;
         std::vector<std::pair<Packet, std::vector<uint8_t>>> _queue;

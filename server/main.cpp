@@ -24,7 +24,7 @@ void network(registry &reg, UDPServer &serverUDP, TCPServer &serverTCP)
         std::cout << "Queue, il y a des choses a traiter" << std::endl;
         // traiter les packets
         // ajouter dans la queueSendPacket aussi
-        serverUDP.getData();
+        serverUDP.saveData();
     }
     serverUDP.mtxQueue.unlock();
 }

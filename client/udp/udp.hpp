@@ -64,6 +64,7 @@ class UDPClient {
         std::vector<uint8_t> unpack(Packet &packet, std::array<uint8_t, 1024> query, std::size_t bytes_transferred);
         std::vector<std::pair<Packet, std::vector<uint8_t>>> _queue;
         std::mutex mtx;
+        void saveData();
     private:
         std::thread _thread;
         std::size_t _port;
