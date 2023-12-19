@@ -18,7 +18,7 @@ void moveEntity(registry &reg) {
     auto &velocity = reg.getComponent<Velocity>();
     for (int i = 0; i < position.size(); i++) {
         if (position[i] && velocity[i]) {
-            std::cout << "position: " << position[i].value().x << " " << position[i].value().y << std::endl;
+            // std::cout << "position: " << position[i].value().x << " " << position[i].value().y << std::endl;
             position[i].value().x += velocity[i].value().x_speed;
             position[i].value().y += velocity[i].value().y_speed;
         }

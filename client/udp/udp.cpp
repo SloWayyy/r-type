@@ -150,7 +150,7 @@ void UDPClient::saveData()
     for (int i = 0; i < _queue.size(); i++) {
         Packet packet = _queue[i].first;
         int size = _queue[i].second.size();
-        char *packet2;
+        char packet2[64]= {0};
         std::memcpy(packet2, _queue[i].second.data(), size);
         reg.registerPacket(packet.type_index, packet.entity_id, packet2);
     }
