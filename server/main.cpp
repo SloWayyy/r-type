@@ -59,7 +59,7 @@ int main(int ac, char const **av)
     reg.add_system(moveEntity);
 
     while (1) {
-        usleep(50000);
+        // usleep(50000);
         reg.run_system();
 
     }

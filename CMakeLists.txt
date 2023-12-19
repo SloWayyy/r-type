@@ -72,3 +72,10 @@ target_link_libraries(r-type_server
 )
 
 
+#######################COPY LIBS#######################
+if (WIN32)
+    add_custom_command(TARGET r-type_client POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib
+        ${CMAKE_CURRENT_BINARY_DIR}/)
+endif()
