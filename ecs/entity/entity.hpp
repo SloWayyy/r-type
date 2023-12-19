@@ -15,8 +15,8 @@
             explicit Entity(size_t number) : entity(number) {};
             ~Entity() = default;
             operator size_t() const { return entity; };
-            void operator++(int number) { entity++; };
-            void operator--(int number) { entity--; };
+            void operator++(int number __attribute_maybe_unused__) { entity++; };
+            void operator--(int number __attribute_maybe_unused__) { entity--; };
         private:
             size_t entity;
     };

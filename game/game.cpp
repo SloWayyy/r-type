@@ -38,14 +38,13 @@ void Game::init()
     // sprite.emplace_at(ship, "game/assets/spaceShip.png", sf::IntRect(198, 0, 32, 32));
     velocity.emplace_at(ship, 0, 0, 0, 10, 0);
     size.emplace_at(ship, 1.5, 1.5);
-    reg.add_system(moveEntity);
-    reg.add_system(animeEntity, 32, 198);
+    reg.add_system<MoveSystem>();
 }
 
 void Game::run()
 {
     sf::RenderWindow window(sf::VideoMode(800, 600), "SFML window");
-    reg.add_system(drawEntity, std::ref(window));
+    reg.add_system<DrawSystem>(std::ref(window));
     window.setFramerateLimit(5);
     sf::Event event;
 

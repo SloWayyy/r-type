@@ -146,7 +146,7 @@ std::array<char, 37> UDPClient::generate_uuid() {
 void UDPClient::saveData()
 {
     std::cout << "GET DATA CLIENT" << std::endl;
-    for (int i = 0; i < _queue.size(); i++) {
+    for (long unsigned int i = 0; i < _queue.size(); i++) {
         Packet packet = _queue[i].first;
         int size = _queue[i].second.size();
         char *packet2;
