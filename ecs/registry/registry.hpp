@@ -15,10 +15,15 @@
     #include <any>
     #include <map>
     #include <functional>
+    #include <queue>
     #include "../system/ISystem.hpp"
     #include "sparse_array/sparse_array.hpp"
     #include "../entity/entity.hpp"
     #include "../component/component.cpp"
+
+    enum class Event_t {
+        KEY_PRESSED
+    };
 
     class registry {
     public:
@@ -141,6 +146,9 @@
         void registerPacket(size_t type, size_t entity, char *packet) {
             _addPacketFunction.at(type)(*this, entity, packet);
         };
+
+
+        std::unordered_map<Event_t, uint8_t> _events;
         std::vector<std::type_index> _typeIndex;
         std::unordered_map<std::type_index, std::any> _components;
 

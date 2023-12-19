@@ -11,8 +11,11 @@
 #include "../ecs/registry/registry.hpp"
 #include "../ecs/system/system.hpp"
 #include "./system/networkSystem.hpp"
+#include "./system/inputSystem.hpp"
+#include "./system/playerSystem.hpp"
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+#include <chrono>
 
 int main(int ac, char **av)
 {
@@ -36,25 +39,40 @@ int main(int ac, char **av)
     position.emplace_at(tmp, 0, 0);
     size.emplace_at(tmp, 1.5, 1.5);
     reg.add_system<DrawSystem>(std::ref(window));
-    reg.add_system<NetworkSystem>(std::ref(udpClient), std::ref(tcpClient));
     reg.add_system<MoveSystem>();
+    reg.add_system<PlayerSystem>(0);
+    reg.add_system<NetworkSystem>(std::ref(udpClient), std::ref(tcpClient));
+    // reg.add_system<InputSystem>(std::ref(window));
     // reg.add_system(animeEntity, 32, 198);
+    InputSystem inputSystem(reg, window);
+
+
+    velocity.emplace_at(tmp, 0, 0, 0, 0, 0);
+
+    auto current_time = std::chrono::high_resolution_clock::now();
+    float refresh_rate = 1.0f / 60.0f;
+    float elapsed_time = 0.0f;
+
 
     while (window.isOpen()) {
+        auto new_time = std::chrono::high_resolution_clock::now();
+        auto time_diff = new_time - current_time;   
+        current_time = new_time;
+
+        float delta_time = std::chrono::duration<float>(time_diff).count();
+        elapsed_time += delta_time;
+
+
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-                std::cout << "-------------right---------------" << std::endl;
-                auto &vel = velocity.emplace_at(tmp, 1, 1, 1, 1, 1);
-                udpClient.send(vel.value(), tmp, DATA_PACKET);
-                sleep(0.8);
-                // auto index = reg._typeIndex.at(typeid(Velocity));
-                // Packet packet = {4242, PacketType::DATA_PACKET, 0, tmp, index, 845485485124856245};
-            }
         }
-        window.clear();
-        reg.run_system();
-        window.display();
+        inputSystem();
+        if (elapsed_time >= refresh_rate) {
+            window.clear();
+            reg.run_system();
+            window.display();
+            elapsed_time = 0.0f;
+        }
     }
 }
