@@ -97,6 +97,8 @@ void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_
     if (!error) {
         Packet receivedPacket;
         std::vector<uint8_t> receivedComponent = unpack(receivedPacket, _recv_buffer, bytes_transferred);
+        std::cout << "packet size: " << sizeof(Packet) << std::endl;
+        std::cout << "received packet size: " << receivedPacket.packet_type << std::endl;
         std::cout << "component size"<< std::endl;
         if (receivedComponent.size() == 0) {
             start_receive();
@@ -198,11 +200,44 @@ void UDPServer::saveData()
         char *packet2;
         std::memcpy(packet2, _queue[i].second.data(), size);
         reg.registerPacket(packet.type_index, packet.entity_id, packet2);
+        std::cout << "Packet saved" << std::endl;
+        sendToAll(_queue[i].first, _queue[i].second, DATA_PACKET);
+        std::cout << "Message sent to client UDP: " << _queue[i].first.entity_id << std::endl;
+
         // for (const auto &client : _clientsUDP) {
         //     std::cout << _queue[i] << std::endl;
         //     std::cout << "Message sent to client UDP: " << client.first << std::endl;
             // std::vector
             // socket_.send_to(asio::buffer(_queue[i].first), client.second);
         // }
+    }
+}
+
+void UDPServer::sendToAll(const Packet &packet, std::vector<uint8_t> component, PacketType packet_type)
+{
+    std::vector<uint8_t> packetBytes(reinterpret_cast<const uint8_t*>(&packet),
+                                     reinterpret_cast<const uint8_t*>(&packet) + sizeof(Packet));
+    std::vector<uint8_t> data;
+    data.insert(data.end(), packetBytes.begin(), packetBytes.end());
+    data.insert(data.end(), component.begin(), component.end());
+
+    if (data.size() == 0) {
+        std::cout << "DATA SIZE IS 0" << std::endl;
+        return;
+    }
+    try {
+        std::cout << "SIZE : " << _clientsUDP.size() << std::endl;
+        for (const auto &client : _clientsUDP) {
+            std::cout << "Message sent to client UDP DANS SEND TO ALL: " << client.first << std::endl;
+            socket_.send_to(asio::buffer(data), client.second);
+            if (packet_type == DATA_PACKET) {
+                data[4] = RESPONSE_PACKET;
+                mtxSendPacket.lock();
+                _queueSendPacket.push_back(std::make_pair(client.second, data));
+                mtxSendPacket.unlock();
+            }
+        }
+    } catch (const asio::system_error &ec) {
+        std::cerr << "ERROR UDP sending message" << ec.what() << std::endl;
     }
 }

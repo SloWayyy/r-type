@@ -14,7 +14,7 @@ UDPClient::UDPClient(std::size_t port, std::string ip, registry &reg) :
     _thread = std::thread(&UDPClient::run, this);
     _port = socket_.local_endpoint().port();
     start_receive();
-    send("pos", 2, NEW_CONNECTION);
+    send("pos", 0, NEW_CONNECTION);
 }
 
 UDPClient::~UDPClient()
@@ -80,7 +80,7 @@ std::vector<uint8_t> UDPClient::pack(T const& component, uint32_t entity_id, Pac
             break;
     }
 
-    if (type_index == reg._typeIndex.size()) {
+    if (type_index == reg._typeIndex.size() and packet_type != NEW_CONNECTION) {
         std::cerr << "ERROR: type_index not found message not send" << std::endl;
         return {};
     } else {

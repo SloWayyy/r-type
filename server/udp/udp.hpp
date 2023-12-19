@@ -27,6 +27,7 @@ enum PacketType {
     RESPONSE_PACKET = '2',
     NEW_CONNECTION = '3',
 };
+
 struct Packet
 {
     uint32_t magic_number;
@@ -56,6 +57,7 @@ class UDPServer {
         void send(std::vector<uint8_t> message, asio::ip::udp::endpoint endpoint);
         template <typename T>
         void sendToAll(const T &component, uint32_t entity_id, PacketType packet_type = '0');
+        void sendToAll(const Packet &packet, std::vector<uint8_t> component, PacketType packet_type);
         void run();
         size_t getPort() const;
         std::array<char, 37>  generate_uuid();

@@ -17,6 +17,7 @@ void network(registry &reg, UDPClient &server, TCPClient &server2)
 {
 
     while (server._queue.size() > 0) {
+        std::cout << "Queue, il y a des choses a traiter" << std::endl;
         auto packet = server._queue.front();
         server.mtx.lock();
         server.saveData();
