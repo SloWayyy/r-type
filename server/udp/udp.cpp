@@ -56,7 +56,7 @@ std::vector<uint8_t> UDPServer::pack(T const& component, uint32_t entity_id, Pac
             break;
     }
 
-    if (type_index == reg._typeIndex.size()) {
+    if (type_index == reg._typeIndex.size() and packet_type) {
         std::cerr << "ERROR: type_index not found message not send" << std::endl;
         return {};
     } else {
@@ -197,20 +197,12 @@ void UDPServer::saveData()
     for (int i = 0; i < _queue.size(); i++) {
         Packet packet = _queue[i].first;
         int size = _queue[i].second.size();
-        char *packet2;
+        char packet2[64];
         std::memcpy(packet2, _queue[i].second.data(), size);
         reg.registerPacket(packet.type_index, packet.entity_id, packet2);
-        std::cout << "Packet saved" << std::endl;
         sendToAll(_queue[i].first, _queue[i].second, DATA_PACKET);
-        std::cout << "Message sent to client UDP: " << _queue[i].first.entity_id << std::endl;
-
-        // for (const auto &client : _clientsUDP) {
-        //     std::cout << _queue[i] << std::endl;
-        //     std::cout << "Message sent to client UDP: " << client.first << std::endl;
-            // std::vector
-            // socket_.send_to(asio::buffer(_queue[i].first), client.second);
-        // }
     }
+    _queue.clear();
 }
 
 void UDPServer::sendToAll(const Packet &packet, std::vector<uint8_t> component, PacketType packet_type)
@@ -222,11 +214,9 @@ void UDPServer::sendToAll(const Packet &packet, std::vector<uint8_t> component, 
     data.insert(data.end(), component.begin(), component.end());
 
     if (data.size() == 0) {
-        std::cout << "DATA SIZE IS 0" << std::endl;
         return;
     }
     try {
-        std::cout << "SIZE : " << _clientsUDP.size() << std::endl;
         for (const auto &client : _clientsUDP) {
             std::cout << "Message sent to client UDP DANS SEND TO ALL: " << client.first << std::endl;
             socket_.send_to(asio::buffer(data), client.second);

@@ -20,7 +20,7 @@ void network(registry &reg, UDPServer &serverUDP, TCPServer &serverTCP)
     // verif si les clients ont tous repondu au packet sionn on renvoi
     serverUDP.mtxSendPacket.unlock();
     serverUDP.mtxQueue.lock();
-    while (serverUDP._queue.size() > 0) {
+    if (serverUDP._queue.size() > 0) {
         std::cout << "Queue, il y a des choses a traiter" << std::endl;
         // traiter les packets
         // ajouter dans la queueSendPacket aussi

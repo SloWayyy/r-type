@@ -63,8 +63,9 @@ void UDPClient::handle_receive(const asio::error_code &error, std::size_t bytes_
             std::cout << "OUTDATED PACKET" << std::endl;
         }
         packet.packet_type = RESPONSE_PACKET;
-        std::array<uint8_t, sizeof(Packet) + 1> buffer;
+        std::array<uint8_t, sizeof(Packet)> buffer;
         std::memcpy(buffer.data(), &packet, sizeof(Packet));
+        std::cout << "j'ai renvoye le packet" << std::endl;
         socket_.send_to(asio::buffer(buffer), remote_endpoint_);
         start_receive();
     }
