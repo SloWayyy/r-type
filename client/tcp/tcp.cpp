@@ -7,17 +7,24 @@
 
 #include "tcp.hpp"
 
-TCPClient::TCPClient(std::size_t port, std::string ip)
+TCPClient::TCPClient(std::size_t port, std::string ip, registry &reg)
     : _port(port),
     _ioContext(),
     _socket(_ioContext),
     _resolver(_ioContext),
     _endpoint(asio::ip::make_address(ip), this->_port),
     _ip(ip),
-    buffer()
+    buffer(),
+    reg(reg)
 {
     this->createClient();
+    this->_thread = std::thread(&TCPClient::run, this);
     this->startAsyncOperations();
+}
+
+TCPClient::~TCPClient()
+{
+    this->_thread.join();
 }
 
 std::vector<std::string> TCPClient::getServerMessages()
@@ -71,6 +78,7 @@ void TCPClient::handleReceive()
             handleReceive();
         } else {
             std::cerr << "Server is disconected." << std::endl;
+            // return;
             exit(0);
         }
     });

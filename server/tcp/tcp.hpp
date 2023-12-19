@@ -17,7 +17,7 @@
 class TCPServer {
     public:
         TCPServer(std::size_t port, std::size_t portUDP, std::string ip);
-        ~TCPServer() = default;
+        ~TCPServer();
         int createSocket();
         void run();
         void startAccept();
@@ -26,6 +26,7 @@ class TCPServer {
         void sendMessageToAClient(const std::string &message, std::shared_ptr<asio::ip::tcp::socket> client);
         std::unordered_map<size_t, std::shared_ptr<asio::ip::tcp::socket>> _clientsInfo;
         std::vector<std::string> _ClientMessages;
+        std::thread _thread;
 
     private:
         std::size_t _port;

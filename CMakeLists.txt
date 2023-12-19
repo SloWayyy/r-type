@@ -22,6 +22,7 @@ set(ASIO_CMAKE_ASIO_TAG asio-1-12-2)
 set(SFML_CMAKE_SFML_TAG 2.5.x)
 
 FetchContent_MakeAvailable(asio-cmake)
+FetchContent_MakeAvailable(SFML)
 
 set(CMAKE_CXX_STANDARD 17)
 if (LINUX)
@@ -33,8 +34,8 @@ include_directories(client/include)
 
 set(SRC_CLIENT client/main.cpp
               client/tcp/tcp.cpp
-              client/udp/udp.cpp
-              client/GameLoop.cpp
+              ecs/system/system.cpp
+              ecs/component/component.cpp
 )
 
 add_executable(r-type_client ${SRC_CLIENT})
@@ -57,14 +58,17 @@ include_directories(server/include)
 
 set(SRC_SERVER server/main.cpp
                 server/tcp/tcp.cpp
-                server/udp/udp.cpp
-                server/server.cpp
+                ecs/system/system.cpp
+                ecs/component/component.cpp
 )
 
 add_executable(r-type_server ${SRC_SERVER})
 
 target_link_libraries(r-type_server
     PRIVATE asio
+    PRIVATE sfml-system
+    PRIVATE sfml-window
+    PRIVATE sfml-graphics
 )
 
 
