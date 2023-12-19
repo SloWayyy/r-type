@@ -49,6 +49,7 @@ void UDPClient::handle_receive(const asio::error_code &error, std::size_t bytes_
         std::cout << "BYTES RECU DU SERVEUR: " << bytes_transferred << std::endl;
         Packet packet;
         std::vector<uint8_t> receivedComponent = unpack(packet, _recv_buffer, bytes_transferred);
+        packet.display_packet();
         if (receivedComponent.size() == 0) {
             start_receive();
             return;
@@ -56,6 +57,7 @@ void UDPClient::handle_receive(const asio::error_code &error, std::size_t bytes_
         if (packet.packet_type == NEW_CONNECTION) {
             std::cout << "----------------------------NEW CONNECTION VOICI MON ID :----------------------" << packet.entity_id << std::endl;
             _entity_id = packet.entity_id;
+            reg._player = packet.entity_id;
         } else if (packet.timestamp >= _last_timestamp) {
             _last_timestamp = packet.timestamp;
             mtx.lock();

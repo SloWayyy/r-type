@@ -37,13 +37,13 @@ int main(int ac, char const **av)
     auto &position = reg.getComponent<Position>();
     auto &velocity = reg.getComponent<Velocity>();
     auto test = reg.addEntity();
+    reg.addEntity();
     position.emplace_at(test, 50, 50);
     velocity.emplace_at(test, 0, 0, 0, 1, 0);
     reg.add_system<NetworkSystem>(std::ref(udpServer), std::ref(tcpServer));
     reg.add_system<MoveSystem>();
 
     while (1) {
-        usleep(50000);
         reg.run_system();
 
     }

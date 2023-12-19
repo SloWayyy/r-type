@@ -31,6 +31,7 @@ int main(int ac, char **av)
     sf::Event event;
     reg.addAllComponents<Position, Velocity, Sprite, Size>();
     uint32_t tmp = reg.addEntity();
+    reg.addEntity();
     auto &position = reg.getComponent<Position>();
     auto &velocity = reg.getComponent<Velocity>();
     auto &sprite = reg.getComponent<Sprite>();
@@ -38,9 +39,12 @@ int main(int ac, char **av)
     sprite.emplace_at(tmp, "../game/assets/spaceShip.png", sf::IntRect(198, 0, 32, 32));
     position.emplace_at(tmp, 0, 0);
     size.emplace_at(tmp, 1.5, 1.5);
+    sprite.emplace_at(1, "../game/assets/spaceShip.png", sf::IntRect(198, 0, 32, 32));
+    position.emplace_at(1, 50, 50);
+    size.emplace_at(1, 1.5, 1.5);
     reg.add_system<DrawSystem>(std::ref(window));
     reg.add_system<MoveSystem>();
-    reg.add_system<PlayerSystem>(0);
+    reg.add_system<PlayerSystem>();
     reg.add_system<NetworkSystem>(std::ref(udpClient), std::ref(tcpClient));
     // reg.add_system<InputSystem>(std::ref(window));
     // reg.add_system(animeEntity, 32, 198);
@@ -48,6 +52,7 @@ int main(int ac, char **av)
 
 
     velocity.emplace_at(tmp, 0, 0, 0, 0, 0);
+    velocity.emplace_at(1, 0, 0, 0, 0, 0);
 
     auto current_time = std::chrono::high_resolution_clock::now();
     float refresh_rate = 1.0f / 60.0f;
