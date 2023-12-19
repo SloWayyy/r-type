@@ -5,6 +5,8 @@
 ** registry
 */
 
+#define ENTITY_COUNT 500
+
 #ifndef REGISTRY_HPP_
     #define REGISTRY_HPP_
 
@@ -19,6 +21,7 @@
     #include "sparse_array/sparse_array.hpp"
     #include "../entity/entity.hpp"
     #include "../component/component.cpp"
+
 
     class registry {
     public:
@@ -58,7 +61,7 @@
         template <typename T>
         void addComponent()
         {
-            std::any component = Sparse_array<T>();
+            std::any component = Sparse_array<T>(ENTITY_COUNT);
             std::type_index type = std::type_index(component.type());
 
             if (_components.find(type) == _components.end()) {
@@ -118,10 +121,6 @@
                 Entity tmp = _entity_graveyard.back();
                 _entity_graveyard.erase(_entity_graveyard.end() - 1);
                 return tmp;
-            }
-
-            for (auto &func : _addFunction) {
-                func(*this);
             }
             _entity_count++;
             return _entity_count - 1;

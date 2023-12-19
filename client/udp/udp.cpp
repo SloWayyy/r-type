@@ -22,6 +22,12 @@ UDPClient::~UDPClient()
     _thread.join();
 }
 
+void UDPClient::askEntity(void)
+{
+    std::cout << std::endl << "ASK ENTITY CLIENT" << std::endl << std::endl;
+    // send("pos", 0, ASK_ENTITY);
+}
+
 void UDPClient::start_receive()
 {
     socket_.async_receive_from(
@@ -50,8 +56,15 @@ void UDPClient::handle_receive(const asio::error_code &error, std::size_t bytes_
         std::cout << "bytes transferred: " << bytes_transferred << std::endl;
         Packet packet;
         std::vector<uint8_t> receivedComponent = unpack(packet, _recv_buffer, bytes_transferred);
+
         if (receivedComponent.size() == 0) {
             start_receive();
+            return;
+        }
+        std::cout << "\nHANDLE ASK\n" << std::endl;
+        if (packet.packet_type == ASK_ENTITY && myEntityId == -1) {
+            std::cout << "ENTITY GET CLIENT" << std::endl;
+            myEntityId = packet.entity_id;
             return;
         }
         if (packet.timestamp >= _last_timestamp) {
@@ -79,8 +92,9 @@ std::vector<uint8_t> UDPClient::pack(T const& component, uint32_t entity_id, Pac
         if (reg._typeIndex[type_index] == std::type_index(typeid(component)))
             break;
     }
+    std::cout << "type_index: " << type_index << std::endl;
 
-    if (type_index == reg._typeIndex.size() and packet_type != NEW_CONNECTION) {
+    if (type_index == reg._typeIndex.size() && packet_type != NEW_CONNECTION && packet_type != ASK_ENTITY) {
         std::cerr << "ERROR: type_index not found message not send" << std::endl;
         return {};
     } else {
@@ -114,6 +128,8 @@ template <typename T>
 void UDPClient::send(const T &component, uint32_t entity_id, PacketType packet_type)
 {
     std::vector<uint8_t> data = pack(component, entity_id, packet_type);
+
+    
 
     if (data.size() == 0)
         return;
@@ -149,7 +165,7 @@ void UDPClient::saveData()
     for (long unsigned int i = 0; i < _queue.size(); i++) {
         Packet packet = _queue[i].first;
         int size = _queue[i].second.size();
-        char *packet2[64] = {0};
+        char packet2[64];
         std::memcpy(packet2, _queue[i].second.data(), size);
         reg.registerPacket(packet.type_index, packet.entity_id, packet2);
     }

@@ -27,6 +27,7 @@ enum PacketType {
     REPEAT_PACKET = '1',
     RESPONSE_PACKET = '2',
     NEW_CONNECTION = '3',
+    ASK_ENTITY = '4',
 };
 
 struct Packet {
@@ -65,7 +66,9 @@ class UDPClient {
         std::vector<std::pair<Packet, std::vector<uint8_t>>> _queue;
         std::mutex mtx;
         void saveData();
+        void askEntity();
     private:
+        int myEntityId = -1;
         std::thread _thread;
         std::size_t _port;
         asio::ip::udp::endpoint _endpointServer;

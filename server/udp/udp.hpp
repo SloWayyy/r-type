@@ -26,6 +26,7 @@ enum PacketType {
     REPEAT_PACKET = '1',
     RESPONSE_PACKET = '2',
     NEW_CONNECTION = '3',
+    ASK_ENTITY = '4',
 };
 
 struct Packet
@@ -71,6 +72,7 @@ class UDPServer {
         std::mutex mtxSendPacket;
         std::mutex mtxQueue;
     private:
+        int myEntityId = -1;
         std::thread _thread;
         std::size_t _port;
         asio::io_context _io_context;

@@ -22,7 +22,6 @@ class MoveSystem : public ISystem {
             auto &velocity = _reg.getComponent<Velocity>();
             for (long unsigned int i = 0; i < position.size(); i++) {
                 if (position[i] && velocity[i]) {
-                    std::cout << "position: " << position[i].value().x << " " << position[i].value().y << std::endl;
                     position[i].value().x += velocity[i].value().x_speed;
                     position[i].value().y += velocity[i].value().y_speed;
                 }

@@ -27,7 +27,10 @@ class Sparse_array {
         using const_iterator = typename container_t::const_iterator;
 
     public:
-        Sparse_array() = default;                         // You can add more constructors .
+        Sparse_array() = default;
+        Sparse_array(size_t entity_count) {
+            _data.resize(entity_count, std::optional<Component>());
+        }
         Sparse_array(Sparse_array const &other): _data(other._data) {}; // copy constructor
         Sparse_array(Sparse_array &&) = default; // move constructor
         ~Sparse_array() = default;

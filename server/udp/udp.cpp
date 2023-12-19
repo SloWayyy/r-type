@@ -56,12 +56,11 @@ std::vector<uint8_t> UDPServer::pack(T const& component, uint32_t entity_id, Pac
             break;
     }
 
-    if (type_index == reg._typeIndex.size()) {
+    if (type_index == reg._typeIndex.size() && packet_type != NEW_CONNECTION && packet_type != ASK_ENTITY) {
         std::cerr << "ERROR: type_index not found message not send" << std::endl;
         return {};
     } else {
         std::array<char, 37> uuid = generate_uuid();
-        std::cout << "UUID CLIENT du packet: " << uuid.data() << std::endl;
         Packet packet = {_magic_number, packet_type, std::time(nullptr), entity_id, type_index, uuid};
         try {
             std::vector<uint8_t> result;
@@ -96,23 +95,33 @@ void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_
 {
     if (!error) {
         Packet receivedPacket;
+        std::cout << "PRINT JE RECOIS UN NOUVEAU MSG UDP de size" << bytes_transferred << std::endl;
         std::vector<uint8_t> receivedComponent = unpack(receivedPacket, _recv_buffer, bytes_transferred);
-        std::cout << "packet size: " << sizeof(Packet) << std::endl;
-        std::cout << "received packet size: " << receivedPacket.packet_type << std::endl;
-        std::cout << "component size"<< std::endl;
+        // receivedPacket.display_packet();
         if (receivedComponent.size() == 0) {
-            start_receive();
+            // start_receive();
             return;
         }
         if (receivedPacket.packet_type == NEW_CONNECTION) {
+            std::cout << "---------------NEW CONNECTION-------------------" << std::endl;
             _clientsUDP[receivedPacket.entity_id] = remote_endpoint_;
-            std::cout << "New player connected from " << remote_endpoint_.address() << " " << remote_endpoint_.port() << std::endl;
             sendToAll(receivedPacket, 0, NEW_CONNECTION);
-            start_receive();
+            // start_receive();
             return;
         }
+
+        std::cout << "Packet type: " << receivedPacket.packet_type << std::endl;
+
         if (receivedPacket.magic_number != _magic_number) {
             std::cerr << "ERROR: magic number not valid in received packet" << std::endl;
+            // start_receive();
+            return;
+        }
+        if (receivedPacket.packet_type == ASK_ENTITY) {
+            // std::cout << "---------------ASK ENTITY-------------------" << std::endl;
+            // size_t new_entity = reg.addEntity();
+            // std::cout << "NEW ENTITY: " << new_entity << std::endl;
+            // sendToAll(receivedPacket, new_entity, ASK_ENTITY);
             start_receive();
             return;
         }
@@ -126,12 +135,15 @@ void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_
                     mtxSendPacket.unlock();
                 }
             }
-            start_receive();
+            // start_receive();
         }
+        std::cout << "-----------------PACKET SEND TO QUEUE--------------" << std::endl;
         mtxQueue.lock();
         _queue.push_back(std::make_pair(receivedPacket, receivedComponent));
         mtxQueue.unlock();
-        start_receive();
+        // start_receive();
+    } else {
+        std::cerr << "ERROR UDP receiving message" << error.message() << std::endl;
     }
 }
 
@@ -197,8 +209,9 @@ void UDPServer::saveData()
     for (long unsigned int i = 0; i < _queue.size(); i++) {
         Packet packet = _queue[i].first;
         int size = _queue[i].second.size();
-        char *packet2 = NULL;
+        char packet2[64] = {0};
         std::memcpy(packet2, _queue[i].second.data(), size);
+        std::cout <<  "tete" << packet.type_index << std::endl;
         reg.registerPacket(packet.type_index, packet.entity_id, packet2);
         std::cout << "Packet saved" << std::endl;
         sendToAll(_queue[i].first, _queue[i].second, DATA_PACKET);
