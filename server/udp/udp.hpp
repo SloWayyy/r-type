@@ -58,6 +58,7 @@ class UDPServer {
         template <typename T>
         void sendToAll(const T &component, uint32_t entity_id, PacketType packet_type = '0');
         void sendToAll(const Packet &packet, std::vector<uint8_t> component, PacketType packet_type);
+        void send(std::vector<uint8_t> component, Packet packet, asio::ip::udp::endpoint endpoint);
         void run();
         size_t getPort() const;
         std::array<char, 37>  generate_uuid();
