@@ -5,7 +5,7 @@ Entity component system (ECS) is a software architectural pattern mostly used in
 
 ## Sparse Array
 
-  An entity is a container of components. It is represented by an integer. When an entity is created, it is added to the sparse array of entities. The sparse array is a vector of integers. The index of the vector is the entity id and the value is the index of the entity in the component. When an entity is destroyed, the entity is removed from the sparse array.
+  The Sparse Array is a container of components. It is represented by an integer. When an entity is created, it is added to the sparse array of entities. This one is a vector of integers. The index of the vector is the entity id and the value is the index of the entity in the component. When an entity is destroyed, the entity is removed from the sparse array.
 
   each entity has a list of components and each component is an any which can be equal to a certain value or None.
   <img src="docs/SparseArray.png" alt="SparseArray">
