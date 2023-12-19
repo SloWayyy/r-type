@@ -43,20 +43,9 @@ Entity component system (ECS) is a software architectural pattern mostly used in
         }
     }
 
+## Registery
 
-## Main
+  <p>The registery class is the parent class of the ecs. It contains the program's various classes, such as the system class and the entity class.</p>
+  <p>The registery class contains, for example, the sparse array which, as mentioned above, contains all components and entities</p>
 
-  <p>The provided main function showcases the usage of the ECS. It creates a registry, adds components (Position, Velocity, Drawable, Controller), adds two entities, associates a Drawable component with the first entity, and displays drawable entities using the system.</p>
-
-    int main() {
-        registry r;
-        System s(r);
-        r.addAllComponents();
-
-        int first_entity = r.addEntity();
-        int second_entity = r.addEntity();
-
-        Sparse_array<Drawable> &obj = r.getComponent<Drawable>();
-        obj[first_entity] = Drawable(true);
-        s.display_drawable();
-    }
+  <img src="docs/registery.png" alt="registery">
