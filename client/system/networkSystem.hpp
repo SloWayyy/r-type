@@ -33,7 +33,9 @@ class NetworkSystem : public ISystem {
             else {
                 int teest[] = {0, 1};
                 std::cout <<" player ==== " << teest[_reg._player] << std::endl;
-                 auto &velocity = _reg.getComponent<Velocity>();
+                auto &velocity = _reg.getComponent<Velocity>();
+                auto &position = _reg.getComponent<Position>();
+                _udpClient.send(position[_reg._player].value(), _reg._player, DATA_PACKET);
                 _udpClient.send(velocity[_reg._player].value(), _reg._player, DATA_PACKET);
                 _reg._events.erase(Event_t::KEY_PRESSED);
             }
