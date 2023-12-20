@@ -65,6 +65,7 @@ class UDPClient {
         std::vector<std::pair<Packet, std::vector<uint8_t>>> _queue;
         std::mutex mtx;
         void saveData();
+        u_int32_t getEntityId() const {return _entity_id;};
     private:
         std::thread _thread;
         std::size_t _port;
@@ -75,6 +76,7 @@ class UDPClient {
         std::array<uint8_t, 1024> _recv_buffer;
         long _last_timestamp = 0;
         uint32_t _magic_number = 4242;
+        uint32_t _entity_id = 0;
         registry &reg;
 };
 

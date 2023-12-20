@@ -36,7 +36,6 @@ std::vector<uint8_t> UDPClient::unpack(Packet &packet, std::array<uint8_t, 1024>
     try {
         std::memcpy(&packet, query.data(), sizeof(Packet));
         std::vector<uint8_t> component(query.begin() + sizeof(Packet), query.begin() + bytes_transferred);
-        std::cout << "component size: " << component.size() << std::endl;
         return component;
     } catch (const std::exception &e) {
         std::cerr << "ERROR unpack: " << e.what() << std::endl;
@@ -47,14 +46,19 @@ std::vector<uint8_t> UDPClient::unpack(Packet &packet, std::array<uint8_t, 1024>
 void UDPClient::handle_receive(const asio::error_code &error, std::size_t bytes_transferred)
 {
     if (!error) {
-        std::cout << "bytes transferred: " << bytes_transferred << std::endl;
+        std::cout << "BYTES RECU DU SERVEUR: " << bytes_transferred << std::endl;
         Packet packet;
         std::vector<uint8_t> receivedComponent = unpack(packet, _recv_buffer, bytes_transferred);
+        packet.display_packet();
         if (receivedComponent.size() == 0) {
             start_receive();
             return;
         }
-        if (packet.timestamp >= _last_timestamp) {
+        if (packet.packet_type == NEW_CONNECTION) {
+            std::cout << "----------------------------NEW CONNECTION VOICI MON ID :----------------------" << packet.entity_id << std::endl;
+            _entity_id = packet.entity_id;
+            reg._player = packet.entity_id;
+        } else if (packet.timestamp >= _last_timestamp) {
             _last_timestamp = packet.timestamp;
             mtx.lock();
             _queue.push_back(std::make_pair(packet, receivedComponent));
@@ -86,10 +90,7 @@ std::vector<uint8_t> UDPClient::pack(T const& component, uint32_t entity_id, Pac
         return {};
     } else {
         std::array<char, 37> uuid = generate_uuid();
-        std::cout << "UUID CLIENT du packet: " << uuid.data() << std::endl;
         Packet packet = {_magic_number, packet_type, std::time(nullptr), entity_id, type_index, uuid};
-        packet.display_packet();
-        std::cout << "packet size: " << sizeof(Packet) << std::endl;
         try {
             std::vector<uint8_t> result;
             result.resize(sizeof(Packet) + sizeof(T));

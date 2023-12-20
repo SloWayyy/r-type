@@ -28,6 +28,15 @@ class NetworkSystem : public ISystem {
                 Packet header = packet.first;
                 std::vector<uint8_t> component = packet.second;
             }
+            if (_reg._events.find(Event_t::KEY_PRESSED) == _reg._events.end())
+                return;
+            else {
+                int teest[] = {0, 1};
+                std::cout <<" player ==== " << teest[_reg._player] << std::endl;
+                 auto &velocity = _reg.getComponent<Velocity>();
+                _udpClient.send(velocity[_reg._player].value(), _reg._player, DATA_PACKET);
+                _reg._events.erase(Event_t::KEY_PRESSED);
+            }
         };
     private:
         registry &_reg;
