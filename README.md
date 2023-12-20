@@ -2,66 +2,106 @@
 
 ## Description
 
-RTYPE is a 2D shoot'em up game. The player controls a spaceship and must fight against enemies and bosses.
+RTYPE is a 2D shoot'em up game in C++<br>
+The player joins a team of 4 spaceships and has to fight enemies in order to stay alive.<br>
+The last survivor wins the game.
 
-## Installation PRE-REQUISITES
+## Prerequisites
 
-### INSTALL VS CODE
+- [CMake](https://cmake.org/download/)
 
-(https://code.visualstudio.com/download)
+- [Visual Studio 2019](https://visualstudio.microsoft.com/fr/downloads/)
 
-### INSTALL CMAKE
+##  R-TYPE Setup WINDOWS and LINUX
 
-(https://cmake.org/download/)
-
-### INSTALL GIT BASH
-
-(https://git-scm.com/downloads)
-
-### DEPENDENCIES
-
-### INSTALL VCPKG
-
-(https://vcpkg.io/en/getting-started)
-
-#### LINUX
-
-SET ENVIRONMENT VARIABLE
+### Clone the repository
 
 ```bash
-export CMAKE_TOOLCHAIN_FILE="[path to vcpkg]/scripts/buildsystems/vcpkg.cmake"
+git clone git@github.com:SloWayyy/r-type.git
 ```
 
-#### WINDOWS
+### Build the project
 
-SET ENVIRONMENT VARIABLE
-```
-WINDOWS > VARIABLES ENVIRONMENT > NEW > 
-NAME: "CMAKE_TOOLCHAIN_FILE" 
-VALUE: "[path to vcpkg]/scripts/buildsystems/vcpkg.cmake"
-```
-
-### COMPILATION
-
-#### LINUX
-
-```bash
-cmake -B build
-cmake --build build
-```
-
-The binary is in the build directory.
-
-#### WINDOWS
+#### Windows
 
 
 ```bash
+cd r-type
 cmake.exe -B build
 cmake.exe --build build
+cd build/Debug
 ```
-The binary is in the build/Debug directory.
+
+#### Linux
+
+```bash
+cd r-type
+cmake -B build
+cmake --build build
+cd build/
+```
+
+### Launch the project
+
+#### Server
+
+```bash
+./r-type_server port ip
+```
+
+<table>
+  <tr>
+    <th>Argument</th>
+    <th>Type</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>port</td>
+    <td>Int</td>
+    <td>Port TCP on which the server will listen</td>
+  </tr>
+  <tr>
+    <td>ip</td>
+    <td>String</td>
+    <td>Ip address of the server</td>
+  </tr>
+</table>
 
 
-## RUN
+#### Client
 
+```bash
+./r-type_client port ip
+```
 
+<table>
+  <tr>
+    <th>Argument</th>
+    <th>Type</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>port</td>
+    <td>Int</td>
+    <td>Port TCP on which the client will connect</td>
+  </tr>
+  <tr>
+    <td>ip</td>
+    <td>String</td>
+    <td>Ip address of the server</td>
+  </tr>
+
+</table>
+
+## Internal documentation
+
+- [Server](server/Readme.md)
+
+- [Game Engine](ecs/Readme.md)
+
+- [Client](client/Readme.md)
+
+## Authors
+
+| [<img src="https://github.com/kvn703.png?size=85" width=85><br><sub>Kevin NADARAJAH</sub>](https://github.com/kvn703) | [<img src="https://github.com/SloWayyy.png?size=85" width=85><br><sub>Mehdi Djendar</sub>](https://github.com/SloWayyy) | [<img src="https://github.com/Sloyi.png?size=85" width=85><br><sub>Rayan Es-Seffar</sub>](https://github.com/Sloyi) | [<img src="https://github.com/JonathanYakan.png?size=85" width=85><br><sub>Jonathan Yakan</sub>](https://github.com/JonathanYakan) | [<img src="https://github.com/Tahalani.png?size=85" width=85><br><sub>Taha ALANI</sub>](https://github.com/Tahalani) |
+|:-----------------------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------:|

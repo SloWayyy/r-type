@@ -11,23 +11,7 @@
 #include "udp/udp.hpp"
 #include "../ecs/registry/registry.hpp"
 #include "../ecs/system/system.hpp"
-
-void network(registry &reg, UDPServer &serverUDP, TCPServer &serverTCP)
-{
-    auto &position = reg.getComponent<Position>();
-
-    serverUDP.mtxSendPacket.lock();
-    // verif si les clients ont tous repondu au packet sionn on renvoi
-    serverUDP.mtxSendPacket.unlock();
-    serverUDP.mtxQueue.lock();
-    if (serverUDP._queue.size() > 0) {
-        std::cout << "Queue, il y a des choses a traiter" << std::endl;
-        // traiter les packets
-        // ajouter dans la queueSendPacket aussi
-        serverUDP.saveData();
-    }
-    serverUDP.mtxQueue.unlock();
-}
+#include "./system/networkSystem.hpp"
 
 bool isDigit(const std::string &port)
 {
@@ -55,8 +39,8 @@ int main(int ac, char const **av)
     auto test = reg.addEntity();
     position.emplace_at(test, 50, 50);
     velocity.emplace_at(test, 0, 0, 0, 1, 0);
-    reg.add_system(network, std::ref(udpServer), std::ref(tcpServer));
-    reg.add_system(moveEntity);
+    reg.add_system<NetworkSystem>(std::ref(udpServer), std::ref(tcpServer));
+    reg.add_system<MoveSystem>();
 
     while (1) {
         // usleep(50000);

@@ -15,6 +15,7 @@
     #include <any>
     #include <map>
     #include <functional>
+    #include "../system/ISystem.hpp"
     #include "sparse_array/sparse_array.hpp"
     #include "../entity/entity.hpp"
     #include "../component/component.cpp"
@@ -126,16 +127,14 @@
             return _entity_count - 1;
         };
 
-        template<typename Function, typename ...Params>
-        void add_system(Function && f, Params && ...params) {
-            _system.push_back([f, this, params...]() mutable {
-                f(*this, params...);
-            });
+        template<class Class, typename ...Params>
+        void add_system(Params && ...params) {
+            _system.push_back(std::make_unique<Class>(*this, std::forward<Params>(params)...));
         };
 
         void run_system() {
-            for (auto &func : _system) {
-                func();
+            for (auto &system : _system) {
+                system->operator()();
             }
         };
 
@@ -146,7 +145,7 @@
         std::unordered_map<std::type_index, std::any> _components;
 
     private:
-        std::vector<std::function<void()>> _system;
+        std::vector<std::unique_ptr<ISystem>> _system;
         std::vector<Entity> _entity_graveyard;
         std::vector<std::function<void(registry &, Entity const &)>> _eraseFunction;
         std::vector<std::function<void(registry &, Entity const &)>> _addFunction;
