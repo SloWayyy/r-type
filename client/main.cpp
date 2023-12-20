@@ -39,7 +39,7 @@ int main(int ac, char **av)
     sprite.emplace_at(tmp, "../game/assets/spaceShip.png", sf::IntRect(198, 0, 32, 32));
     position.emplace_at(tmp, 0, 0);
     size.emplace_at(tmp, 1.5, 1.5);
-    sprite.emplace_at(1, "../game/assets/spaceShip.png", sf::IntRect(198, 0, 32, 32));
+    sprite.emplace_at(1, "../game/assets/spaceShipBlue.png", sf::IntRect(198, 0, 32, 32));
     position.emplace_at(1, 50, 50);
     size.emplace_at(1, 1.5, 1.5);
     reg.add_system<DrawSystem>(std::ref(window));
@@ -61,7 +61,7 @@ int main(int ac, char **av)
 
     while (window.isOpen()) {
         auto new_time = std::chrono::high_resolution_clock::now();
-        auto time_diff = new_time - current_time;   
+        auto time_diff = new_time - current_time;
         current_time = new_time;
 
         float delta_time = std::chrono::duration<float>(time_diff).count();
