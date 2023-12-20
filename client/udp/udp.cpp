@@ -19,7 +19,11 @@ UDPClient::UDPClient(std::size_t port, std::string ip, registry &reg) :
 
 UDPClient::~UDPClient()
 {
+    try {
     _thread.join();
+    } catch (const std::exception& e) {
+        std::cerr << "Error joining thread: " << e.what() << std::endl;
+    }
 }
 
 void UDPClient::start_receive()
