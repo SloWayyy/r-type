@@ -157,7 +157,7 @@ void UDPClient::saveData()
     }
 }
 
-u_int32_t UDPClient::getEntityId() const
+uint32_t UDPClient::getEntityId()
 {
     return _entity_id;
 }

@@ -65,7 +65,7 @@ class UDPClient {
         std::vector<std::pair<Packet, std::vector<uint8_t>>> _queue;
         std::mutex mtx;
         void saveData();
-        u_int32_t getEntityId() const;
+        uint32_t getEntityId();
     private:
         std::thread _thread;
         std::size_t _port;
