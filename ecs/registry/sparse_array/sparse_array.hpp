@@ -76,11 +76,13 @@ class Sparse_array {
         };
 
         reference_type insert_at(size_type pos, Component const &component) {
-            _data.insert(_data.begin() + pos, component);
+            if (pos < _data.size())
+                _data.at(pos) = component;
             return _data[pos];
         };
         reference_type insert_at(size_type pos, Component &&component) {
-            _data.insert(_data.begin() + pos, std::forward<Component>(component));
+            if (pos < _data.size())
+                _data.at(pos) = std::move(component);
             return _data[pos];
         };
 
@@ -94,7 +96,8 @@ class Sparse_array {
             _data.erase(_data.begin() + pos);
         };
          void insert_packet(size_t pos, const char *packet) {
-            _data.insert(_data.begin() + pos, reinterpret_cast<const Component&>(*packet));
+            if (pos < _data.size())
+                _data.at(pos) = *reinterpret_cast<const Component*>(packet);
         };
 
         size_type get_index(value_type const &component) const {
