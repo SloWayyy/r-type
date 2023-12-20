@@ -24,7 +24,11 @@ TCPClient::TCPClient(std::size_t port, std::string ip, registry &reg)
 
 TCPClient::~TCPClient()
 {
-    this->_thread.join();
+    try {
+        this->_thread.join();
+    } catch (const std::exception& e) {
+        std::cerr << "Error joining thread: " << e.what() << std::endl;
+    }
 }
 
 std::vector<std::string> TCPClient::getServerMessages()
