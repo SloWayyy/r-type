@@ -156,3 +156,8 @@ void UDPClient::saveData()
         reg.registerPacket(packet.type_index, packet.entity_id, packet2);
     }
 }
+
+u_int32_t UDPClient::getEntityId() const
+{
+    return _entity_id;
+}
