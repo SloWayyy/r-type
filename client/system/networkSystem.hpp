@@ -9,13 +9,13 @@
 #define NETWORKSYSTEM_HPP_
 
 #include "../../ecs/system/ISystem.hpp"
-#include "../tcp/tcp.hpp"
-#include "../../network/udp.hpp"
+#include "../../network/tcpClient/tcpClient.hpp"
+#include "../../network/udp/udp.hpp"
 
 class NetworkSystem : public ISystem {
     public:
         NetworkSystem() = delete;
-        NetworkSystem(registry &reg, UDPServer &udpClient, TCPClient &tcpClient): _reg(reg), _tcpClient(tcpClient), _udpClient(udpClient) {};
+        NetworkSystem(registry &reg, Udp &udpClient, TCPClient &tcpClient): _reg(reg), _tcpClient(tcpClient), _udpClient(udpClient) {};
         ~NetworkSystem() = default;
         void operator()() override {
             while (_udpClient._queue.size() > 0) {
@@ -42,7 +42,7 @@ class NetworkSystem : public ISystem {
         };
     private:
         registry &_reg;
-        UDPServer &_udpClient;
+        Udp &_udpClient;
         TCPClient &_tcpClient;
 };
 

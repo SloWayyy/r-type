@@ -7,11 +7,11 @@
 
 #include "../ecs/registry/registry.hpp"
 #include "../ecs/system/system.hpp"
-#include "../network/udp.hpp"
+#include "../network/tcpClient/tcpClient.hpp"
+#include "../network/udp/udp.hpp"
 #include "./system/inputSystem.hpp"
 #include "./system/networkSystem.hpp"
 #include "./system/playerSystem.hpp"
-#include "tcp/tcp.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <chrono>
@@ -25,7 +25,7 @@ int main(int ac, char **av)
     }
     registry reg;
     TCPClient tcpClient(std::stoi(av[1]), av[2], reg);
-    UDPServer udpClient(4243, av[2], reg, true);
+    Udp udpClient(4243, av[2], reg, true);
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "R-Type");
     sf::Event event;

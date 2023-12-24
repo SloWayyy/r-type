@@ -8,7 +8,7 @@
 #ifndef UDP_HPP_
 #define UDP_HPP_
 
-#include "../ecs/registry/registry.hpp"
+#include "../../ecs/registry/registry.hpp"
 #include <any>
 #include <array>
 #include <asio.hpp>
@@ -46,12 +46,12 @@ struct Packet {
     }
 };
 
-class UDPServer
+class Udp
 {
 public:
-    UDPServer(std::size_t port, std::string ip, registry &reg);
-    UDPServer(std::size_t port, std::string ip, registry &reg, bool client); // client
-    ~UDPServer();
+    Udp(std::size_t port, std::string ip, registry &reg);
+    Udp(std::size_t port, std::string ip, registry &reg, bool client); // client
+    ~Udp();
     void start_receive();
     void start_receive_client(); // client
     void handle_receive_client(const asio::error_code &error, std::size_t bytes_transferred); // client

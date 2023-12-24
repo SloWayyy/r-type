@@ -9,13 +9,13 @@
 #define NETWORKSYSTEM_HPP_
 
 #include "../../ecs/system/ISystem.hpp"
-#include "../tcp/tcp.hpp"
-#include "../../network/udp.hpp"
+#include "../../network/tcpServer/tcpServer.hpp"
+#include "../../network/udp/udp.hpp"
 
 class NetworkSystem : public ISystem {
     public:
         NetworkSystem() = delete;
-        NetworkSystem(registry &reg, UDPServer &udpServer, TCPServer &tcpServer): _reg(reg), _tcpServer(tcpServer), _udpServer(udpServer) {};
+        NetworkSystem(registry &reg, Udp &udpServer, TCPServer &tcpServer): _reg(reg), _tcpServer(tcpServer), _udpServer(udpServer) {};
         ~NetworkSystem() = default;
         void operator()() override {
             auto &position = _reg.getComponent<Position>();
@@ -34,7 +34,7 @@ class NetworkSystem : public ISystem {
         };
     private:
         registry &_reg;
-        UDPServer &_udpServer;
+        Udp &_udpServer;
         TCPServer &_tcpServer;
 };
 

@@ -7,9 +7,9 @@
 
 #include "../ecs/registry/registry.hpp"
 #include "../ecs/system/system.hpp"
-#include "../network/udp.hpp"
+#include "../network/tcpServer/tcpServer.hpp"
+#include "../network/udp/udp.hpp"
 #include "./system/networkSystem.hpp"
-#include "tcp/tcp.hpp"
 #include <asio.hpp>
 #include <iostream>
 
@@ -30,7 +30,7 @@ int main(int ac, char const **av)
         return -1;
     }
     registry reg;
-    UDPServer udpServer(4242, av[2], reg);
+    Udp udpServer(4242, av[2], reg);
     TCPServer tcpServer(std::atoi(av[1]), udpServer.getPort(), av[2]);
 
     reg.addAllComponents<Position, Velocity, Sprite, Size>();

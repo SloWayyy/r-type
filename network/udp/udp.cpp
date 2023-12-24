@@ -5,8 +5,8 @@
 ** udp
 */
 
-#include <typeindex>
 #include <random>
+#include <typeindex>
 #include <unordered_map>
 
 struct Position2 {
@@ -16,63 +16,59 @@ struct Position2 {
 
 bool operator==(const Packet &lhs, const Packet &rhs)
 {
-    return lhs.magic_number == rhs.magic_number
-            && lhs.packet_type == rhs.packet_type
-            && lhs.timestamp == rhs.timestamp
-            && lhs.entity_id == rhs.entity_id
-            && lhs.type_index == rhs.type_index;
+    return lhs.magic_number == rhs.magic_number && lhs.packet_type == rhs.packet_type && lhs.timestamp == rhs.timestamp && lhs.entity_id == rhs.entity_id && lhs.type_index == rhs.type_index;
 }
 
-UDPServer::UDPServer(std::size_t port, std::string ip, registry &reg)
+Udp::Udp(std::size_t port, std::string ip, registry &reg)
     : socket_(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), 0)), _magic_number(4242), reg(reg)
 {
     try {
-        this->socket_  = asio::ip::udp::socket(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), port));
+        this->socket_ = asio::ip::udp::socket(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), port));
     } catch (const asio::system_error &ec) {
         std::cerr << "ERROR UDP binding socket: " << ec.what() << std::endl;
         std::exit(84);
     }
     this->_port = socket_.local_endpoint().port();
-    _thread = std::thread(&UDPServer::run, this);
+    _thread = std::thread(&Udp::run, this);
     start_receive();
 }
 
-UDPServer::UDPServer(std::size_t port, std::string ip, registry &reg, bool client) :
-    _endpointServer(asio::ip::make_address(ip), 4242),
-    socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0)), _last_timestamp(0), reg(reg)
+Udp::Udp(std::size_t port, std::string ip, registry &reg, bool client)
+    : _endpointServer(asio::ip::make_address(ip), 4242),
+      socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0)), _last_timestamp(0), reg(reg)
 {
-    _thread = std::thread(&UDPServer::run, this);
+    _thread = std::thread(&Udp::run, this);
     _port = socket_.local_endpoint().port();
     start_receive_client();
     send_client("pos", 0, NEW_CONNECTION);
 }
 
-UDPServer::~UDPServer()
+Udp::~Udp()
 {
     std::cout << "Server is closing" << std::endl;
     _thread.join();
 }
 
-void UDPServer::start_receive_client()
+void Udp::start_receive_client()
 {
     socket_.async_receive_from(
-        asio::buffer(_recv_buffer), remote_endpoint_,
-        std::bind(&UDPServer::handle_receive_client, this,
-                  std::placeholders::_1,
-                  std::placeholders::_2));
+    asio::buffer(_recv_buffer), remote_endpoint_,
+    std::bind(&Udp::handle_receive_client, this,
+    std::placeholders::_1,
+    std::placeholders::_2));
 }
 
-void UDPServer::start_receive()
+void Udp::start_receive()
 {
     socket_.async_receive_from(
-        asio::buffer(_recv_buffer), remote_endpoint_,
-        std::bind(&UDPServer::handle_receive, this,
-                  std::placeholders::_1,
-                  std::placeholders::_2));
+    asio::buffer(_recv_buffer), remote_endpoint_,
+    std::bind(&Udp::handle_receive, this,
+    std::placeholders::_1,
+    std::placeholders::_2));
 }
 
 template <typename T>
-std::vector<uint8_t> UDPServer::pack_client(T const& component, uint32_t entity_id, PacketType packet_type)
+std::vector<uint8_t> Udp::pack_client(T const &component, uint32_t entity_id, PacketType packet_type)
 {
     uint32_t type_index = 0;
 
@@ -103,7 +99,7 @@ std::vector<uint8_t> UDPServer::pack_client(T const& component, uint32_t entity_
 }
 
 template <typename T>
-std::vector<uint8_t> UDPServer::pack(T const& component, uint32_t entity_id, PacketType packet_type)
+std::vector<uint8_t> Udp::pack(T const &component, uint32_t entity_id, PacketType packet_type)
 {
     uint32_t type_index = 0;
 
@@ -134,13 +130,13 @@ std::vector<uint8_t> UDPServer::pack(T const& component, uint32_t entity_id, Pac
     }
 }
 
-std::array<char, 37> UDPServer::generate_uuid() {
+std::array<char, 37> Udp::generate_uuid()
+{
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, 15);
     std::array<char, 37> uuid;
     std::string hexChars = "0123456789abcdef";
-
 
     for (int i = 0; i < 37; i++) {
         uuid[i] = hexChars[dis(gen)];
@@ -148,7 +144,7 @@ std::array<char, 37> UDPServer::generate_uuid() {
     return uuid;
 }
 
-void UDPServer::handle_receive_client(const asio::error_code &error, std::size_t bytes_transferred)
+void Udp::handle_receive_client(const asio::error_code &error, std::size_t bytes_transferred)
 {
     if (!error) {
         std::cout << "BYTES RECU DU SERVEUR: " << bytes_transferred << std::endl;
@@ -180,7 +176,7 @@ void UDPServer::handle_receive_client(const asio::error_code &error, std::size_t
     }
 }
 
-void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_transferred)
+void Udp::handle_receive(const asio::error_code &error, std::size_t bytes_transferred)
 {
     if (!error) {
         Packet receivedPacket;
@@ -222,28 +218,29 @@ void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_
     }
 }
 
-void UDPServer::run()
+void Udp::run()
 {
     std::cout << "Server is running on port " << this->_port << std::endl;
     this->_io_context.run();
 }
 
 template <typename T>
-void UDPServer::send_client(const T &component, uint32_t entity_id, PacketType packet_type)
+void Udp::send_client(const T &component, uint32_t entity_id, PacketType packet_type)
 {
     std::vector<uint8_t> data = pack_client(component, entity_id, packet_type);
 
     if (data.size() == 0)
         return;
     try {
-        std::cout << "Message sent to server UDP: " << " on adress " << _endpointServer.address() << " on port " << _endpointServer.port() << std::endl;
+        std::cout << "Message sent to server UDP: "
+                  << " on adress " << _endpointServer.address() << " on port " << _endpointServer.port() << std::endl;
         socket_.send_to(asio::buffer(data), _endpointServer);
     } catch (const asio::system_error &ec) {
         std::cerr << "ERROR UDP sending message" << ec.what() << std::endl;
     }
 }
 
-void UDPServer::send(std::vector<uint8_t> message, asio::ip::udp::endpoint endpoint)
+void Udp::send(std::vector<uint8_t> message, asio::ip::udp::endpoint endpoint)
 {
     try {
         socket_.send_to(asio::buffer(message), endpoint);
@@ -252,11 +249,11 @@ void UDPServer::send(std::vector<uint8_t> message, asio::ip::udp::endpoint endpo
     }
 }
 
-void UDPServer::send(std::vector<uint8_t> component, Packet packet, asio::ip::udp::endpoint endpoint)
+void Udp::send(std::vector<uint8_t> component, Packet packet, asio::ip::udp::endpoint endpoint)
 {
     std::vector<uint8_t> data;
-    std::vector<uint8_t> packetBytes(reinterpret_cast<const uint8_t*>(&packet),
-                                     reinterpret_cast<const uint8_t*>(&packet) + sizeof(Packet));
+    std::vector<uint8_t> packetBytes(reinterpret_cast<const uint8_t *>(&packet),
+    reinterpret_cast<const uint8_t *>(&packet) + sizeof(Packet));
     data.insert(data.end(), packetBytes.begin(), packetBytes.end());
     data.insert(data.end(), component.begin(), component.end());
 
@@ -276,7 +273,7 @@ void UDPServer::send(std::vector<uint8_t> component, Packet packet, asio::ip::ud
 }
 
 template <typename T>
-void UDPServer::sendToAll(const T &component, uint32_t entity_id, PacketType packet_type)
+void Udp::sendToAll(const T &component, uint32_t entity_id, PacketType packet_type)
 {
     std::vector<uint8_t> data = pack(component, entity_id, packet_type);
 
@@ -298,7 +295,7 @@ void UDPServer::sendToAll(const T &component, uint32_t entity_id, PacketType pac
     }
 }
 
-std::vector<uint8_t> UDPServer::unpack(Packet &packet, std::array<uint8_t, 1024> query, std::size_t bytes_transferred)
+std::vector<uint8_t> Udp::unpack(Packet &packet, std::array<uint8_t, 1024> query, std::size_t bytes_transferred)
 {
     try {
         std::memcpy(&packet, query.data(), sizeof(Packet));
@@ -310,12 +307,12 @@ std::vector<uint8_t> UDPServer::unpack(Packet &packet, std::array<uint8_t, 1024>
     }
 }
 
-size_t UDPServer::getPort() const
+size_t Udp::getPort() const
 {
     return this->_port;
 }
 
-void UDPServer::saveData()
+void Udp::saveData()
 {
     for (int i = 0; i < _queue.size(); i++) {
         Packet packet = _queue[i].first;
@@ -328,22 +325,22 @@ void UDPServer::saveData()
     _queue.clear();
 }
 
-void UDPServer::saveData_client()
+void Udp::saveData_client()
 {
     std::cout << "GET DATA CLIENT" << std::endl;
     for (int i = 0; i < _queue.size(); i++) {
         Packet packet = _queue[i].first;
         int size = _queue[i].second.size();
-        char packet2[64]= {0};
+        char packet2[64] = {0};
         std::memcpy(packet2, _queue[i].second.data(), size);
         reg.registerPacket(packet.type_index, packet.entity_id, packet2);
     }
 }
 
-void UDPServer::sendToAll(const Packet &packet, std::vector<uint8_t> component, PacketType packet_type)
+void Udp::sendToAll(const Packet &packet, std::vector<uint8_t> component, PacketType packet_type)
 {
-    std::vector<uint8_t> packetBytes(reinterpret_cast<const uint8_t*>(&packet),
-                                     reinterpret_cast<const uint8_t*>(&packet) + sizeof(Packet));
+    std::vector<uint8_t> packetBytes(reinterpret_cast<const uint8_t *>(&packet),
+    reinterpret_cast<const uint8_t *>(&packet) + sizeof(Packet));
     std::vector<uint8_t> data;
     data.insert(data.end(), packetBytes.begin(), packetBytes.end());
     data.insert(data.end(), component.begin(), component.end());
