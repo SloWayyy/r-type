@@ -10,19 +10,19 @@
 
 #include "../../ecs/system/ISystem.hpp"
 #include "../tcp/tcp.hpp"
-#include "../udp/udp.hpp"
+#include "../../network/udp.hpp"
 
 class NetworkSystem : public ISystem {
     public:
         NetworkSystem() = delete;
-        NetworkSystem(registry &reg, UDPClient &udpClient, TCPClient &tcpClient): _reg(reg), _tcpClient(tcpClient), _udpClient(udpClient) {};
+        NetworkSystem(registry &reg, UDPServer &udpClient, TCPClient &tcpClient): _reg(reg), _tcpClient(tcpClient), _udpClient(udpClient) {};
         ~NetworkSystem() = default;
         void operator()() override {
             while (_udpClient._queue.size() > 0) {
                 std::cout << "Queue, il y a des choses a traiter" << std::endl;
                 auto packet = _udpClient._queue.front();
                 _udpClient.mtx.lock();
-                _udpClient.saveData();
+                _udpClient.saveData_client();
                 _udpClient._queue.erase(_udpClient._queue.begin());
                 _udpClient.mtx.unlock();
                 Packet header = packet.first;
@@ -35,14 +35,14 @@ class NetworkSystem : public ISystem {
                 std::cout <<" player ==== " << teest[_reg._player] << std::endl;
                 auto &velocity = _reg.getComponent<Velocity>();
                 auto &position = _reg.getComponent<Position>();
-                _udpClient.send(position[_reg._player].value(), _reg._player, DATA_PACKET);
-                _udpClient.send(velocity[_reg._player].value(), _reg._player, DATA_PACKET);
+                _udpClient.send_client(position[_reg._player].value(), _reg._player, DATA_PACKET);
+                _udpClient.send_client(velocity[_reg._player].value(), _reg._player, DATA_PACKET);
                 _reg._events.erase(Event_t::KEY_PRESSED);
             }
         };
     private:
         registry &_reg;
-        UDPClient &_udpClient;
+        UDPServer &_udpClient;
         TCPClient &_tcpClient;
 };
 

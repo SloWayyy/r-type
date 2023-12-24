@@ -37,10 +37,29 @@ UDPServer::UDPServer(std::size_t port, std::string ip, registry &reg)
     start_receive();
 }
 
+UDPServer::UDPServer(std::size_t port, std::string ip, registry &reg, bool client) :
+    _endpointServer(asio::ip::make_address(ip), 4242),
+    socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0)), _last_timestamp(0), reg(reg)
+{
+    _thread = std::thread(&UDPServer::run, this);
+    _port = socket_.local_endpoint().port();
+    start_receive_client();
+    send_client("pos", 0, NEW_CONNECTION);
+}
+
 UDPServer::~UDPServer()
 {
     std::cout << "Server is closing" << std::endl;
     _thread.join();
+}
+
+void UDPServer::start_receive_client()
+{
+    socket_.async_receive_from(
+        asio::buffer(_recv_buffer), remote_endpoint_,
+        std::bind(&UDPServer::handle_receive_client, this,
+                  std::placeholders::_1,
+                  std::placeholders::_2));
 }
 
 void UDPServer::start_receive()
@@ -50,6 +69,37 @@ void UDPServer::start_receive()
         std::bind(&UDPServer::handle_receive, this,
                   std::placeholders::_1,
                   std::placeholders::_2));
+}
+
+template <typename T>
+std::vector<uint8_t> UDPServer::pack_client(T const& component, uint32_t entity_id, PacketType packet_type)
+{
+    uint32_t type_index = 0;
+
+    for (; type_index < reg._typeIndex.size(); type_index++) {
+        if (reg._typeIndex[type_index] == std::type_index(typeid(component)))
+            break;
+    }
+
+    if (type_index == reg._typeIndex.size() && packet_type != NEW_CONNECTION) {
+        std::cerr << "ERROR: type_index not found message not send" << std::endl;
+        return {};
+    } else {
+        std::array<char, 37> uuid = generate_uuid();
+        Packet packet = {_magic_number, packet_type, std::time(nullptr), entity_id, type_index, uuid};
+        try {
+            std::vector<uint8_t> result;
+            result.resize(sizeof(Packet) + sizeof(T));
+            const uint8_t *packetBytes = reinterpret_cast<const uint8_t *>(&packet);
+            std::copy(packetBytes, packetBytes + sizeof(Packet), result.begin());
+            const uint8_t *componentBytes = reinterpret_cast<const uint8_t *>(&component);
+            std::copy(componentBytes, componentBytes + sizeof(T), result.begin() + sizeof(Packet));
+            return result;
+        } catch (const std::exception &e) {
+            std::cerr << "ERROR: " << e.what() << std::endl;
+            return {};
+        }
+    }
 }
 
 template <typename T>
@@ -96,6 +146,38 @@ std::array<char, 37> UDPServer::generate_uuid() {
         uuid[i] = hexChars[dis(gen)];
     }
     return uuid;
+}
+
+void UDPServer::handle_receive_client(const asio::error_code &error, std::size_t bytes_transferred)
+{
+    if (!error) {
+        std::cout << "BYTES RECU DU SERVEUR: " << bytes_transferred << std::endl;
+        Packet packet;
+        std::vector<uint8_t> receivedComponent = unpack(packet, _recv_buffer, bytes_transferred);
+        packet.display_packet();
+        if (receivedComponent.size() == 0) {
+            start_receive_client();
+            return;
+        }
+        if (packet.packet_type == NEW_CONNECTION) {
+            std::cout << "----------------------------NEW CONNECTION VOICI MON ID :----------------------" << packet.entity_id << std::endl;
+            _entity_id = packet.entity_id;
+            reg._player = packet.entity_id;
+        } else if (packet.timestamp >= _last_timestamp) {
+            _last_timestamp = packet.timestamp;
+            mtx.lock();
+            _queue.push_back(std::make_pair(packet, receivedComponent));
+            mtx.unlock();
+        } else {
+            std::cout << "OUTDATED PACKET" << std::endl;
+        }
+        packet.packet_type = RESPONSE_PACKET;
+        std::array<uint8_t, sizeof(Packet)> buffer;
+        std::memcpy(buffer.data(), &packet, sizeof(Packet));
+        std::cout << "j'ai renvoye le packet" << std::endl;
+        socket_.send_to(asio::buffer(buffer), remote_endpoint_);
+        start_receive_client();
+    }
 }
 
 void UDPServer::handle_receive(const asio::error_code &error, std::size_t bytes_transferred)
@@ -146,6 +228,20 @@ void UDPServer::run()
     this->_io_context.run();
 }
 
+template <typename T>
+void UDPServer::send_client(const T &component, uint32_t entity_id, PacketType packet_type)
+{
+    std::vector<uint8_t> data = pack_client(component, entity_id, packet_type);
+
+    if (data.size() == 0)
+        return;
+    try {
+        std::cout << "Message sent to server UDP: " << " on adress " << _endpointServer.address() << " on port " << _endpointServer.port() << std::endl;
+        socket_.send_to(asio::buffer(data), _endpointServer);
+    } catch (const asio::system_error &ec) {
+        std::cerr << "ERROR UDP sending message" << ec.what() << std::endl;
+    }
+}
 
 void UDPServer::send(std::vector<uint8_t> message, asio::ip::udp::endpoint endpoint)
 {
@@ -230,6 +326,18 @@ void UDPServer::saveData()
         sendToAll(_queue[i].first, _queue[i].second, DATA_PACKET);
     }
     _queue.clear();
+}
+
+void UDPServer::saveData_client()
+{
+    std::cout << "GET DATA CLIENT" << std::endl;
+    for (int i = 0; i < _queue.size(); i++) {
+        Packet packet = _queue[i].first;
+        int size = _queue[i].second.size();
+        char packet2[64]= {0};
+        std::memcpy(packet2, _queue[i].second.data(), size);
+        reg.registerPacket(packet.type_index, packet.entity_id, packet2);
+    }
 }
 
 void UDPServer::sendToAll(const Packet &packet, std::vector<uint8_t> component, PacketType packet_type)

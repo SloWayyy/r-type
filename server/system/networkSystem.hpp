@@ -10,7 +10,7 @@
 
 #include "../../ecs/system/ISystem.hpp"
 #include "../tcp/tcp.hpp"
-#include "../udp/udp.hpp"
+#include "../../network/udp.hpp"
 
 class NetworkSystem : public ISystem {
     public:

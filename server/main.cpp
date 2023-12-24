@@ -5,13 +5,13 @@
 ** main.cpp
 */
 
-#include <iostream>
-#include <asio.hpp>
-#include "tcp/tcp.hpp"
-#include "udp/udp.hpp"
 #include "../ecs/registry/registry.hpp"
 #include "../ecs/system/system.hpp"
+#include "../network/udp.hpp"
 #include "./system/networkSystem.hpp"
+#include "tcp/tcp.hpp"
+#include <asio.hpp>
+#include <iostream>
 
 bool isDigit(const std::string &port)
 {
