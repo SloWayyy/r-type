@@ -27,7 +27,7 @@ class NetworkSystem : public ISystem {
                 std::cout << "Queue, il y a des choses a traiter" << std::endl;
                 // traiter les packets
                 // ajouter dans la queueSendPacket aussi
-                _udpServer.saveData();
+                _udpServer.updateSparseArray(false);
             }
             _udpServer.mtxQueue.unlock();
         };
