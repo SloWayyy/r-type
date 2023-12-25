@@ -15,10 +15,9 @@
 class NetworkSystem : public ISystem {
     public:
         NetworkSystem() = delete;
-        NetworkSystem(registry &reg, Udp &udpServer, TCPServer &tcpServer): _reg(reg), _tcpServer(tcpServer), _udpServer(udpServer) {};
+        NetworkSystem(registry &reg, Udp &udpServer, TCPServer &tcpServer): _reg(reg), _udpServer(udpServer), _tcpServer(tcpServer) {};
         ~NetworkSystem() = default;
         void operator()() override {
-            auto &position = _reg.getComponent<Position>();
 
             _udpServer.mtxSendPacket.lock();
             // verif si les clients ont tous repondu au packet sionn on renvoi

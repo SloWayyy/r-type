@@ -33,7 +33,7 @@ Udp::Udp(std::size_t port, std::string ip, registry &reg)
     start_receive();
 }
 
-Udp::Udp(std::size_t port, std::string ip, registry &reg, bool client)
+Udp::Udp(std::string ip, registry &reg)
     : _endpointServer(asio::ip::make_address(ip), 4242),
       socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0)), _last_timestamp(0), reg(reg)
 {
@@ -314,7 +314,7 @@ size_t Udp::getPort() const
 
 void Udp::saveData()
 {
-    for (int i = 0; i < _queue.size(); i++) {
+    for (int i = 0; i < (int)_queue.size(); i++) {
         Packet packet = _queue[i].first;
         int size = _queue[i].second.size();
         char packet2[64];
@@ -328,7 +328,7 @@ void Udp::saveData()
 void Udp::saveData_client()
 {
     std::cout << "GET DATA CLIENT" << std::endl;
-    for (int i = 0; i < _queue.size(); i++) {
+    for (int i = 0; i < (int)_queue.size(); i++) {
         Packet packet = _queue[i].first;
         int size = _queue[i].second.size();
         char packet2[64] = {0};
@@ -342,12 +342,13 @@ void Udp::sendToAll(const Packet &packet, std::vector<uint8_t> component, Packet
     std::vector<uint8_t> packetBytes(reinterpret_cast<const uint8_t *>(&packet),
     reinterpret_cast<const uint8_t *>(&packet) + sizeof(Packet));
     std::vector<uint8_t> data;
+
     data.insert(data.end(), packetBytes.begin(), packetBytes.end());
     data.insert(data.end(), component.begin(), component.end());
 
-    if (data.size() == 0) {
+    if (data.size() == 0)
         return;
-    }
+
     try {
         for (const auto &client : _clientsUDP) {
             std::cout << "Message sent to client UDP DANS SEND TO ALL: " << client.first << std::endl;

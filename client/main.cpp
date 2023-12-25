@@ -10,7 +10,7 @@
 #include "../network/tcpClient/tcpClient.hpp"
 #include "../network/udp/udp.hpp"
 #include "./system/inputSystem.hpp"
-#include "./system/networkSystem.hpp"
+#include "./system/clientNetworkSystem.hpp"
 #include "./system/playerSystem.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
@@ -25,7 +25,7 @@ int main(int ac, char **av)
     }
     registry reg;
     TCPClient tcpClient(std::stoi(av[1]), av[2], reg);
-    Udp udpClient(4243, av[2], reg, true);
+    Udp udpClient(av[2], reg);
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "R-Type");
     sf::Event event;
@@ -47,7 +47,7 @@ int main(int ac, char **av)
     reg.add_system<PlayerSystem>();
     reg.add_system<NetworkSystem>(std::ref(udpClient), std::ref(tcpClient));
     // reg.add_system<InputSystem>(std::ref(window));
-    // reg.add_system(animeEntity, 32, 198);
+    // reg.add_system(animeEntity, 32, 198);f
     InputSystem inputSystem(reg, window);
 
 

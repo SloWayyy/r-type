@@ -21,7 +21,7 @@ struct Size {
 };
 
 struct Velocity {
-    Velocity(int velocity = 0, int time = 0, int acc = 0, int x_speed = 0, int y_speed = 0): v(velocity), t(time), a(acc), x_speed(x_speed), y_speed(y_speed){};
+    Velocity(int velocity = 0, int time = 0, int acc = 0, int x_speed = 0, int y_speed = 0): x_speed(x_speed), y_speed(y_speed), v(velocity), t(time), a(acc){};
     void print()
     {
         std::cout << "Velocity v: " << v << "\nVelocity t: " << t << "\nVelocity a: " << a << std::endl;

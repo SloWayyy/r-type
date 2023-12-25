@@ -46,55 +46,54 @@ struct Packet {
     }
 };
 
-class Udp
-{
-public:
-    Udp(std::size_t port, std::string ip, registry &reg);
-    Udp(std::size_t port, std::string ip, registry &reg, bool client); // client
-    ~Udp();
-    void start_receive();
-    void start_receive_client(); // client
-    void handle_receive_client(const asio::error_code &error, std::size_t bytes_transferred); // client
-    void handle_receive(const asio::error_code &error, std::size_t bytes_transferred);
-    void handle_send(std::shared_ptr<std::string> message, const asio::error_code &error, std::size_t bytes_transferred); // client
-    void send(std::vector<uint8_t> message, asio::ip::udp::endpoint endpoint);
-    template <typename T>
-    void sendToAll(const T &component, uint32_t entity_id, PacketType packet_type = '0');
-    void sendToAll(const Packet &packet, std::vector<uint8_t> component, PacketType packet_type);
-    template <typename T> // client
-    void send_client(T const &component, uint32_t entity_id, PacketType packet_type); // client
-    void send(std::vector<uint8_t> component, Packet packet, asio::ip::udp::endpoint endpoint);
-    void run();
-    size_t getPort() const;
-    std::array<char, 37> generate_uuid();
-    template <typename T>
-    std::vector<uint8_t> pack(T const &component, uint32_t entity_id, PacketType packet_type);
-    template <typename T>
-    std::vector<uint8_t> pack_client(T const& component, uint32_t entity_id, PacketType packet_type);
-    std::vector<uint8_t> unpack(Packet &packet, std::array<uint8_t, 1024> query, std::size_t bytes_transferred);
-    void saveData();
-    void saveData_client();
-    std::unordered_map<size_t, asio::ip::udp::endpoint> _clientsUDP;
-    std::vector<std::pair<asio::ip::udp::endpoint, std::vector<uint8_t>>> _queueSendPacket;
-    std::vector<std::pair<Packet, std::vector<uint8_t>>> _queue;
-    std::mutex mtx;
-    std::mutex mtxSendPacket;
-    std::mutex mtxQueue;
-    uint32_t getEntityId() const {return _entity_id;};
+class Udp {
+    public:
+        Udp(std::size_t port, std::string ip, registry &reg);
+        Udp(std::string ip, registry &reg); // client
+        ~Udp();
+        void start_receive();
+        void start_receive_client(); // client
+        void handle_receive_client(const asio::error_code &error, std::size_t bytes_transferred); // client
+        void handle_receive(const asio::error_code &error, std::size_t bytes_transferred);
+        void handle_send(std::shared_ptr<std::string> message, const asio::error_code &error, std::size_t bytes_transferred); // client
+        void send(std::vector<uint8_t> message, asio::ip::udp::endpoint endpoint);
+        template <typename T>
+        void sendToAll(const T &component, uint32_t entity_id, PacketType packet_type = '0');
+        void sendToAll(const Packet &packet, std::vector<uint8_t> component, PacketType packet_type);
+        template <typename T> // client
+        void send_client(T const &component, uint32_t entity_id, PacketType packet_type); // client
+        void send(std::vector<uint8_t> component, Packet packet, asio::ip::udp::endpoint endpoint);
+        void run();
+        size_t getPort() const;
+        std::array<char, 37> generate_uuid();
+        template <typename T>
+        std::vector<uint8_t> pack(T const &component, uint32_t entity_id, PacketType packet_type);
+        template <typename T>
+        std::vector<uint8_t> pack_client(T const& component, uint32_t entity_id, PacketType packet_type);
+        std::vector<uint8_t> unpack(Packet &packet, std::array<uint8_t, 1024> query, std::size_t bytes_transferred);
+        void saveData();
+        void saveData_client();
+        std::unordered_map<size_t, asio::ip::udp::endpoint> _clientsUDP;
+        std::vector<std::pair<asio::ip::udp::endpoint, std::vector<uint8_t>>> _queueSendPacket;
+        std::vector<std::pair<Packet, std::vector<uint8_t>>> _queue;
+        std::mutex mtx;
+        std::mutex mtxSendPacket;
+        std::mutex mtxQueue;
+        uint32_t getEntityId() const {return _entity_id;};
 
-private:
-    std::thread _thread;
-    std::size_t _port;
-    asio::ip::udp::endpoint _endpointServer;
-    asio::io_context _io_context;
-    asio::ip::udp::socket socket_;
-    asio::ip::udp::endpoint remote_endpoint_;
-    std::array<uint8_t, 1024> _recv_buffer;
-    long _last_timestamp = 0;
-    asio::ip::udp::endpoint _endpointClient;
-    uint32_t _magic_number = 4242;
-    uint32_t _entity_id = 0;
-    registry &reg;
+    private:
+        std::thread _thread;
+        std::size_t _port;
+        asio::ip::udp::endpoint _endpointServer;
+        asio::io_context _io_context;
+        asio::ip::udp::socket socket_;
+        asio::ip::udp::endpoint remote_endpoint_;
+        std::array<uint8_t, 1024> _recv_buffer;
+        long _last_timestamp = 0;
+        asio::ip::udp::endpoint _endpointClient;
+        uint32_t _magic_number = 4242;
+        uint32_t _entity_id = 0;
+        registry &reg;
 };
 
 #include "udp.cpp"

@@ -9,7 +9,7 @@
 #include "../ecs/system/system.hpp"
 #include "../network/tcpServer/tcpServer.hpp"
 #include "../network/udp/udp.hpp"
-#include "./system/networkSystem.hpp"
+#include "./system/serverNetworkSystem.hpp"
 #include <asio.hpp>
 #include <iostream>
 

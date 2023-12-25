@@ -15,7 +15,7 @@
 class NetworkSystem : public ISystem {
     public:
         NetworkSystem() = delete;
-        NetworkSystem(registry &reg, Udp &udpClient, TCPClient &tcpClient): _reg(reg), _tcpClient(tcpClient), _udpClient(udpClient) {};
+        NetworkSystem(registry &reg, Udp &udpClient, TCPClient &tcpClient): _reg(reg), _udpClient(udpClient), _tcpClient(tcpClient) {};
         ~NetworkSystem() = default;
         void operator()() override {
             while (_udpClient._queue.size() > 0) {
@@ -25,7 +25,7 @@ class NetworkSystem : public ISystem {
                 _udpClient.saveData_client();
                 _udpClient._queue.erase(_udpClient._queue.begin());
                 _udpClient.mtx.unlock();
-                Packet header = packet.first;
+                // Packet header = packet.first;
                 std::vector<uint8_t> component = packet.second;
             }
             if (_reg._events.find(Event_t::KEY_PRESSED) == _reg._events.end())

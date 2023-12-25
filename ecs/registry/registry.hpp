@@ -75,7 +75,7 @@
                     tmp[entity] = std::optional<T>();
                 });
 
-                _addFunction.push_back([](registry &reg, int const &entity) {
+                _addFunction.push_back([](registry &reg, int const &) {
                     auto &tmp = reg.getComponent<T>();
                     tmp.push_back();
                 });
