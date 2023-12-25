@@ -35,8 +35,8 @@ class NetworkSystem : public ISystem {
                 std::cout <<" player ==== " << teest[_reg._player] << std::endl;
                 auto &velocity = _reg.getComponent<Velocity>();
                 auto &position = _reg.getComponent<Position>();
-                _udpClient.send_client(DATA_PACKET, position[_reg._player].value(), _reg._player);
-                _udpClient.send_client(DATA_PACKET, velocity[_reg._player].value(), _reg._player);
+                _udpClient.sendClientToServer(DATA_PACKET, position[_reg._player].value(), _reg._player);
+                _udpClient.sendClientToServer(DATA_PACKET, velocity[_reg._player].value(), _reg._player);
                 _reg._events.erase(Event_t::KEY_PRESSED);
             }
         };
