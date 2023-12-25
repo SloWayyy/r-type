@@ -45,7 +45,6 @@ class PlayerSystem : public ISystem {
             {
                 std::cerr << e.what() << '\n';
             }
-            
         };
     private:
         registry &_reg;

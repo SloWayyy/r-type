@@ -46,10 +46,7 @@ int main(int ac, char **av)
     reg.add_system<MoveSystem>();
     reg.add_system<PlayerSystem>();
     reg.add_system<NetworkSystem>(std::ref(udpClient), std::ref(tcpClient));
-    // reg.add_system<InputSystem>(std::ref(window));
-    // reg.add_system(animeEntity, 32, 198);f
     InputSystem inputSystem(reg, window);
-
 
     velocity.emplace_at(tmp, 0, 0, 0, 0, 0);
     velocity.emplace_at(1, 0, 0, 0, 0, 0);
