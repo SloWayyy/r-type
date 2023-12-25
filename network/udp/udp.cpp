@@ -47,13 +47,13 @@ void Udp::start_receive(bool client)
     if (client) {
         socket_.async_receive_from(
         asio::buffer(_recv_buffer), remote_endpoint_,
-        std::bind(&Udp::handle_receive_client, this,
+        std::bind(&Udp::handleReceiveClient, this,
         std::placeholders::_1,
         std::placeholders::_2));
     } else {
         socket_.async_receive_from(
         asio::buffer(_recv_buffer), remote_endpoint_,
-        std::bind(&Udp::handle_receive, this,
+        std::bind(&Udp::handleReceiveServer, this,
         std::placeholders::_1,
         std::placeholders::_2));
     }
@@ -62,12 +62,19 @@ void Udp::start_receive(bool client)
 std::vector<uint8_t> Udp::createPacket(std::vector<uint8_t> component, Packet packet)
 {
     std::vector<uint8_t> data;
-
     std::vector<uint8_t> packetBytes(reinterpret_cast<const uint8_t *>(&packet),
+
     reinterpret_cast<const uint8_t *>(&packet) + sizeof(Packet));
     data.insert(data.end(), packetBytes.begin(), packetBytes.end());
     data.insert(data.end(), component.begin(), component.end());
     return data;
+}
+
+std::array<uint8_t, sizeof(Packet)> Udp::createPacket(Packet packet)
+{
+    std::array<uint8_t, sizeof(Packet)> buffer;
+    std::memcpy(buffer.data(), &packet, sizeof(Packet));
+    return buffer;
 }
 
 // Packet for new connection
@@ -75,6 +82,7 @@ std::vector<uint8_t> Udp::createPacket(PacketType packet_type, uint32_t entity_i
 {
     Packet packet = {_magic_number, packet_type, std::time(nullptr), entity_id, 0, generate_uuid()};
     std::vector<uint8_t> result;
+
     result.resize(sizeof(Packet));
     const uint8_t *packetBytes = reinterpret_cast<const uint8_t *>(&packet);
     std::copy(packetBytes, packetBytes + sizeof(Packet), result.begin());
@@ -120,72 +128,75 @@ std::vector<uint8_t> Udp::unpack(Packet &packet, std::array<uint8_t, 1024> query
     }
 }
 
-void Udp::handle_receive_client(const asio::error_code &error, std::size_t bytes_transferred)
+int Udp::handleErrorReceive(const asio::error_code &error, std::vector<uint8_t> receivedComponent, Packet receivedPacket, bool isClient)
 {
-    if (!error) {
-        Packet packet;
-        std::vector<uint8_t> receivedComponent = unpack(packet, _recv_buffer, bytes_transferred);
-        if (receivedComponent.size() == 0 && packet.packet_type != NEW_CONNECTION) {
-            start_receive(true);
-            return;
-        }
-        if (packet.packet_type == NEW_CONNECTION) {
-            _entity_id = packet.entity_id;
-            reg._player = packet.entity_id;
-        } else if (packet.timestamp >= _last_timestamp) {
-            _last_timestamp = packet.timestamp;
-            mtx.lock();
-            _queue.push_back(std::make_pair(packet, receivedComponent));
-            mtx.unlock();
-        } else {
-            std::cout << "OUTDATED PACKET" << std::endl;
-        }
-        packet.packet_type = RESPONSE_PACKET;
-        std::array<uint8_t, sizeof(Packet)> buffer;
-        std::memcpy(buffer.data(), &packet, sizeof(Packet));
-        socket_.send_to(asio::buffer(buffer), remote_endpoint_);
-        start_receive(true);
+    if (error)
+        return -1;
+    if (receivedComponent.size() == 0 && receivedPacket.packet_type != NEW_CONNECTION) {
+        start_receive(isClient);
+        return -1;
     }
+    return 0;
 }
 
-void Udp::handle_receive(const asio::error_code &error, std::size_t bytes_transferred)
+void Udp::handleReceiveClient(const asio::error_code &error, std::size_t bytes_transferred)
 {
-    if (!error) {
-        Packet receivedPacket;
-        std::vector<uint8_t> receivedComponent = unpack(receivedPacket, _recv_buffer, bytes_transferred);
-        if (receivedComponent.size() == 0 && receivedPacket.packet_type != NEW_CONNECTION) {
-            start_receive();
-            return;
-        }
-        if (receivedPacket.packet_type == NEW_CONNECTION) {
-            _clientsUDP[remote_endpoint_.port()] = remote_endpoint_;
-            receivedPacket.entity_id = _clientsUDP.size() - 1;
-            sendNewConnection(receivedComponent, receivedPacket);
-            start_receive();
-            return;
-        }
-        if (receivedPacket.magic_number != _magic_number) {
-            std::cerr << "ERROR: magic number not valid in received packet" << std::endl;
-            start_receive();
-            return;
-        }
-        if (receivedPacket.packet_type == RESPONSE_PACKET) {
-            for (const auto &query : _queueSendPacket) {
-                Packet queryPacket;
-                std::memcpy(&queryPacket, query.second.data(), sizeof(Packet));
-                if (receivedPacket.uuid == queryPacket.uuid) {
-                    mtxSendPacket.lock();
-                    _queueSendPacket.erase(std::remove(_queueSendPacket.begin(), _queueSendPacket.end(), query), _queueSendPacket.end());
-                    mtxSendPacket.unlock();
-                }
-            }
-            start_receive();
-        }
-        mtxQueue.lock();
+    Packet receivedPacket;
+    std::vector<uint8_t> receivedComponent = unpack(receivedPacket, _recv_buffer, bytes_transferred);
+
+    if (handleErrorReceive(error, receivedComponent, receivedPacket, true) == -1)
+        return;
+    if (receivedPacket.packet_type == NEW_CONNECTION) {
+        _entity_id = receivedPacket.entity_id;
+        reg._player = receivedPacket.entity_id;
+    } else if (receivedPacket.timestamp >= _last_timestamp) {
+        _last_timestamp = receivedPacket.timestamp;
+        mtx.lock();
         _queue.push_back(std::make_pair(receivedPacket, receivedComponent));
-        mtxQueue.unlock();
+        mtx.unlock();
+    } else
+        std::cout << "OUTDATED PACKET" << std::endl;
+
+    receivedPacket.packet_type = RESPONSE_PACKET;
+    sendClientToServer(receivedPacket);
+    start_receive(true);
+}
+
+void Udp::handleReceiveServer(const asio::error_code &error, std::size_t bytes_transferred)
+{
+    Packet receivedPacket;
+    std::vector<uint8_t> receivedComponent = unpack(receivedPacket, _recv_buffer, bytes_transferred);
+
+    if (handleErrorReceive(error, receivedComponent, receivedPacket, false) == -1)
+        return;
+    if (receivedPacket.packet_type == NEW_CONNECTION) {
+        _clientsUDP[remote_endpoint_.port()] = remote_endpoint_;
+        receivedPacket.entity_id = _clientsUDP.size() - 1;
+        sendServerToClient(NEW_CONNECTION, receivedComponent, receivedPacket);
+        start_receive();
+        return;
+    }
+    if (receivedPacket.magic_number != _magic_number) {
+        std::cerr << "ERROR: magic number not valid in received packet" << std::endl;
+        start_receive();
+        return;
+    }
+    if (receivedPacket.packet_type == RESPONSE_PACKET) {
+        for (const auto &query : _queueSendPacket) {
+            Packet queryPacket;
+            std::memcpy(&queryPacket, query.second.data(), sizeof(Packet));
+            if (receivedPacket.uuid == queryPacket.uuid) {
+                mtxSendPacket.lock();
+                _queueSendPacket.erase(std::remove(_queueSendPacket.begin(), _queueSendPacket.end(), query), _queueSendPacket.end());
+                mtxSendPacket.unlock();
+            }
+        }
         start_receive();
     }
+    mtxQueue.lock();
+    _queue.push_back(std::make_pair(receivedPacket, receivedComponent));
+    mtxQueue.unlock();
+    start_receive();
 }
 
 std::array<char, 37> Udp::generate_uuid()
@@ -208,9 +219,9 @@ void Udp::run()
 }
 
 template <typename... Args>
-void Udp::sendClientToServer(PacketType packet_type, Args... args)
+void Udp::sendClientToServer(Args... args)
 {
-    std::vector<uint8_t> data = createPacket(packet_type, args...);
+    auto data = createPacket(args...);
 
     if (data.size() == 0)
         return;
@@ -222,15 +233,16 @@ void Udp::sendClientToServer(PacketType packet_type, Args... args)
     }
 }
 
-void Udp::sendNewConnection(std::vector<uint8_t> component, Packet packet)
+template <typename... Args>
+void Udp::sendServerToClient(PacketType packet_type, Args... args)
 {
-    std::vector<uint8_t> data = createPacket(component, packet);
+    std::vector<uint8_t> data = createPacket(args...);
 
     if (data.empty())
         return;
     try {
         socket_.send_to(asio::buffer(data), remote_endpoint_);
-        if (packet.packet_type == DATA_PACKET || packet.packet_type == NEW_CONNECTION) {
+        if (packet_type == DATA_PACKET || packet_type == NEW_CONNECTION) {
             data[4] = RESPONSE_PACKET;
             mtxSendPacket.lock();
             _queueSendPacket.push_back(std::make_pair(remote_endpoint_, data));
@@ -272,6 +284,7 @@ void Udp::updateSparseArray(bool isClient)
 
         std::memcpy(component, data.data(), data.size());
         reg.registerPacket(header.type_index, header.entity_id, component);
+
         if (!isClient)
             sendToAll(DATA_PACKET, data, header);
     }

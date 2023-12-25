@@ -55,15 +55,18 @@ class Udp {
         ~Udp();
 
         void start_receive(bool isClient = false);
-        void handle_receive_client(const asio::error_code &error, std::size_t bytes_transferred); // client
-        void handle_receive(const asio::error_code &error, std::size_t bytes_transferred);
+        void handleReceiveClient(const asio::error_code &error, std::size_t bytes_transferred); // client
+        void handleReceiveServer(const asio::error_code &error, std::size_t bytes_transferred);
         void handle_send(std::shared_ptr<std::string> message, const asio::error_code &error, std::size_t bytes_transferred); // client
+        int handleErrorReceive(const asio::error_code &error, std::vector<uint8_t> receivedComponent, Packet receivedPacket, bool isClient);
 
         template <typename ...Args>
         void sendToAll(PacketType packet_type = '0', Args ...args);
+
         template <typename... Args>
-        void sendClientToServer(PacketType packet_type, Args... args);
-        void sendNewConnection(std::vector<uint8_t> component, Packet packet);
+        void sendClientToServer(Args... args);
+        template <typename... Args>
+        void sendServerToClient(PacketType packet_type, Args... args);
 
         void run();
         void updateSparseArray(bool isClient);
@@ -74,6 +77,7 @@ class Udp {
         std::vector<uint8_t> createPacket(PacketType packet_type, T const &component, uint32_t entity_id);
         std::vector<uint8_t> createPacket(std::vector<uint8_t> component, Packet packet);
         std::vector<uint8_t> createPacket(PacketType packet_type, uint32_t entity_id);
+        std::array<uint8_t, sizeof(Packet)> createPacket(Packet packet);
         std::vector<uint8_t> unpack(Packet &packet, std::array<uint8_t, 1024> query, std::size_t bytes_transferred);
 
         size_t getPort() const {return _port;};
