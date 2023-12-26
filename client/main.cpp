@@ -24,12 +24,12 @@ int main(int ac, char **av)
         return 84;
     }
     registry reg;
+    reg.addAllComponents<Position, Velocity, Sprite, Size>();
     TCPClient tcpClient(std::stoi(av[1]), av[2], reg);
     Udp udpClient(av[2], reg);
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "R-Type");
     sf::Event event;
-    reg.addAllComponents<Position, Velocity, Sprite, Size>();
     uint32_t tmp = reg.addEntity();
     reg.addEntity();
     auto &position = reg.getComponent<Position>();

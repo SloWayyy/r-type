@@ -37,25 +37,25 @@ Udp::~Udp()
     _thread.join();
 }
 
-bool operator==(const Packet &lhs, const Packet &rhs)
-{
-    return lhs.magic_number == rhs.magic_number && lhs.packet_type == rhs.packet_type && lhs.timestamp == rhs.timestamp && lhs.entity_id == rhs.entity_id && lhs.type_index == rhs.type_index;
-}
-
 void Udp::start_receive(bool client)
 {
-    if (client) {
-        socket_.async_receive_from(
-        asio::buffer(_recv_buffer), remote_endpoint_,
-        std::bind(&Udp::handleReceiveClient, this,
-        std::placeholders::_1,
-        std::placeholders::_2));
-    } else {
-        socket_.async_receive_from(
-        asio::buffer(_recv_buffer), remote_endpoint_,
-        std::bind(&Udp::handleReceiveServer, this,
-        std::placeholders::_1,
-        std::placeholders::_2));
+    try {
+        if (client) {
+            socket_.async_receive_from(
+            asio::buffer(_recv_buffer), remote_endpoint_,
+            std::bind(&Udp::handleReceiveClient, this,
+            std::placeholders::_1,
+            std::placeholders::_2));
+        } else {
+            socket_.async_receive_from(
+            asio::buffer(_recv_buffer), remote_endpoint_,
+            std::bind(&Udp::handleReceiveServer, this,
+            std::placeholders::_1,
+            std::placeholders::_2));
+        }
+    } catch (const asio::system_error &ec) {
+        std::cerr << "ERROR UDP binding socket: " << ec.what() << std::endl;
+        return;
     }
 }
 
@@ -243,7 +243,6 @@ void Udp::sendServerToClient(PacketType packet_type, Args... args)
     try {
         socket_.send_to(asio::buffer(data), remote_endpoint_);
         if (packet_type == DATA_PACKET || packet_type == NEW_CONNECTION) {
-            data[4] = RESPONSE_PACKET;
             mtxSendPacket.lock();
             _queueSendPacket.push_back(std::make_pair(remote_endpoint_, data));
             mtxSendPacket.unlock();
@@ -264,7 +263,6 @@ void Udp::sendToAll(PacketType packet_type, Args ...args)
         for (const auto &client : _clientsUDP) {
             socket_.send_to(asio::buffer(data), client.second);
             if (packet_type == DATA_PACKET) {
-                data[4] = RESPONSE_PACKET;
                 mtxSendPacket.lock();
                 _queueSendPacket.push_back(std::make_pair(client.second, data));
                 mtxSendPacket.unlock();

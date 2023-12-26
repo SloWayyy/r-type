@@ -31,10 +31,10 @@ int main(int ac, char const **av)
         return -1;
 
     registry reg;
+    reg.addAllComponents<Position, Velocity, Sprite, Size>();
     Udp udpServer(4242, av[2], reg);
     TCPServer tcpServer(std::atoi(av[1]), udpServer.getPort(), av[2]);
 
-    reg.addAllComponents<Position, Velocity, Sprite, Size>();
     reg.add_system<NetworkSystem>(std::ref(udpServer), std::ref(tcpServer));
 
     while (1) {
