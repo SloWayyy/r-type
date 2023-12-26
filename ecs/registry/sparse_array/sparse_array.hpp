@@ -95,7 +95,7 @@ class Sparse_array {
         void erase(size_type pos) {
             _data.erase(_data.begin() + pos);
         };
-         void insert_packet(size_t pos, const char *packet) {
+        void insert_packet(size_t pos, const char *packet) {
             if (pos < _data.size())
                 _data.at(pos) = *reinterpret_cast<const Component*>(packet);
         };

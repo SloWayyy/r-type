@@ -5,7 +5,7 @@
 ** tcp.cpp
 */
 
-#include "tcp.hpp"
+#include "tcpClient.hpp"
 
 TCPClient::TCPClient(std::size_t port, std::string ip, registry &reg)
     : _port(port),

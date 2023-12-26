@@ -5,17 +5,17 @@
 ** main
 */
 
-#include <iostream>
-#include "udp/udp.hpp"
-#include "tcp/tcp.hpp"
 #include "../ecs/registry/registry.hpp"
 #include "../ecs/system/system.hpp"
-#include "./system/networkSystem.hpp"
+#include "../network/tcpClient/tcpClient.hpp"
+#include "../network/udp/udp.hpp"
 #include "./system/inputSystem.hpp"
+#include "./system/clientNetworkSystem.hpp"
 #include "./system/playerSystem.hpp"
-#include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
 #include <chrono>
+#include <iostream>
 
 int main(int ac, char **av)
 {
@@ -24,12 +24,12 @@ int main(int ac, char **av)
         return 84;
     }
     registry reg;
+    reg.addAllComponents<Position, Velocity, Sprite, Size>();
     TCPClient tcpClient(std::stoi(av[1]), av[2], reg);
-    UDPClient udpClient(4243, av[2], reg);
+    Udp udpClient(av[2], reg);
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "R-Type");
     sf::Event event;
-    reg.addAllComponents<Position, Velocity, Sprite, Size>();
     uint32_t tmp = reg.addEntity();
     reg.addEntity();
     auto &position = reg.getComponent<Position>();
@@ -46,10 +46,7 @@ int main(int ac, char **av)
     reg.add_system<MoveSystem>();
     reg.add_system<PlayerSystem>();
     reg.add_system<NetworkSystem>(std::ref(udpClient), std::ref(tcpClient));
-    // reg.add_system<InputSystem>(std::ref(window));
-    // reg.add_system(animeEntity, 32, 198);
     InputSystem inputSystem(reg, window);
-
 
     velocity.emplace_at(tmp, 0, 0, 0, 0, 0);
     velocity.emplace_at(1, 0, 0, 0, 0, 0);
