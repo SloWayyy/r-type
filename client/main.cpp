@@ -32,7 +32,7 @@ int main(int ac, char **av)
     sf::Event event;
     uint32_t tmp = reg.addEntity();
     uint32_t tmp1 = reg.addEntity();
-    // uint32_t tmp2 = reg.addEntity();
+    uint32_t tmp2 = reg.addEntity();
     // uint32_t tmp3 = reg.addEntity();
     // auto &velocity = reg.getComponent<Velocity>();
     auto &sprite = reg.getComponent<Sprite>();
@@ -42,7 +42,7 @@ int main(int ac, char **av)
     sprite.emplace_at(1, "../game/assets/spaceShipBlue.png", sf::IntRect(198, 0, 32, 32));
     // size.emplace_at(tmp1, 1.5, 1.5);
 
-    // sprite.emplace_at(tmp2, "../game/assets/spaceShipBlue.png", sf::IntRect(198, 0, 32, 32));
+    sprite.emplace_at(2, "../game/assets/spaceShipBlue.png", sf::IntRect(198, 0, 32, 32));
     // size.emplace_at(tmp2, 1.5, 1.5);
 
     reg.add_system<DrawSystem>(std::ref(window));

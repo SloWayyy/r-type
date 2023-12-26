@@ -181,20 +181,20 @@ void Udp::handleReceiveServer(const asio::error_code &error, std::size_t bytes_t
     if (receivedPacket.packet_type == NEW_CONNECTION) {
         _clientsUDP[remote_endpoint_.port()] = remote_endpoint_;
         std::vector<std::vector<uint8_t>> entities = updateGame.updateEntity();
-        // receivedPacket.entity_id = std::any_cast<uint32_t>(entities[0]);
+        _sparseArray.push_back(entities);
         for (size_t i = 1; i < entities.size(); i += 1) {
             std::cout << "je rentre dans le for" << std::endl;
-            // receivedPacket.entity_id = std::any_cast<uint32_t>(entities[0]);
-            // std::cout << "std::any rentrer x fois : " << i << " entity_id= " << std::any_cast<uint32_t>(entities[0]) << std::endl;
-            // std::cout << "std::any rentrer x fois : " << i << " entity_id= " << entities[i].x << std::endl;
             receivedPacket.type_index = i - 1;
             std::memcpy(&receivedPacket.entity_id, entities[0].data(), sizeof(uint32_t));
-
-            // if (receivedPacket.type_index == 2) {
-            //     receivedPacket.type_index = 3;
-            // }
             sendToAll(DATA_PACKET, entities[i], receivedPacket);
-            // sendServerToClient(NEW_CONNECTION, entities[i], receivedPacket);
+        }
+        for (const auto &_entity : _sparseArray) {
+            for (size_t i = 1; i < _entity.size(); i += 1) {
+                std::cout << "je rentre dans le for" << std::endl;
+                receivedPacket.type_index = i - 1;
+                std::memcpy(&receivedPacket.entity_id, _entity[0].data(), sizeof(uint32_t));
+                sendServerToClient(NEW_CONNECTION, _entity[i], receivedPacket);
+            }
         }
         start_receive();
         return;
