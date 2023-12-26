@@ -18,14 +18,11 @@ class NetworkSystem : public ISystem {
         NetworkSystem(registry &reg, Udp &udpClient, TCPClient &tcpClient): _reg(reg), _udpClient(udpClient), _tcpClient(tcpClient) {};
         ~NetworkSystem() = default;
         void operator()() override {
+            _udpClient.mtx.lock();
             while (_udpClient._queue.size() > 0) {
-                std::cout << "Queue, il y a des choses a traiter" << std::endl;
-                auto packet = _udpClient._queue.front();
-                _udpClient.mtx.lock();
                 _udpClient.updateSparseArray(true);
-                _udpClient._queue.erase(_udpClient._queue.begin());
-                _udpClient.mtx.unlock();
             }
+            _udpClient.mtx.unlock();
             if (_reg._events.find(Event_t::KEY_PRESSED) == _reg._events.end())
                 return;
             else {

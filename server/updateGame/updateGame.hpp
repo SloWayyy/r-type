@@ -9,13 +9,15 @@
     #define UPDATEGAME_HPP_
 
 #include "../../ecs/registry/registry.hpp"
+#include <any>
+#include <vector>
 
 class UpdateGame {
     public:
         UpdateGame(registry &reg);
         ~UpdateGame() = default;
 
-        std::pair<size_t, Position> updateEntity();
+        std::vector<std::vector<uint8_t>> updateEntity();
     private:
         registry &_reg;
 };

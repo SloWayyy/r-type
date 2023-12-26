@@ -148,9 +148,9 @@ void Udp::handleReceiveClient(const asio::error_code &error, std::size_t bytes_t
         return;
     if (receivedPacket.packet_type == NEW_CONNECTION) {
         if (_entity_id == -1) {
-            mtx.lock();
             _entity_id = receivedPacket.entity_id;
             reg._player = receivedPacket.entity_id;
+            mtx.lock();
             _queue.push_back(std::make_pair(receivedPacket, receivedComponent));
             mtx.unlock();
         } else {
@@ -180,12 +180,25 @@ void Udp::handleReceiveServer(const asio::error_code &error, std::size_t bytes_t
         return;
     if (receivedPacket.packet_type == NEW_CONNECTION) {
         _clientsUDP[remote_endpoint_.port()] = remote_endpoint_;
-        std::pair<size_t, Position> entity = updateGame.updateEntity();
-        sendToAll(NEW_CONNECTION, NEW_CONNECTION, entity.second, entity.first);
+        std::vector<std::vector<uint8_t>> entities = updateGame.updateEntity();
+        // receivedPacket.entity_id = std::any_cast<uint32_t>(entities[0]);
+        for (size_t i = 1; i < entities.size(); i += 1) {
+            std::cout << "je rentre dans le for" << std::endl;
+            // receivedPacket.entity_id = std::any_cast<uint32_t>(entities[0]);
+            // std::cout << "std::any rentrer x fois : " << i << " entity_id= " << std::any_cast<uint32_t>(entities[0]) << std::endl;
+            // std::cout << "std::any rentrer x fois : " << i << " entity_id= " << entities[i].x << std::endl;
+            receivedPacket.type_index = i - 1;
+            std::memcpy(&receivedPacket.entity_id, entities[0].data(), sizeof(uint32_t));
+
+            // if (receivedPacket.type_index == 2) {
+            //     receivedPacket.type_index = 3;
+            // }
+            sendToAll(DATA_PACKET, entities[i], receivedPacket);
+            // sendServerToClient(NEW_CONNECTION, entities[i], receivedPacket);
+        }
         start_receive();
         return;
     }
-
     if (receivedPacket.magic_number != _magic_number) {
         std::cerr << "ERROR: magic number not valid in received packet" << std::endl;
         start_receive();
@@ -291,13 +304,17 @@ void Udp::updateSparseArray(bool isClient)
         char component[64] = {0};
 
         std::memcpy(component, data.data(), data.size());
+        std::cout << "je rentre dans registePacket" << std::endl;
         reg.registerPacket(header.type_index, header.entity_id, component);
 
         if (!isClient)
             sendToAll(DATA_PACKET, data, header);
     }
 
-    if (!isClient)
+    // if (!isClient) {
+        std::cout << "je clear la queue" << std::endl;
         _queue.clear();
+        std::cout << "queue size: " << _queue.size() << std::endl;
+    // }
 }
 

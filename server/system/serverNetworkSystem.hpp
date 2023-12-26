@@ -24,6 +24,7 @@ class NetworkSystem : public ISystem {
             _udpServer.mtxSendPacket.unlock();
             _udpServer.mtxQueue.lock();
             while (_udpServer._queue.size() > 0) {
+            std::cout << "Queue size: " << _udpServer._queue.size() << std::endl;
                 _udpServer.updateSparseArray(false);
             }
             _udpServer.mtxQueue.unlock();
