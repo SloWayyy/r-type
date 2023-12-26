@@ -69,6 +69,8 @@ class Udp {
         template <typename... Args>
         void sendServerToClient(PacketType packet_type, Args... args);
 
+        void sendPlayerListToClient(std::vector<std::vector<uint8_t>> entities, Packet receivedPacket);
+
         void run();
         void updateSparseArray(bool isClient);
         std::array<char, 37> generate_uuid();

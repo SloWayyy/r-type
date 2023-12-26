@@ -171,6 +171,22 @@ void Udp::handleReceiveClient(const asio::error_code &error, std::size_t bytes_t
     start_receive(true);
 }
 
+void Udp::sendPlayerListToClient(std::vector<std::vector<uint8_t>> entities, Packet receivedPacket)
+{
+    for (size_t i = 1; i < entities.size(); i += 1) {
+        receivedPacket.type_index = i - 1;
+        std::memcpy(&receivedPacket.entity_id, entities[0].data(), sizeof(uint32_t));
+        sendToAll(DATA_PACKET, entities[i], receivedPacket);
+    }
+    for (const auto &_entity : _sparseArray) {
+        for (size_t i = 1; i < _entity.size(); i += 1) {
+            receivedPacket.type_index = i - 1;
+            std::memcpy(&receivedPacket.entity_id, _entity[0].data(), sizeof(uint32_t));
+            sendServerToClient(NEW_CONNECTION, _entity[i], receivedPacket);
+        }
+    }
+}
+
 void Udp::handleReceiveServer(const asio::error_code &error, std::size_t bytes_transferred)
 {
     Packet receivedPacket;
@@ -182,20 +198,7 @@ void Udp::handleReceiveServer(const asio::error_code &error, std::size_t bytes_t
         _clientsUDP[remote_endpoint_.port()] = remote_endpoint_;
         std::vector<std::vector<uint8_t>> entities = updateGame.updateEntity();
         _sparseArray.push_back(entities);
-        for (size_t i = 1; i < entities.size(); i += 1) {
-            std::cout << "je rentre dans le for" << std::endl;
-            receivedPacket.type_index = i - 1;
-            std::memcpy(&receivedPacket.entity_id, entities[0].data(), sizeof(uint32_t));
-            sendToAll(DATA_PACKET, entities[i], receivedPacket);
-        }
-        for (const auto &_entity : _sparseArray) {
-            for (size_t i = 1; i < _entity.size(); i += 1) {
-                std::cout << "je rentre dans le for" << std::endl;
-                receivedPacket.type_index = i - 1;
-                std::memcpy(&receivedPacket.entity_id, _entity[0].data(), sizeof(uint32_t));
-                sendServerToClient(NEW_CONNECTION, _entity[i], receivedPacket);
-            }
-        }
+        sendPlayerListToClient(entities, receivedPacket);
         start_receive();
         return;
     }

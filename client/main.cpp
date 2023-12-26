@@ -33,17 +33,10 @@ int main(int ac, char **av)
     uint32_t tmp = reg.addEntity();
     uint32_t tmp1 = reg.addEntity();
     uint32_t tmp2 = reg.addEntity();
-    // uint32_t tmp3 = reg.addEntity();
-    // auto &velocity = reg.getComponent<Velocity>();
     auto &sprite = reg.getComponent<Sprite>();
-    // auto &size = reg.getComponent<Size>();
     sprite.emplace_at(0, "../game/assets/spaceShip.png", sf::IntRect(198, 0, 32, 32));
-    // size.emplace_at(tmp, 1.5, 1.5);
     sprite.emplace_at(1, "../game/assets/spaceShipBlue.png", sf::IntRect(198, 0, 32, 32));
-    // size.emplace_at(tmp1, 1.5, 1.5);
-
     sprite.emplace_at(2, "../game/assets/spaceShipBlue.png", sf::IntRect(198, 0, 32, 32));
-    // size.emplace_at(tmp2, 1.5, 1.5);
 
     reg.add_system<DrawSystem>(std::ref(window));
     reg.add_system<MoveSystem>();
@@ -51,11 +44,6 @@ int main(int ac, char **av)
     reg.add_system<NetworkSystem>(std::ref(udpClient), std::ref(tcpClient));
 
     InputSystem inputSystem(reg, window);
-
-    // velocity.emplace_at(tmp, 0, 0, 0, 0, 0);
-    // velocity.emplace_at(tmp1, 0, 0, 0, 0, 0);
-    // velocity.emplace_at(tmp2, 0, 0, 0, 0, 0);
-
     auto current_time = std::chrono::high_resolution_clock::now();
     float refresh_rate = 1.0f / 60.0f;
     float elapsed_time = 0.0f;
