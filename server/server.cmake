@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(include)
 
 set(SRC_SERVER server/main.cpp
+                server/updateGame/updateGame.cpp
                 network/tcpServer/tcpServer.cpp
                 ecs/system/system.cpp
                 ecs/component/component.cpp
