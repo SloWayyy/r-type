@@ -9,6 +9,7 @@
 #define UDP_HPP_
 
 #include "../../ecs/registry/registry.hpp"
+#include "../../server/updateGame/updateGame.hpp"
 #include <any>
 #include <array>
 #include <asio.hpp>
@@ -50,7 +51,7 @@ class Udp {
     public:
 
         // constructor / destructor
-        Udp(std::size_t port, std::string ip, registry &reg);
+        Udp(std::size_t port, std::string ip, registry &reg, UpdateGame &updateGame);
         Udp(std::string ip, registry &reg); // client
         ~Udp();
 
@@ -101,8 +102,9 @@ class Udp {
         long _last_timestamp = 0;
         asio::ip::udp::endpoint _endpointClient;
         uint32_t _magic_number = 4242;
-        uint32_t _entity_id = 0;
+        int _entity_id = -1;
         registry &reg;
+        UpdateGame &updateGame;
 };
 
 #include "udp.cpp"

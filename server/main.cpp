@@ -10,6 +10,7 @@
 #include "../network/tcpServer/tcpServer.hpp"
 #include "../network/udp/udp.hpp"
 #include "./system/serverNetworkSystem.hpp"
+#include "./updateGame/updateGame.hpp"
 #include <asio.hpp>
 #include <iostream>
 
@@ -32,7 +33,8 @@ int main(int ac, char const **av)
 
     registry reg;
     reg.addAllComponents<Position, Velocity, Sprite, Size>();
-    Udp udpServer(4242, av[2], reg);
+    UpdateGame updateGame(reg);
+    Udp udpServer(4242, av[2], reg, updateGame);
     TCPServer tcpServer(std::atoi(av[1]), udpServer.getPort(), av[2]);
 
     reg.add_system<NetworkSystem>(std::ref(udpServer), std::ref(tcpServer));

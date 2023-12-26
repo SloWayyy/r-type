@@ -9,7 +9,7 @@
 #include <typeindex>
 #include <unordered_map>
 
-Udp::Udp(std::size_t port, std::string ip, registry &reg) : socket_(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), 0)), _magic_number(4242), reg(reg)
+Udp::Udp(std::size_t port, std::string ip, registry &reg, UpdateGame &updateGame) : socket_(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), 0)), _magic_number(4242), reg(reg), updateGame(updateGame)
 {
     try {
         this->socket_ = asio::ip::udp::socket(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), port));
@@ -23,7 +23,7 @@ Udp::Udp(std::size_t port, std::string ip, registry &reg) : socket_(_io_context,
     start_receive();
 }
 
-Udp::Udp(std::string ip, registry &reg) : _endpointServer(asio::ip::make_address(ip), 4242), socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0)), _last_timestamp(0), reg(reg)
+Udp::Udp(std::string ip, registry &reg) : _endpointServer(asio::ip::make_address(ip), 4242), socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0)), _last_timestamp(0), reg(reg), updateGame(updateGame)
 {
     _thread = std::thread(&Udp::run, this);
     _port = socket_.local_endpoint().port();
@@ -147,8 +147,17 @@ void Udp::handleReceiveClient(const asio::error_code &error, std::size_t bytes_t
     if (handleErrorReceive(error, receivedComponent, receivedPacket, true) == -1)
         return;
     if (receivedPacket.packet_type == NEW_CONNECTION) {
-        _entity_id = receivedPacket.entity_id;
-        reg._player = receivedPacket.entity_id;
+        if (_entity_id == -1) {
+            mtx.lock();
+            _entity_id = receivedPacket.entity_id;
+            reg._player = receivedPacket.entity_id;
+            _queue.push_back(std::make_pair(receivedPacket, receivedComponent));
+            mtx.unlock();
+        } else {
+            mtx.lock();
+            _queue.push_back(std::make_pair(receivedPacket, receivedComponent));
+            mtx.unlock();
+        }
     } else if (receivedPacket.timestamp >= _last_timestamp) {
         _last_timestamp = receivedPacket.timestamp;
         mtx.lock();
@@ -171,11 +180,12 @@ void Udp::handleReceiveServer(const asio::error_code &error, std::size_t bytes_t
         return;
     if (receivedPacket.packet_type == NEW_CONNECTION) {
         _clientsUDP[remote_endpoint_.port()] = remote_endpoint_;
-        receivedPacket.entity_id = _clientsUDP.size() - 1;
-        sendServerToClient(NEW_CONNECTION, receivedComponent, receivedPacket);
+        std::pair<size_t, Position> entity = updateGame.updateEntity();
+        sendToAll(NEW_CONNECTION, NEW_CONNECTION, entity.second, entity.first);
         start_receive();
         return;
     }
+
     if (receivedPacket.magic_number != _magic_number) {
         std::cerr << "ERROR: magic number not valid in received packet" << std::endl;
         start_receive();

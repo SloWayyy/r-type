@@ -31,25 +31,29 @@ int main(int ac, char **av)
     sf::RenderWindow window(sf::VideoMode(800, 600), "R-Type");
     sf::Event event;
     uint32_t tmp = reg.addEntity();
-    reg.addEntity();
-    auto &position = reg.getComponent<Position>();
+    uint32_t tmp1 = reg.addEntity();
+    uint32_t tmp2 = reg.addEntity();
     auto &velocity = reg.getComponent<Velocity>();
     auto &sprite = reg.getComponent<Sprite>();
     auto &size = reg.getComponent<Size>();
     sprite.emplace_at(tmp, "../game/assets/spaceShip.png", sf::IntRect(198, 0, 32, 32));
-    position.emplace_at(tmp, 0, 0);
     size.emplace_at(tmp, 1.5, 1.5);
-    sprite.emplace_at(1, "../game/assets/spaceShipBlue.png", sf::IntRect(198, 0, 32, 32));
-    position.emplace_at(1, 50, 50);
-    size.emplace_at(1, 1.5, 1.5);
+    sprite.emplace_at(tmp1, "../game/assets/spaceShipBlue.png", sf::IntRect(198, 0, 32, 32));
+    size.emplace_at(tmp1, 1.5, 1.5);
+
+    sprite.emplace_at(tmp2, "../game/assets/spaceShipBlue.png", sf::IntRect(198, 0, 32, 32));
+    size.emplace_at(tmp2, 1.5, 1.5);
+
     reg.add_system<DrawSystem>(std::ref(window));
     reg.add_system<MoveSystem>();
     reg.add_system<PlayerSystem>();
     reg.add_system<NetworkSystem>(std::ref(udpClient), std::ref(tcpClient));
+
     InputSystem inputSystem(reg, window);
 
     velocity.emplace_at(tmp, 0, 0, 0, 0, 0);
-    velocity.emplace_at(1, 0, 0, 0, 0, 0);
+    velocity.emplace_at(tmp1, 0, 0, 0, 0, 0);
+    velocity.emplace_at(tmp2, 0, 0, 0, 0, 0);
 
     auto current_time = std::chrono::high_resolution_clock::now();
     float refresh_rate = 1.0f / 60.0f;
