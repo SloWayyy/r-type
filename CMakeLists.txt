@@ -26,7 +26,7 @@ FetchContent_MakeAvailable(SFML)
 
 set(CMAKE_CXX_STANDARD 17)
 if (LINUX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -g")
 endif()
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 

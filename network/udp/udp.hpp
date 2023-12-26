@@ -25,6 +25,7 @@ enum PacketType {
     REPEAT_PACKET = '1',
     RESPONSE_PACKET = '2',
     NEW_CONNECTION = '3',
+    NEW_PLAYER = '4',
 };
 
 struct Packet {
@@ -51,22 +52,13 @@ class Udp {
 
         // constructor / destructor
         Udp(std::size_t port, std::string ip, registry &reg);
-        Udp(std::string ip, registry &reg); // client
-        ~Udp();
-
-        void start_receive(bool isClient = false);
-        void handleReceiveClient(const asio::error_code &error, std::size_t bytes_transferred); // client
-        void handleReceiveServer(const asio::error_code &error, std::size_t bytes_transferred);
-        void handle_send(std::shared_ptr<std::string> message, const asio::error_code &error, std::size_t bytes_transferred); // client
-        int handleErrorReceive(const asio::error_code &error, std::vector<uint8_t> receivedComponent, Packet receivedPacket, bool isClient);
-
-        template <typename ...Args>
+NEW_PLAYER        template <typename ...Args>
         void sendToAll(PacketType packet_type = '0', Args ...args);
 
         template <typename... Args>
         void sendClientToServer(Args... args);
         template <typename... Args>
-        void sendServerToClient(PacketType packet_type, Args... args);
+        void sendServerToClient(PacketType packet_type, asio::ip::udp::endpoint endpoint, Args... args);
 
         void run();
         void updateSparseArray(bool isClient);

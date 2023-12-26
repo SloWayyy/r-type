@@ -143,12 +143,42 @@ void Udp::handleReceiveClient(const asio::error_code &error, std::size_t bytes_t
 {
     Packet receivedPacket;
     std::vector<uint8_t> receivedComponent = unpack(receivedPacket, _recv_buffer, bytes_transferred);
+    std::cout << "size " << receivedComponent.size() << std::endl;
 
     if (handleErrorReceive(error, receivedComponent, receivedPacket, true) == -1)
         return;
     if (receivedPacket.packet_type == NEW_CONNECTION) {
-        _entity_id = receivedPacket.entity_id;
-        reg._player = receivedPacket.entity_id;
+        Position pos_player;
+        std::memcpy(&pos_player, receivedComponent.data(), sizeof(Position));
+        std::cout << "pos_player: " << pos_player.x << pos_player.y << std::endl;
+        uint32_t player = reg.addEntity();
+        std::cout << "NEW CONNECTION " << player << std::endl;
+        auto &position = reg.getComponent<Position>();
+        auto &velocity = reg.getComponent<Velocity>();
+        auto &sprite = reg.getComponent<Sprite>();
+        auto &size = reg.getComponent<Size>();
+        
+        sprite.emplace_at(player, "../game/assets/spaceShip.png", sf::IntRect(198, 0, 32, 32));
+        position.emplace_at(player, pos_player.x, pos_player.y);
+        size.emplace_at(player, 1.5, 1.5);
+        velocity.emplace_at(player, 0, 0, 0, 0, 0);
+        _entity_id = player;
+        reg._player = player;
+    } else if (receivedPacket.packet_type == NEW_PLAYER) {
+        Position pos_player;
+        std::memcpy(&pos_player, receivedComponent.data(), sizeof(Position));
+        std::cout << "pos_player: " << pos_player.x << pos_player.y << std::endl;
+        uint32_t player = reg.addEntity();
+        std::cout << "NEW PLAYER " << player << std::endl;
+        auto &position = reg.getComponent<Position>();
+        auto &velocity = reg.getComponent<Velocity>();
+        auto &sprite = reg.getComponent<Sprite>();
+        auto &size = reg.getComponent<Size>();
+        
+        sprite.emplace_at(player, "../game/assets/spaceShip.png", sf::IntRect(198, 0, 32, 32));
+        position.emplace_at(player, pos_player.x, pos_player.y);
+        size.emplace_at(player, 1.5, 1.5);
+        velocity.emplace_at(player, 0, 0, 0, 0, 0);
     } else if (receivedPacket.timestamp >= _last_timestamp) {
         _last_timestamp = receivedPacket.timestamp;
         mtx.lock();
@@ -162,6 +192,8 @@ void Udp::handleReceiveClient(const asio::error_code &error, std::size_t bytes_t
     start_receive(true);
 }
 
+int pos = 50;
+
 void Udp::handleReceiveServer(const asio::error_code &error, std::size_t bytes_transferred)
 {
     Packet receivedPacket;
@@ -170,9 +202,28 @@ void Udp::handleReceiveServer(const asio::error_code &error, std::size_t bytes_t
     if (handleErrorReceive(error, receivedComponent, receivedPacket, false) == -1)
         return;
     if (receivedPacket.packet_type == NEW_CONNECTION) {
+        uint32_t player = reg.addEntity();
+        std::cout << "NEW CONNECTION " << player << std::endl;
+        auto &position = reg.getComponent<Position>();
+        auto &velocity = reg.getComponent<Velocity>();
+        auto &sprite = reg.getComponent<Sprite>();
+        auto &size = reg.getComponent<Size>();
+
+        sprite.emplace_at(player, "../game/assets/spaceShipBlue.png", sf::IntRect(198, 0, 32, 32));
+        position.emplace_at(player, 50, pos);
+        size.emplace_at(player, 1.5, 1.5);
+        velocity.emplace_at(player, 0, 0, 0, 0, 0);
         _clientsUDP[remote_endpoint_.port()] = remote_endpoint_;
-        receivedPacket.entity_id = _clientsUDP.size() - 1;
-        sendServerToClient(NEW_CONNECTION, receivedComponent, receivedPacket);
+        receivedPacket.entity_id = player;
+        Position pos_player = {50, pos};
+        std::cout << "pos: " << pos << std::endl;
+        pos += 50;
+        sendServerToClient(NEW_CONNECTION, remote_endpoint_, NEW_CONNECTION , pos_player, player);
+        for (const auto &client : _clientsUDP) {
+            if (client.second.port() != remote_endpoint_.port())
+                sendServerToClient(NEW_PLAYER, client.second, NEW_PLAYER, pos_player, player);
+        }
+        // sendToAll(NEW_CONNECTION, NEW_CONNECTION, pos_player, player);
         start_receive();
         return;
     }
@@ -234,18 +285,18 @@ void Udp::sendClientToServer(Args... args)
 }
 
 template <typename... Args>
-void Udp::sendServerToClient(PacketType packet_type, Args... args)
+void Udp::sendServerToClient(PacketType packet_type, asio::ip::udp::endpoint endpoint, Args... args)
 {
     std::vector<uint8_t> data = createPacket(args...);
 
     if (data.empty())
         return;
     try {
-        socket_.send_to(asio::buffer(data), remote_endpoint_);
+        socket_.send_to(asio::buffer(data), endpoint);
         if (packet_type == DATA_PACKET || packet_type == NEW_CONNECTION) {
             data[4] = RESPONSE_PACKET;
             mtxSendPacket.lock();
-            _queueSendPacket.push_back(std::make_pair(remote_endpoint_, data));
+            _queueSendPacket.push_back(std::make_pair(endpoint, data));
             mtxSendPacket.unlock();
         }
     } catch (const asio::system_error &ec) {
