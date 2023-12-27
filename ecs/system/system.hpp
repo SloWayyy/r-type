@@ -22,7 +22,6 @@ class MoveSystem : public ISystem {
             auto &velocity = _reg.getComponent<Velocity>();
             for (long unsigned int i = 0; i < position.size(); i++) {
                 if (position[i] && velocity[i]) {
-                    // std::cout << "position: " << position[i].value().x << " " << position[i].value().y << std::endl;
                     position[i].value().x += velocity[i].value().x_speed;
                     position[i].value().y += velocity[i].value().y_speed;
                 }
@@ -46,7 +45,6 @@ class DrawSystem : public ISystem {
             for (long unsigned int i = 0; i < sprite.size(); i++) {
                 if (!sprite[i] || !position[i] || !size[i])
                     continue;
-
                 auto &sprite_value = sprite[i].value();
                 auto &pos_value = position[i].value();
                 auto &size_value = size[i].value();

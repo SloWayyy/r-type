@@ -314,10 +314,6 @@ void Udp::updateSparseArray(bool isClient)
             sendToAll(DATA_PACKET, data, header);
     }
 
-    // if (!isClient) {
-        std::cout << "je clear la queue" << std::endl;
         _queue.clear();
-        std::cout << "queue size: " << _queue.size() << std::endl;
-    // }
 }
 
