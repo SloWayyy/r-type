@@ -214,11 +214,8 @@ void Udp::handleReceiveServer(const asio::error_code &error, std::size_t bytes_t
             Packet queryPacket;
             std::memcpy(&queryPacket, _queueSendPacket[i].second.data(), sizeof(Packet));
             if (receivedPacket.uuid == queryPacket.uuid && remote_endpoint_ == _queueSendPacket[i].first) {
-                // std::cout << "size avant: " << _queueSendPacket.size() << std::endl;
                 _queueSendPacket.erase(_queueSendPacket.begin() + i);
-                // std::cout << "size apres: " << _queueSendPacket.size() << std::endl;
                 size--;
-                // i = 0;
             } else {
                 i++;
             }
