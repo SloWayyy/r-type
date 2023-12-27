@@ -274,7 +274,7 @@ template <typename... Args> void Udp::sendServerToClient(PacketType packet_type,
         return;
     try {
         socket_.send_to(asio::buffer(data), remote_endpoint_);
-        if (packet_type == DATA_PACKET || packet_type == NEW_CONNECTION) {
+        if (packet_type == DATA_PACKET) {
             mtxSendPacket.lock();
             _queueSendPacket.push_back(std::make_pair(remote_endpoint_, data));
             mtxSendPacket.unlock();
