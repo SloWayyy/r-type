@@ -132,7 +132,7 @@ int Udp::handleErrorReceive(const asio::error_code &error, std::vector<uint8_t> 
 {
     if (error)
         return -1;
-    if (receivedComponent.size() == 0 && receivedPacket.packet_type != NEW_CONNECTION) {
+    if (receivedComponent.size() == 0 && receivedPacket.packet_type != NEW_CONNECTION && receivedPacket.packet_type != RESPONSE_PACKET) {
         start_receive(isClient);
         return -1;
     }
@@ -208,15 +208,22 @@ void Udp::handleReceiveServer(const asio::error_code &error, std::size_t bytes_t
         return;
     }
     if (receivedPacket.packet_type == RESPONSE_PACKET) {
-        for (const auto &query : _queueSendPacket) {
+        mtxSendPacket.lock();
+        std::size_t size = _queueSendPacket.size();
+        for (std::size_t i = 0; i < size;) {
             Packet queryPacket;
-            std::memcpy(&queryPacket, query.second.data(), sizeof(Packet));
+            std::cout << "hello" << std::endl;
+            std::cout << "queryPacket.uuid: " << queryPacket.uuid.data() << std::endl;
+            std::memcpy(&queryPacket, _queueSendPacket[i].second.data(), sizeof(Packet));
             if (receivedPacket.uuid == queryPacket.uuid) {
-                mtxSendPacket.lock();
-                _queueSendPacket.erase(std::remove(_queueSendPacket.begin(), _queueSendPacket.end(), query), _queueSendPacket.end());
-                mtxSendPacket.unlock();
+                std::cout << "HAAAAAAAAAAAAAAa: " << _queueSendPacket.size() << std::endl;
+                _queueSendPacket.erase(std::remove(_queueSendPacket.begin(), _queueSendPacket.end(), _queueSendPacket[i]), _queueSendPacket.end());
+                size--;
+            } else {
+                i++;
             }
         }
+        mtxSendPacket.unlock();
         start_receive();
     }
     mtxQueue.lock();
