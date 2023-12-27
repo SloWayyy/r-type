@@ -75,26 +75,34 @@ void TCPServer::handleRead(std::shared_ptr<asio::ip::tcp::socket> client)
 
 void TCPServer::sendMessageToAllClients(const std::string &message)
 {
-    for (const auto &client : _clientsInfo) {
-        client.second->async_send(asio::buffer(message + "\n"), [this, client](const asio::error_code& ec, std::size_t) {
-            if (!ec) {
-                std::cout << "Message sent to client " << client.second->remote_endpoint() << std::endl;
-            } else {
-                std::cerr << "Error sending message to client " << client.second->remote_endpoint() << ": " << ec.message() << std::endl;
-            }
-        });
+    try {
+        for (const auto &client : _clientsInfo) {
+            client.second->async_send(asio::buffer(message + "\n"), [this, client](const asio::error_code& ec, std::size_t) {
+                if (!ec) {
+                    std::cout << "Message sent to client " << client.second->remote_endpoint() << std::endl;
+                } else {
+                    std::cerr << "Error sending message to client " << client.second->remote_endpoint() << ": " << ec.message() << std::endl;
+                }
+            });
+        }
+    } catch (const asio::system_error& ec) {
+        std::cerr << "Error sending message to all clients: " << ec.what() << std::endl;
     }
 }
 
 void TCPServer::sendMessageToAClient(const std::string &message, std::shared_ptr<asio::ip::tcp::socket> client)
 {
-    client->async_send(asio::buffer(message + "\n"), [this, client](const asio::error_code& ec, std::size_t) {
-        if (!ec) {
-            std::cout << "Message sent to client " << client->remote_endpoint() << std::endl;
-        } else {
-            std::cerr << "Error sending message to client " << client->remote_endpoint() << ": " << ec.message() << std::endl;
-        }
-    });
+    try {
+        client->async_send(asio::buffer(message + "\n"), [this, client](const asio::error_code& ec, std::size_t) {
+            if (!ec) {
+                std::cout << "Message sent to client " << client->remote_endpoint() << std::endl;
+            } else {
+                std::cerr << "Error sending message to client " << client->remote_endpoint() << ": " << ec.message() << std::endl;
+            }
+        });
+    } catch (const asio::system_error& ec) {
+        std::cerr << "Error sending message to all clients: " << ec.what() << std::endl;
+    }
 }
 
 void TCPServer::startAccept()

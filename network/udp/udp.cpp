@@ -212,11 +212,8 @@ void Udp::handleReceiveServer(const asio::error_code &error, std::size_t bytes_t
         std::size_t size = _queueSendPacket.size();
         for (std::size_t i = 0; i < size;) {
             Packet queryPacket;
-            std::cout << "hello" << std::endl;
-            std::cout << "queryPacket.uuid: " << queryPacket.uuid.data() << std::endl;
             std::memcpy(&queryPacket, _queueSendPacket[i].second.data(), sizeof(Packet));
-            if (receivedPacket.uuid == queryPacket.uuid) {
-                std::cout << "HAAAAAAAAAAAAAAa: " << _queueSendPacket.size() << std::endl;
+            if (receivedPacket.uuid == queryPacket.uuid && remote_endpoint_ == _queueSendPacket[i].first) {
                 _queueSendPacket.erase(std::remove(_queueSendPacket.begin(), _queueSendPacket.end(), _queueSendPacket[i]), _queueSendPacket.end());
                 size--;
             } else {
@@ -225,6 +222,7 @@ void Udp::handleReceiveServer(const asio::error_code &error, std::size_t bytes_t
         }
         mtxSendPacket.unlock();
         start_receive();
+        return;
     }
     mtxQueue.lock();
     _queue.push_back(std::make_pair(receivedPacket, receivedComponent));
@@ -259,7 +257,7 @@ void Udp::sendClientToServer(Args... args)
     if (data.size() == 0)
         return;
     try {
-        std::cout << "Message sent to server UDP: " << " on adress " << _endpointServer.address() << " on port " << _endpointServer.port() << std::endl;
+        std::cout << "Sent to server UDP: type("<< data[4] << ") on adress " << _endpointServer.address() << " on port " << _endpointServer.port() << std::endl;
         socket_.send_to(asio::buffer(data), _endpointServer);
     } catch (const asio::system_error &ec) {
         std::cerr << "ERROR UDP sending message" << ec.what() << std::endl;
@@ -314,7 +312,6 @@ void Udp::updateSparseArray(bool isClient)
         char component[64] = {0};
 
         std::memcpy(component, data.data(), data.size());
-        std::cout << "je rentre dans registePacket" << std::endl;
         reg.registerPacket(header.type_index, header.entity_id, component);
 
         if (!isClient)

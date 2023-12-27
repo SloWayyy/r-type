@@ -21,10 +21,11 @@ class NetworkSystem : public ISystem {
         void operator()() override {
             _udpServer.mtxSendPacket.lock();
             // verif si les clients ont tous repondu au packet sionn on renvoi
+            // si le packet est ancien : on recup le packet, meme le composant apres
+            // ATTENTION VERFIER AUSSI LE REMOTE ENDPOINT COMME DANS HANDLERECEIVE SERVER
             _udpServer.mtxSendPacket.unlock();
             _udpServer.mtxQueue.lock();
             while (_udpServer._queue.size() > 0) {
-            std::cout << "Queue size: " << _udpServer._queue.size() << std::endl;
                 _udpServer.updateSparseArray(false);
             }
             _udpServer.mtxQueue.unlock();
