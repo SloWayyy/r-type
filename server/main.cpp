@@ -14,7 +14,7 @@
 #include <asio.hpp>
 #include <iostream>
 
-int handlingArgs(int ac, char const **av)
+int handlingArgs(int ac, char const** av)
 {
     if (ac != 3) {
         std::cerr << "Usage: ./server [port] [ip]" << std::endl;
@@ -26,7 +26,7 @@ int handlingArgs(int ac, char const **av)
     }
 }
 
-int main(int ac, char const **av)
+int main(int ac, char const** av)
 {
     if (handlingArgs(ac, av) == -1)
         return -1;
