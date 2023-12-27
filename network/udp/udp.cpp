@@ -214,8 +214,11 @@ void Udp::handleReceiveServer(const asio::error_code &error, std::size_t bytes_t
             Packet queryPacket;
             std::memcpy(&queryPacket, _queueSendPacket[i].second.data(), sizeof(Packet));
             if (receivedPacket.uuid == queryPacket.uuid && remote_endpoint_ == _queueSendPacket[i].first) {
-                _queueSendPacket.erase(std::remove(_queueSendPacket.begin(), _queueSendPacket.end(), _queueSendPacket[i]), _queueSendPacket.end());
+                // std::cout << "size avant: " << _queueSendPacket.size() << std::endl;
+                _queueSendPacket.erase(_queueSendPacket.begin() + i);
+                // std::cout << "size apres: " << _queueSendPacket.size() << std::endl;
                 size--;
+                // i = 0;
             } else {
                 i++;
             }
@@ -283,6 +286,15 @@ void Udp::sendServerToClient(PacketType packet_type, Args... args)
     }
 }
 
+void Udp::sendServerToAClient(std::vector<uint8_t> data, asio::ip::udp::endpoint endpoint)
+{
+    try {
+        socket_.send_to(asio::buffer(data), endpoint);
+    } catch (const asio::system_error &ec) {
+        std::cerr << "ERROR UDP sending message" << ec.what() << std::endl;
+    }
+}
+
 template <typename ...Args>
 void Udp::sendToAll(PacketType packet_type, Args ...args)
 {
@@ -310,14 +322,10 @@ void Udp::updateSparseArray(bool isClient)
         Packet header = i.first;
         auto data = i.second;
         char component[64] = {0};
-
         std::memcpy(component, data.data(), data.size());
         reg.registerPacket(header.type_index, header.entity_id, component);
-
         if (!isClient)
             sendToAll(DATA_PACKET, data, header);
     }
-
         _queue.clear();
 }
-

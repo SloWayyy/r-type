@@ -69,6 +69,7 @@ class Udp {
         template <typename... Args>
         void sendServerToClient(PacketType packet_type, Args... args);
 
+        void sendServerToAClient(std::vector<uint8_t> data, asio::ip::udp::endpoint endpoint);
         void sendPlayerListToClient(std::vector<std::vector<uint8_t>> entities, Packet receivedPacket);
 
         void run();
