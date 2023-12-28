@@ -17,9 +17,9 @@ TCPClient::TCPClient(std::size_t port, std::string ip, registry& reg)
     , buffer()
     , reg(reg)
 {
-    this->createClient();
     this->_thread = std::thread(&TCPClient::run, this);
-    this->startAsyncOperations();
+    this->createClient();
+    // this->handleReceive();
 }
 
 TCPClient::~TCPClient()
@@ -37,7 +37,7 @@ void TCPClient::createClient()
 {
     try {
         asio::connect(this->_socket, this->_resolver.resolve(_ip, std::to_string(this->_port)));
-        std::cout << "Connected to " << this->_endpoint << " successfully!\n";
+        std::cout << "Connected to Server (TCP) " << this->_endpoint << " successfully!\n";
     } catch (const std::exception& e) {
         std::cerr << "Connection error: " << e.what() << std::endl;
     }
@@ -55,6 +55,7 @@ void TCPClient::handleSend(const asio::error_code& error, std::size_t)
 void TCPClient::run()
 {
     std::cout << "Client is running on port " << this->_port << std::endl;
+    this->handleReceive();
     this->_ioContext.run();
 }
 
@@ -68,6 +69,7 @@ void TCPClient::sendToServer()
 void TCPClient::handleReceive()
 {
     asio::async_read_until(this->_socket, this->buffer, "\n", [this](const asio::error_code& error, std::size_t) {
+        std::cout << "RECEIVE TCP" << std::endl;
         if (!error) {
             std::istream input_stream(&this->buffer);
             std::string data;
@@ -85,6 +87,7 @@ void TCPClient::handleReceive()
             exit(0);
         }
     });
+    // handleReceive();
 }
 
 void TCPClient::startAsyncOperations() { this->handleReceive(); }

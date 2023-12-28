@@ -8,36 +8,35 @@
 #include "tcpServer.hpp"
 
 TCPServer::TCPServer(std::size_t port, std::size_t portUDP, std::string ip)
-    : _port(port)
-    , _portUDP(portUDP)
-    , _ioContext()
-    , _endpoint(asio::ip::make_address(ip), 0)
-    , _acceptor(_ioContext, _endpoint)
-    , buffer()
-    , _ip(ip)
+    : _port(port), _portUDP(portUDP), _ioContext(), buffer(), _ip(ip),
+      _endpoint(asio::ip::make_address(ip), port),
+      _acceptor(_ioContext, _endpoint)
 {
     try {
-        this->_endpoint = asio::ip::tcp::endpoint(asio::ip::make_address(ip), port);
-        this->_acceptor = asio::ip::tcp::acceptor(_ioContext, _endpoint);
+        // Autres initialisations si nécessaires
     } catch (const asio::system_error& ec) {
         std::cerr << "Error opening socket: " << ec.what() << std::endl;
         std::exit(84);
     }
+
     this->createSocket();
     _thread = std::thread(&TCPServer::run, this);
     startAccept();
 }
 
+
+
+
 TCPServer::~TCPServer() { _thread.join(); }
 
 int TCPServer::createSocket()
 {
-    std::cout << "Creating server socket..." << std::endl;
+    std::cout << "Creating server socket (TCP)..." << std::endl;
     try {
         _acceptor.set_option(asio::ip::tcp::acceptor::reuse_address(true));
         this->_acceptor.listen();
     } catch (const asio::system_error& ec) {
-        std::cerr << "Error opening socket: " << ec.what() << std::endl;
+        std::cerr << "Error opening socket (TCP): " << ec.what() << std::endl;
         return -1;
     }
     return 0;
@@ -45,8 +44,8 @@ int TCPServer::createSocket()
 
 void TCPServer::run()
 {
-    std::cout << "ServerTCP is running on port " << this->_port << std::endl;
-    std::cout << "Server is running on port UDP " << this->_portUDP << std::endl;
+    std::cout << "Server (TCP) is running on port " << this->_port << std::endl;
+    std::cout << "Server is running on port (UDP) " << this->_portUDP << std::endl;
     this->_ioContext.run();
 }
 
@@ -107,6 +106,7 @@ void TCPServer::startAccept()
 
     _acceptor.async_accept(*newClient, [this, newClient](const asio::error_code& ec) {
         if (!ec) {
+            std::cout << "New connection TCP: " << newClient->remote_endpoint() << std::endl;
             handleRead(newClient);
             _clientsInfo[newClient->remote_endpoint().port()] = newClient;
             std::cout << "Accepted connection from: " << newClient->remote_endpoint() << std::endl;

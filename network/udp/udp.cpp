@@ -275,6 +275,7 @@ void Udp::run()
 {
     std::cout << "Server is running on port " << this->_port << std::endl;
     this->_io_context.run();
+    std::cout << "Server is closing" << std::endl;
 }
 
 template <typename... Args> void Udp::sendClientToServer(Args... args)
