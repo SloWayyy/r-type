@@ -17,7 +17,6 @@ TCPServer::TCPServer(std::size_t port, std::size_t portUDP, std::string ip)
     _thread = std::thread(&TCPServer::run, this);
 }
 
-
 TCPServer::~TCPServer() {
     _acceptor.close();
     _ioContext.stop();

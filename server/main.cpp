@@ -24,6 +24,7 @@ int handlingArgs(int ac, char const** av)
         std::cerr << "Port must be a number" << std::endl;
         return -1;
     }
+    return 0;
 }
 
 int main(int ac, char const** av)

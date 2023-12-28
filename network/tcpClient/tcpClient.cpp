@@ -19,14 +19,13 @@ TCPClient::TCPClient(std::size_t port, std::string ip, registry& reg)
 {
     this->_thread = std::thread(&TCPClient::run, this);
     this->createClient();
-    // this->handleReceive();
 }
 
 TCPClient::~TCPClient()
 {
     try {
-        this->_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
-        this->_thread.join();
+        this->_socket.close();
+        this->_thread.join(); 
     } catch (const std::exception& e) {
         std::cerr << "Error joining thread: " << e.what() << std::endl;
     }
@@ -76,7 +75,6 @@ void TCPClient::handleReceive()
             std::string data;
             std::getline(input_stream, data);
             if (data.find("RFC") != std::string::npos) {
-                // std::cout << "RFC FROM SERVER RECEIVER: " + data << std::endl;
                 std::cout << data << std::endl;
                 this->_ServerMessages.push_back(
                     data); // stocker toutes les commades reçues du serveur et ensuite recuperer ce vector en faisant un getter pour le passer au game
@@ -84,11 +82,9 @@ void TCPClient::handleReceive()
             handleReceive();
         } else {
             std::cerr << "Server is disconected." << std::endl;
-            // return;
-            exit(0);
+            std::exit(0);
         }
     });
-    // handleReceive();
 }
 
 void TCPClient::startAsyncOperations() { this->handleReceive(); }
