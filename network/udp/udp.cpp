@@ -148,29 +148,40 @@ void Udp::handleReceiveClient(const asio::error_code& error, std::size_t bytes_t
 
     if (handleErrorReceive(error, receivedComponent, receivedPacket, true) == -1)
         return;
-    if (receivedPacket.packet_type == NEW_CONNECTION) {
-        if (_entity_id == -1) {
-            _entity_id = receivedPacket.entity_id;
-            reg._player = receivedPacket.entity_id;
-            mtx.lock();
-            _queue.push_back(std::make_pair(receivedPacket, receivedComponent));
-            mtx.unlock();
-        } else {
-            mtx.lock();
-            _queue.push_back(std::make_pair(receivedPacket, receivedComponent));
-            mtx.unlock();
-        }
-    } else if (receivedPacket.timestamp >= _last_timestamp) {
-        _last_timestamp = receivedPacket.timestamp;
-        mtx.lock();
-        _queue.push_back(std::make_pair(receivedPacket, receivedComponent));
-        mtx.unlock();
-    } else
-        std::cout << "OUTDATED PACKET" << std::endl;
 
+    if (receivedPacket.packet_type == NEW_CONNECTION) {
+        handleNewConnection(receivedPacket, receivedComponent);
+    } else if (receivedPacket.timestamp >= _last_timestamp) {
+        handleTimestampUpdate(receivedPacket, receivedComponent);
+    } else {
+        std::cout << "OUTDATED PACKET" << std::endl;
+    }
     receivedPacket.packet_type = RESPONSE_PACKET;
     sendClientToServer(receivedPacket);
     start_receive(true);
+}
+
+void Udp::handleNewConnection(const Packet& receivedPacket, const std::vector<uint8_t>& receivedComponent)
+{
+    if (_entity_id == -1) {
+        _entity_id = receivedPacket.entity_id;
+        reg._player = receivedPacket.entity_id;
+        mtx.lock();
+        _queue.push_back(std::make_pair(receivedPacket, receivedComponent));
+        mtx.unlock();
+    } else {
+        mtx.lock();
+        _queue.push_back(std::make_pair(receivedPacket, receivedComponent));
+        mtx.unlock();
+    }
+}
+
+void Udp::handleTimestampUpdate(const Packet& receivedPacket, const std::vector<uint8_t>& receivedComponent)
+{
+    _last_timestamp = receivedPacket.timestamp;
+    mtx.lock();
+    _queue.push_back(std::make_pair(receivedPacket, receivedComponent));
+    mtx.unlock();
 }
 
 void Udp::sendPlayerListToClient(std::vector<std::vector<uint8_t>> entities, Packet receivedPacket)
@@ -196,39 +207,54 @@ void Udp::handleReceiveServer(const asio::error_code& error, std::size_t bytes_t
 
     if (handleErrorReceive(error, receivedComponent, receivedPacket, false) == -1)
         return;
-    if (receivedPacket.packet_type == NEW_CONNECTION) {
-        _clientsUDP[remote_endpoint_.port()] = remote_endpoint_;
-        std::vector<std::vector<uint8_t>> entities = updateGame.updateEntity();
-        _sparseArray.push_back(entities);
-        sendPlayerListToClient(entities, receivedPacket);
-        start_receive();
-        return;
-    }
-    if (receivedPacket.magic_number != _magic_number) {
+    processReceivedPacket(receivedPacket, receivedComponent);
+}
+
+void Udp::processReceivedPacket(const Packet &receivedPacket, const std::vector<uint8_t>& receivedComponent)
+{
+    const std::map<std::size_t, std::function<void(const Packet&, const std::vector<uint8_t>&)>> ptr_fct = {
+        {NEW_CONNECTION, [this](const Packet& packet, const std::vector<uint8_t>& component) { handleNewConnection(packet); }},
+        {RESPONSE_PACKET, [this](const Packet& packet, const std::vector<uint8_t>& component) { handleResponsePacket(packet); }}
+    };
+    auto it = ptr_fct.find(receivedPacket.packet_type);
+
+    if (it != ptr_fct.end()) {
+        it->second(receivedPacket, receivedComponent);
+    } else if (receivedPacket.magic_number != _magic_number) {
         std::cerr << "ERROR: magic number not valid in received packet" << std::endl;
         start_receive();
-        return;
-    }
-    if (receivedPacket.packet_type == RESPONSE_PACKET) {
-        mtxSendPacket.lock();
-        std::size_t size = _queueSendPacket.size();
-        for (std::size_t i = 0; i < size;) {
-            Packet queryPacket;
-            std::memcpy(&queryPacket, _queueSendPacket[i].second.data(), sizeof(Packet));
-            if (receivedPacket.uuid == queryPacket.uuid && remote_endpoint_ == _queueSendPacket[i].first) {
-                _queueSendPacket.erase(_queueSendPacket.begin() + i);
-                size--;
-            } else {
-                i++;
-            }
-        }
-        mtxSendPacket.unlock();
+    } else {
+        mtxQueue.lock();
+        _queue.push_back(std::make_pair(receivedPacket, receivedComponent));
+        mtxQueue.unlock();
         start_receive();
-        return;
     }
-    mtxQueue.lock();
-    _queue.push_back(std::make_pair(receivedPacket, receivedComponent));
-    mtxQueue.unlock();
+}
+
+void Udp::handleNewConnection(const Packet &receivedPacket)
+{
+    _clientsUDP[remote_endpoint_.port()] = remote_endpoint_;
+    std::vector<std::vector<uint8_t>> entities = updateGame.updateEntity();
+    _sparseArray.push_back(entities);
+    sendPlayerListToClient(entities, receivedPacket);
+    start_receive();
+}
+
+void Udp::handleResponsePacket(const Packet &receivedPacket)
+{
+    mtxSendPacket.lock();
+    std::size_t size = _queueSendPacket.size();
+    for (std::size_t i = 0; i < size;) {
+        Packet queryPacket;
+        std::memcpy(&queryPacket, _queueSendPacket[i].second.data(), sizeof(Packet));
+        if (receivedPacket.uuid == queryPacket.uuid && remote_endpoint_ == _queueSendPacket[i].first) {
+            _queueSendPacket.erase(_queueSendPacket.begin() + i);
+            size--;
+        } else {
+            i++;
+        }
+    }
+    mtxSendPacket.unlock();
     start_receive();
 }
 
@@ -258,8 +284,7 @@ template <typename... Args> void Udp::sendClientToServer(Args... args)
     if (data.size() == 0)
         return;
     try {
-        std::cout << "Sent to server UDP: type(" << data[4] << ") on adress " << _endpointServer.address() << " on port " << _endpointServer.port()
-                  << std::endl;
+        std::cout << "Sent to server UDP: type(" << data[4] << ") on adress " << _endpointServer.address() << " on port " << _endpointServer.port() << std::endl;
         socket_.send_to(asio::buffer(data), _endpointServer);
     } catch (const asio::system_error& ec) {
         std::cerr << "ERROR UDP sending message" << ec.what() << std::endl;
