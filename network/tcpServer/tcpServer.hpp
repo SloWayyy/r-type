@@ -32,10 +32,10 @@ class TCPServer {
         std::size_t _port;
         std::size_t _portUDP;
         asio::io_context _ioContext;
-        asio::ip::tcp::endpoint _endpoint;
-        asio::ip::tcp::acceptor _acceptor;
         asio::streambuf buffer;
         std::string _ip;
+        asio::ip::tcp::endpoint _endpoint;
+        asio::ip::tcp::acceptor _acceptor;
         asio::error_code _ec;
     protected:
 };

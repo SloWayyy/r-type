@@ -14,7 +14,7 @@ struct Sprite {
         std::cout << "Sprite created with path: " << path << std::endl;
     }
 
-    Sprite(const Sprite &sprite_)
+    Sprite(const Sprite& sprite_)
     {
         texture = sprite_.texture;
         rect = sprite_.rect;
@@ -22,8 +22,8 @@ struct Sprite {
         sprite.setTexture(texture);
     }
 
-    public:
-        sf::IntRect rect;
-        sf::Texture texture;
-        sf::Sprite sprite;
+public:
+    sf::IntRect rect;
+    sf::Texture texture;
+    sf::Sprite sprite;
 };

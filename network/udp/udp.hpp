@@ -9,6 +9,7 @@
 #define UDP_HPP_
 
 #include "../../ecs/registry/registry.hpp"
+#include "../../server/updateGame/updateGame.hpp"
 #include <any>
 #include <array>
 #include <asio.hpp>
@@ -50,13 +51,18 @@ class Udp {
     public:
 
         // constructor / destructor
-        Udp(std::size_t port, std::string ip, registry &reg);
+        Udp(std::size_t port, std::string ip, registry &reg, UpdateGame &updateGame);
         Udp(std::string ip, registry &reg); // client
         ~Udp();
 
         void start_receive(bool isClient = false);
         void handleReceiveClient(const asio::error_code &error, std::size_t bytes_transferred); // client
+        void handleNewConnection(const Packet &receivedPacket, const std::vector<uint8_t>& receivedComponent);
+        void handleTimestampUpdate(const Packet& receivedPacket, const std::vector<uint8_t>& receivedComponent);
         void handleReceiveServer(const asio::error_code &error, std::size_t bytes_transferred);
+        void processReceivedPacket(const Packet &receivedPacket, const std::vector<uint8_t>& receivedComponent);
+        void handleNewConnection(const Packet &receivedPacket);
+        void handleResponsePacket(const Packet &receivedPacket);
         void handle_send(std::shared_ptr<std::string> message, const asio::error_code &error, std::size_t bytes_transferred); // client
         int handleErrorReceive(const asio::error_code &error, std::vector<uint8_t> receivedComponent, Packet receivedPacket, bool isClient);
 
@@ -67,6 +73,9 @@ class Udp {
         void sendClientToServer(Args... args);
         template <typename... Args>
         void sendServerToClient(PacketType packet_type, Args... args);
+
+        void sendServerToAClient(std::vector<uint8_t> data, asio::ip::udp::endpoint endpoint);
+        void sendPlayerListToClient(std::vector<std::vector<uint8_t>> entities, Packet receivedPacket);
 
         void run();
         void updateSparseArray(bool isClient);
@@ -89,6 +98,7 @@ class Udp {
         std::mutex mtx;
         std::mutex mtxSendPacket;
         std::mutex mtxQueue;
+        std::vector<std::vector<std::vector<uint8_t>>> _sparseArray;
 
     private:
         std::thread _thread;
@@ -101,8 +111,9 @@ class Udp {
         long _last_timestamp = 0;
         asio::ip::udp::endpoint _endpointClient;
         uint32_t _magic_number = 4242;
-        uint32_t _entity_id = 0;
+        int _entity_id = -1;
         registry &reg;
+        UpdateGame &updateGame;
 };
 
 #include "udp.cpp"

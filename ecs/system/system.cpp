@@ -1,8 +1,8 @@
 #include "system.hpp"
 
-void animeEntity(registry &reg, size_t incrementLeft, size_t maxWidth)
+void animeEntity(registry& reg, size_t incrementLeft, size_t maxWidth)
 {
-    auto &sprite = reg.getComponent<Sprite>();
+    auto& sprite = reg.getComponent<Sprite>();
 
     for (long unsigned int i = 0; i < sprite.size(); i++) {
         if (sprite[i]) {

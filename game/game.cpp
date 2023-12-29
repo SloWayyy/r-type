@@ -13,23 +13,21 @@ void Game::init()
     gameEntity.setShip(reg.addEntity());
     size_t ship = gameEntity.getShip();
 
-    auto &position = reg.getComponent<Position>();
-    auto &sprite = reg.getComponent<Sprite>();
-    auto &size = reg.getComponent<Size>();
-    auto &velocity = reg.getComponent<Velocity>();
+    auto& position = reg.getComponent<Position>();
+    auto& sprite = reg.getComponent<Sprite>();
+    auto& size = reg.getComponent<Size>();
+    auto& velocity = reg.getComponent<Velocity>();
 
-    Position pos = {10, 100};
+    Position pos = { 10, 100 };
 
-    char *test = reinterpret_cast<char*>(&pos);
+    char* test = reinterpret_cast<char*>(&pos);
     Position pos2 = reinterpret_cast<Position&>(*test);
 
-    Sprite spr = {"game/assets/spaceShip.png", sf::IntRect(198, 0, 32, 32)};
-    char *test2 = reinterpret_cast<char*>(&spr);
-
+    Sprite spr = { "game/assets/spaceShip.png", sf::IntRect(198, 0, 32, 32) };
+    char* test2 = reinterpret_cast<char*>(&spr);
 
     reg.registerPacket(1, ship, test2);
     // Sprite spr2 = reinterpret_cast<Sprite&>(*test2);
-
 
     pos2.print();
     position.emplace_at(ship, 50, 50);
