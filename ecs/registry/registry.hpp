@@ -174,7 +174,6 @@ public:
     std::unordered_map<Event_t, uint8_t> _events;
     std::vector<std::type_index> _typeIndex;
     std::unordered_map<std::type_index, std::any> _components;
-
     int _player = 0;
 
 private:

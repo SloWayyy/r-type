@@ -57,7 +57,12 @@ class Udp {
 
         void start_receive(bool isClient = false);
         void handleReceiveClient(const asio::error_code &error, std::size_t bytes_transferred); // client
+        void handleNewConnection(const Packet &receivedPacket, const std::vector<uint8_t>& receivedComponent);
+        void handleTimestampUpdate(const Packet& receivedPacket, const std::vector<uint8_t>& receivedComponent);
         void handleReceiveServer(const asio::error_code &error, std::size_t bytes_transferred);
+        void processReceivedPacket(const Packet &receivedPacket, const std::vector<uint8_t>& receivedComponent);
+        void handleNewConnection(const Packet &receivedPacket);
+        void handleResponsePacket(const Packet &receivedPacket);
         void handle_send(std::shared_ptr<std::string> message, const asio::error_code &error, std::size_t bytes_transferred); // client
         int handleErrorReceive(const asio::error_code &error, std::vector<uint8_t> receivedComponent, Packet receivedPacket, bool isClient);
 
@@ -69,6 +74,7 @@ class Udp {
         template <typename... Args>
         void sendServerToClient(PacketType packet_type, Args... args);
 
+        void sendServerToAClient(std::vector<uint8_t> data, asio::ip::udp::endpoint endpoint);
         void sendPlayerListToClient(std::vector<std::vector<uint8_t>> entities, Packet receivedPacket);
 
         void run();

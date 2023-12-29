@@ -11,6 +11,8 @@
 #include "../../ecs/system/ISystem.hpp"
 #include "../../ecs/registry/registry.hpp"
 
+#include <list>
+
 
 class InputSystem : public ISystem {
     public:
@@ -19,8 +21,19 @@ class InputSystem : public ISystem {
         ~InputSystem() = default;
         void operator()() override {
             sf::Event event;
-            while (_window.pollEvent(event))
-            {
+            std::list<char> typedText;
+
+            while (_window.pollEvent(event)) {
+                // if (event.type == sf::Event::TextEntered) {
+                //     if (event.text.unicode == '\n') {
+                //         _typedText = typedText;
+                //     }
+                //     if (event.text.unicode < 'z' and event.text.unicode != 8) {
+                //         char typedChar = static_cast<char>(event.text.unicode);
+                //         std::cout << "Typed character: " << typedChar << std::endl;
+                //         typedText.push_back(typedChar);
+                //     }
+                // }
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
                     _reg._events.insert({Event_t::KEY_PRESSED, sf::Keyboard::Right});
                     return;
@@ -37,8 +50,9 @@ class InputSystem : public ISystem {
                     _reg._events.insert({Event_t::KEY_PRESSED, sf::Keyboard::Down});
                     return;
                 }
-            }
+            }   
         };
+        std::list<char> _typedText;
     private:
         registry &_reg;
         sf::RenderWindow &_window;

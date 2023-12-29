@@ -101,6 +101,22 @@ cd build/
 
 - [Client](client/Readme.md)
 
+## Code formatter
+
+  We used clang-format to format our code. You can find the configuration file in the root of the project.
+
+- [Clang-format](https://www.webkit.org/code-style-guidelines/)
+
+ This is how we use it on linux:
+  ```bash
+  clang-format -i -style=file <file>
+  ```
+
+  or for all files in a directory :
+  ```bash
+  find server -name '*.cpp' -exec clang-format -i {} \;
+  ```
+
 ## Authors
 
 | [<img src="https://github.com/kvn703.png?size=85" width=85><br><sub>Kevin NADARAJAH</sub>](https://github.com/kvn703) | [<img src="https://github.com/SloWayyy.png?size=85" width=85><br><sub>Mehdi Djendar</sub>](https://github.com/SloWayyy) | [<img src="https://github.com/Sloyi.png?size=85" width=85><br><sub>Rayan Es-Seffar</sub>](https://github.com/Sloyi) | [<img src="https://github.com/JonathanYakan.png?size=85" width=85><br><sub>Jonathan Yakan</sub>](https://github.com/JonathanYakan) | [<img src="https://github.com/Tahalani.png?size=85" width=85><br><sub>Taha ALANI</sub>](https://github.com/Tahalani) |

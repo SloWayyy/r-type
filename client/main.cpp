@@ -9,15 +9,15 @@
 #include "../ecs/system/system.hpp"
 #include "../network/tcpClient/tcpClient.hpp"
 #include "../network/udp/udp.hpp"
-#include "./system/inputSystem.hpp"
 #include "./system/clientNetworkSystem.hpp"
+#include "./system/inputSystem.hpp"
 #include "./system/playerSystem.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <chrono>
 #include <iostream>
 
-int main(int ac, char **av)
+int main(int ac, char** av)
 {
     if (ac != 3) {
         std::cerr << "USAGE: ./r-type_client port ip" << std::endl;
@@ -33,7 +33,7 @@ int main(int ac, char **av)
     uint32_t tmp = reg.addEntity();
     uint32_t tmp1 = reg.addEntity();
     uint32_t tmp2 = reg.addEntity();
-    auto &sprite = reg.getComponent<Sprite>();
+    auto& sprite = reg.getComponent<Sprite>();
     sprite.emplace_at(0, "../game/assets/spaceShip.png", sf::IntRect(198, 0, 32, 32));
     sprite.emplace_at(1, "../game/assets/spaceShipBlue.png", sf::IntRect(198, 0, 32, 32));
     sprite.emplace_at(2, "../game/assets/spaceShipBlue.png", sf::IntRect(198, 0, 32, 32));
@@ -48,7 +48,6 @@ int main(int ac, char **av)
     float refresh_rate = 1.0f / 60.0f;
     float elapsed_time = 0.0f;
 
-
     while (window.isOpen()) {
         auto new_time = std::chrono::high_resolution_clock::now();
         auto time_diff = new_time - current_time;
@@ -56,7 +55,6 @@ int main(int ac, char **av)
 
         float delta_time = std::chrono::duration<float>(time_diff).count();
         elapsed_time += delta_time;
-
 
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
