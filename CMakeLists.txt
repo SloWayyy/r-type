@@ -5,8 +5,22 @@ project(r-type)
 
 include(libs/depencies.cmake) # Install depencies
 
+
 if (LINUX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+endif()
+if (NOT CMAKE_BUILD_TYPE)
+  message("NORMAL MODE SET")
+  set(CMAKE_BUILD_TYPE "is empty")
+elseif (CMAKE_BUILD_TYPE STREQUAL "debug")
+  message("CMAKE_BUILD_TYPE is ${CMAKE_BUILD_TYPE}")
+  message("DEBUG MODE SET")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+elseif(CMAKE_BUILD_TYPE STREQUAL "normal")
+  message("NORMAL MODE SET")
+else()
+  message(FATAL_ERROR "Use:\nNORMAL MODE: cmake -B build -DCMAKE_BUILD_TYPE=normal\nDEBUG MODE: cmake -B build -DCMAKE_BUILD_TYPE=debug")
+  return()
 endif()
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
