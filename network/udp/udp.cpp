@@ -121,6 +121,10 @@ template <typename T> std::vector<uint8_t> Udp::createPacket(PacketType packet_t
 std::vector<uint8_t> Udp::unpack(Packet& packet, std::array<uint8_t, 1024> query, std::size_t bytes_transferred)
 {
     try {
+        // Decryptage en XOR
+        for (std::size_t i = 0; i < bytes_transferred; i++)
+            query[i] ^= CRYPT_KEY;
+
         std::memcpy(&packet, query.data(), sizeof(Packet));
         std::vector<uint8_t> component(query.begin() + sizeof(Packet), query.begin() + bytes_transferred);
         return component;
@@ -282,11 +286,16 @@ template <typename... Args> void Udp::sendClientToServer(Args... args)
 {
     auto data = createPacket(args...);
 
+    // Encryptage en XOR
+    std::vector<uint8_t> cryptData;
+    for (std::size_t i = 0; i < data.size(); i++)
+        cryptData.push_back(data[i] ^ CRYPT_KEY);
+
     if (data.size() == 0)
         return;
     try {
         std::cout << "Sent to server UDP: type(" << data[4] << ") on adress " << _endpointServer.address() << " on port " << _endpointServer.port() << std::endl;
-        socket_.send_to(asio::buffer(data), _endpointServer);
+        socket_.send_to(asio::buffer(cryptData), _endpointServer);
     } catch (const asio::system_error& ec) {
         std::cerr << "ERROR UDP sending message" << ec.what() << std::endl;
     }
@@ -296,10 +305,13 @@ template <typename... Args> void Udp::sendServerToClient(PacketType packet_type,
 {
     std::vector<uint8_t> data = createPacket(args...);
 
+    // Encryptage en XOR
+    std::vector<uint8_t> cryptData = cryptMessage(data);
+
     if (data.empty())
         return;
     try {
-        socket_.send_to(asio::buffer(data), remote_endpoint_);
+        socket_.send_to(asio::buffer(cryptData), remote_endpoint_);
         if (packet_type == DATA_PACKET) {
             mtxSendPacket.lock();
             _queueSendPacket.push_back(std::make_pair(remote_endpoint_, data));
@@ -312,8 +324,12 @@ template <typename... Args> void Udp::sendServerToClient(PacketType packet_type,
 
 void Udp::sendServerToAClient(std::vector<uint8_t> data, asio::ip::udp::endpoint endpoint)
 {
+    // Encryptage en XOR
+    std::vector<uint8_t> cryptData = cryptMessage(data);
+    std::cout << "data :" << data.data() << " cryptData :" << cryptData.data() << std::endl;
+
     try {
-        socket_.send_to(asio::buffer(data), endpoint);
+        socket_.send_to(asio::buffer(cryptData), endpoint);
     } catch (const asio::system_error& ec) {
         std::cerr << "ERROR UDP sending message" << ec.what() << std::endl;
     }
@@ -323,11 +339,14 @@ template <typename... Args> void Udp::sendToAll(PacketType packet_type, Args... 
 {
     std::vector<uint8_t> data = createPacket(args...);
 
+    // Encryptage en XOR
+    std::vector<uint8_t> cryptData = cryptMessage(data);
+
     if (data.size() == 0)
         return;
     try {
         for (const auto& client : _clientsUDP) {
-            socket_.send_to(asio::buffer(data), client.second);
+            socket_.send_to(asio::buffer(cryptData), client.second);
             if (packet_type == DATA_PACKET) {
                 mtxSendPacket.lock();
                 _queueSendPacket.push_back(std::make_pair(client.second, data));
@@ -351,4 +370,17 @@ void Udp::updateSparseArray(bool isClient)
             sendToAll(DATA_PACKET, data, header);
     }
     _queue.clear();
+}
+
+// This function is not used in 
+// template <typename... Args> void Udp::sendClientToServer(Args... args)
+// because of the return value is not the same always
+// so we do the encryption in the function directly
+std::vector<uint8_t> Udp::cryptMessage(std::vector<uint8_t> message)
+{
+    std::vector<uint8_t> cryptMessage;
+
+    for (std::size_t i = 0; i < message.size(); i++)
+        cryptMessage.push_back(message[i] ^ CRYPT_KEY);
+    return cryptMessage;
 }
