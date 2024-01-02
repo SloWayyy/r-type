@@ -40,7 +40,6 @@ class PlayerSystem : public ISystem {
                     velocity[_reg._player].value().x_speed = 0;
                     velocity[_reg._player].value().y_speed = 1;
                 }
-                _reg._events.erase(Event_t::KEY_PRESSED);
             }
             catch(const std::exception& e)
             {
