@@ -28,7 +28,7 @@ jobs:
       - name: add ssh key
         run: |
           echo "${{ secrets.PRIVATE_KEY }}" >> ~/.ssh_key
-          chmod 0600 ~/ssh_key
+          chmod 0600 ~/.ssh_key
           eval $(ssh-agent)
           ssh-add ~/.ssh_key
 
