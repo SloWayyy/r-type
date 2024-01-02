@@ -10,8 +10,9 @@
 #include "../network/tcpClient/tcpClient.hpp"
 #include "../network/udp/udp.hpp"
 #include "./system/clientNetworkSystem.hpp"
-#include "./system/inputSystem.hpp"
 #include "./system/playerSystem.hpp"
+#include "./system/sfmlSystem.hpp"
+#include "./system/animeSystem.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <chrono>
@@ -24,31 +25,29 @@ int main(int ac, char** av)
         return 84;
     }
     registry reg;
-    reg.addAllComponents<Position, Velocity, Size, Sprite>();
+    reg.addAllComponents<Position, Velocity, Size, Sprite, Anime>();
     TCPClient tcpClient(std::stoi(av[1]), av[2], reg);
     Udp udpClient(av[2], reg);
-
-    sf::RenderWindow window(sf::VideoMode(800, 600), "R-Type");
+    reg.add_system<SfmlSystem>("../game/assets", 800, 600, "R-Type");
     sf::Event event;
     uint32_t tmp = reg.addEntity();
     uint32_t tmp1 = reg.addEntity();
     uint32_t tmp2 = reg.addEntity();
     auto& sprite = reg.getComponent<Sprite>();
-    sprite.emplace_at(0, "../game/assets/spaceShip.png", sf::IntRect(198, 0, 32, 32));
-    sprite.emplace_at(1, "../game/assets/spaceShipBlue.png", sf::IntRect(198, 0, 32, 32));
-    sprite.emplace_at(2, "../game/assets/spaceShipBlue.png", sf::IntRect(198, 0, 32, 32));
+    auto& anime = reg.getComponent<Anime>();
+    anime.emplace_at(0, 32, 198);
+    sprite.emplace_at(0, 0, 192, 0, 32, 32);
+    sprite.emplace_at(1, 1, 192, 0, 32, 32);
 
-    reg.add_system<DrawSystem>(std::ref(window));
     reg.add_system<MoveSystem>();
     reg.add_system<PlayerSystem>();
     reg.add_system<NetworkSystem>(std::ref(udpClient), std::ref(tcpClient));
-
-    InputSystem inputSystem(reg, window);
+    reg.add_system<AnimeSystem>();
     auto current_time = std::chrono::high_resolution_clock::now();
     float refresh_rate = 1.0f / 60.0f;
     float elapsed_time = 0.0f;
 
-    while (window.isOpen()) {
+    while (1) {
         auto new_time = std::chrono::high_resolution_clock::now();
         auto time_diff = new_time - current_time;
         current_time = new_time;
@@ -56,15 +55,8 @@ int main(int ac, char** av)
         float delta_time = std::chrono::duration<float>(time_diff).count();
         elapsed_time += delta_time;
 
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
-        inputSystem();
         if (elapsed_time >= refresh_rate) {
-            window.clear();
             reg.run_system();
-            window.display();
             elapsed_time = 0.0f;
         }
     }
