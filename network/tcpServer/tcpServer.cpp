@@ -12,22 +12,72 @@ TCPServer::TCPServer(std::size_t port, std::size_t portUDP, std::string ip)
       _endpoint(asio::ip::make_address(ip), port),
       _acceptor(_ioContext, _endpoint)
 {
+    this->_adminPassword = "admin";
+    this->OpenAndReadAdmin("../network/tcpServer/passwordAdmin.txt");
+    std::cout << "Admin password: " << this->_adminPassword << std::endl;
+    this->OpenAndReadScoreboard("../network/tcpServer/scoreboard.txt");
     this->createSocket();
-    startAccept();
-    _thread = std::thread(&TCPServer::run, this);
+    this->startAccept();
+    this->_thread = std::thread(&TCPServer::run, this);
 }
 
 TCPServer::~TCPServer() {
-    _acceptor.close();
-    _ioContext.stop();
-    _thread.join(); 
+    this->_acceptor.close();
+    this->_ioContext.stop();
+    this->_thread.join(); 
+}
+
+int TCPServer::OpenAndReadAdmin(std::string file)
+{
+    std::fstream ifs;
+    std::string buffer;
+
+    ifs.open(file, std::fstream::in);
+    if (ifs.is_open()) {
+        try {
+            std::getline(ifs, buffer);
+            this->_adminPassword = buffer;
+            if (buffer.empty())
+                this->_adminPassword = "admin";
+        } catch (const std::exception& e) {
+            this->_adminPassword = "admin";
+            std::cerr << "Error: " << e.what() << std::endl;
+            return (-1);
+        }
+    } else {
+        std::cerr << file << ": No such file or directory" << std::endl;
+        return (-1);
+    }
+    ifs.close();
+    return (0);
+}
+
+int TCPServer::OpenAndReadScoreboard(std::string file)
+{
+    std::fstream ifs;
+    std::string buffer;
+
+    ifs.open(file, std::fstream::in);
+    if (ifs.is_open()) {
+        while (std::getline(ifs, buffer)) {
+            this->_scoreboard.push_back(std::make_pair(std::stoi(buffer.substr(0, buffer.find(":"))), std::stoi(buffer.substr(buffer.find(":") + 1, buffer.size()))));
+        }
+    } else {
+        std::cerr << file << ": No such file or directory" << std::endl;
+        return (-1);
+    }
+    // for (auto &i : _scoreboard) {
+    //     std::cout << "SCOREBOARD: " << i.first << " " << i.second << std::endl;
+    // }
+    ifs.close();
+    return (0);
 }
 
 int TCPServer::createSocket()
 {
     std::cout << "Creating server socket (TCP)..." << std::endl;
     try {
-        _acceptor.set_option(asio::ip::tcp::acceptor::reuse_address(true));
+        this->_acceptor.set_option(asio::ip::tcp::acceptor::reuse_address(true));
         this->_acceptor.listen();
     } catch (const asio::system_error& ec) {
         std::cerr << "Error opening socket (TCP): " << ec.what() << std::endl;
@@ -97,12 +147,11 @@ void TCPServer::sendMessageToAClient(const std::string& message, std::shared_ptr
 void TCPServer::startAccept()
 {
     auto newClient = std::make_shared<asio::ip::tcp::socket>(_ioContext);
-
-    _acceptor.async_accept(*newClient, [this, newClient](const asio::error_code& ec) {
+    this->_acceptor.async_accept(*newClient, [this, newClient](const asio::error_code& ec) {
         if (!ec) {
             std::cout << "New connection TCP: " << newClient->remote_endpoint() << std::endl;
             handleRead(newClient);
-            _clientsInfo[newClient->remote_endpoint().port()] = newClient;
+            this->_clientsInfo[newClient->remote_endpoint().port()] = newClient;
             std::cout << "Accepted connection from: " << newClient->remote_endpoint() << std::endl;
             sendMessageToAClient(
                 "(RFC) PORT_UPD " + std::to_string(_port) + " YOUR_ID " + std::to_string(newClient->remote_endpoint().port()), newClient);

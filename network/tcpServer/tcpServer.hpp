@@ -13,11 +13,15 @@
     #include <unordered_map>
     #include <functional>
     #include <memory>
+    #include <fstream>
+    #include <sstream>
 
 class TCPServer {
     public:
         TCPServer(std::size_t port, std::size_t portUDP, std::string ip);
         ~TCPServer();
+        int OpenAndReadScoreboard(std::string path);
+        int OpenAndReadAdmin(std::string path);
         int createSocket();
         void run();
         void startAccept();
@@ -37,6 +41,8 @@ class TCPServer {
         asio::ip::tcp::endpoint _endpoint;
         asio::ip::tcp::acceptor _acceptor;
         asio::error_code _ec;
+        std::vector<std::pair<std::size_t, std::size_t>> _scoreboard;
+        std::string _adminPassword;
     protected:
 };
 

@@ -21,9 +21,9 @@ Udp::Udp(std::size_t port, std::string ip, registry& reg, UpdateGame& updateGame
         std::cerr << "ERROR UDP binding socket: " << ec.what() << std::endl;
         std::exit(84);
     }
-
     this->_port = socket_.local_endpoint().port();
     _thread = std::thread(&Udp::run, this);
+    // std::cout << "id client: " << remote_endpoint_.port() << std::endl;
     start_receive();
 }
 

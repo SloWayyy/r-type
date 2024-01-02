@@ -27,7 +27,6 @@ int main(int ac, char **av)
     reg.addAllComponents<Position, Velocity, Size, Sprite>();
     TCPClient tcpClient(std::stoi(av[1]), av[2], reg);
     Udp udpClient(av[2], reg);
-
     sf::RenderWindow window(sf::VideoMode(800, 600), "R-Type");
     sf::Event event;
     uint32_t tmp = reg.addEntity();
