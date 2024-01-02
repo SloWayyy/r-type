@@ -30,11 +30,14 @@ jobs:
 
       - name: Check if code is formatted
         run:
-          if [ $(git diff --exit-code) -ne 0 ]; then
-            echo "Code is not formatted execute ./formmater.sh and push again"
+          $Status = git diff --exit-code
+
+          if [ $Status -eq 0 ]; then
+            echo "Code is formatted"
+          else
+            echo "Code is not formatted"
             exit 1
           fi
-          echo "Code is formatted"
 
   check_program_compilation_linux:
     needs: [linter_code]
