@@ -9,6 +9,7 @@
 #include "../ecs/system/system.hpp"
 #include "../network/tcpServer/tcpServer.hpp"
 #include "../network/udp/udp.hpp"
+#include "./system/messageSystem.hpp"
 #include "./system/serverNetworkSystem.hpp"
 #include "./updateGame/updateGame.hpp"
 #include <asio.hpp>
@@ -37,7 +38,7 @@ int main(int ac, char const** av)
     UpdateGame updateGame(reg);
     Udp udpServer(4242, av[2], reg, updateGame);
     TCPServer tcpServer(std::atoi(av[1]), udpServer.getPort(), av[2]);
-
+    reg.add_system<messageSystem>(std::ref(tcpServer));
     reg.add_system<NetworkSystem>(std::ref(udpServer), std::ref(tcpServer));
 
     while (1) {

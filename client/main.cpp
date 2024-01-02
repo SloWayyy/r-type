@@ -9,10 +9,11 @@
 #include "../ecs/system/system.hpp"
 #include "../network/tcpClient/tcpClient.hpp"
 #include "../network/udp/udp.hpp"
+#include "./system/animeSystem.hpp"
 #include "./system/clientNetworkSystem.hpp"
+#include "./system/messageSystem.hpp"
 #include "./system/playerSystem.hpp"
 #include "./system/sfmlSystem.hpp"
-#include "./system/animeSystem.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <chrono>
@@ -28,6 +29,7 @@ int main(int ac, char** av)
     reg.addAllComponents<Position, Velocity, Size, Sprite, Anime>();
     TCPClient tcpClient(std::stoi(av[1]), av[2], reg);
     Udp udpClient(av[2], reg);
+    reg.add_system<messageSystem>(tcpClient);
     reg.add_system<SfmlSystem>("../game/assets", 800, 600, "R-Type");
     sf::Event event;
     uint32_t tmp = reg.addEntity();

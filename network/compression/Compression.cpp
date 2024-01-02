@@ -7,7 +7,7 @@
 
 #include "Compression.hpp"
 
-std::vector<uint8_t> RLE::compress(std::vector<uint8_t> &data)
+std::vector<uint8_t> RLE::compress(std::vector<uint8_t>& data)
 {
     std::vector<uint8_t> compressed;
     uint8_t count = 1;
@@ -28,7 +28,7 @@ std::vector<uint8_t> RLE::compress(std::vector<uint8_t> &data)
     return compressed;
 }
 
-std::array<uint8_t, 1024> RLE::decompress(std::array<uint8_t, 1024> &data)
+std::array<uint8_t, 1024> RLE::decompress(std::array<uint8_t, 1024>& data)
 {
     std::array<uint8_t, 1024> decompressed;
     int j = 0;
@@ -45,7 +45,7 @@ std::array<uint8_t, 1024> RLE::decompress(std::array<uint8_t, 1024> &data)
 int main()
 {
     RLE rle;
-    std::vector<uint8_t> data = {1, 1, 1, 1, 1, 1, 1, 1, 1, 2};
+    std::vector<uint8_t> data = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 2 };
     for (int i = 0; i < data.size(); i++) {
         std::cout << (int)data[i] << std::endl;
     }
@@ -55,7 +55,7 @@ int main()
         std::cout << (int)compressed[i] << std::endl;
     }
     std::cout << "----------------" << std::endl;
-    std::array<uint8_t, 1024> compressed2 = {9, 1, 1, 2};
+    std::array<uint8_t, 1024> compressed2 = { 9, 1, 1, 2 };
     std::array<uint8_t, 1024> decompressed = rle.decompress(compressed2);
     std::cout << "size: " << decompressed.size() << std::endl;
     // for (int i = 0; i < decompressed.size(); i++) {
@@ -63,4 +63,3 @@ int main()
     // }
     return 0;
 }
-

@@ -65,9 +65,15 @@ class SfmlSystem : public ISystem {
         }
 
         void eventHandler() {
+
             while (_window.pollEvent(_event)) {
                 if (_event.type == sf::Event::Closed)
                     _window.close();
+                if (_event.type == sf::Event::TextEntered) {
+                    if (_event.text.unicode < 'z' and _event.text.unicode != 8) {
+                        _reg._events.insert({Event_t::TEXT_ENTERED, _event.text.unicode});
+                    }
+                }
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
                     _reg._events.insert({Event_t::KEY_PRESSED, sf::Keyboard::Right});
                     return;

@@ -23,7 +23,8 @@
 #include <unordered_map>
 
 enum class Event_t {
-    KEY_PRESSED
+    KEY_PRESSED,
+    TEXT_ENTERED,
 };
 
 class registry
