@@ -66,7 +66,8 @@ void TCPClient::sendToServer()
         this->_socket, asio::buffer(message + "\n"), std::bind(&TCPClient::handleSend, this, std::placeholders::_1, std::placeholders::_2));
 }
 
-void TCPClient::handleReceive(){
+void TCPClient::handleReceive()
+{
     asio::async_read_until(this->_socket, this->buffer, "\n", [this](const asio::error_code& error, std::size_t) {
         std::cout << "RECEIVE TCP" << std::endl;
         if (!error) {
