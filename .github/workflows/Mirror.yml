@@ -27,14 +27,14 @@ jobs:
         run: find network -name '*.cpp' | xargs clang-format -i
       - name: add ssh key
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" >> ~/.ssh_key
+          echo "${{ secrets.CLONE_KEY }}" >> ~/.ssh_key
           chmod 0600 ~/.ssh_key
           eval $(ssh-agent)
           ssh-add ~/.ssh_key
 
       - name: Push changes
         run:
-          git diff --exit-code || git config --global user.email "github-actions[bot]@users.noreply.github.com" && git config --global user.name "github-actions[bot]" && git add . && git commit -m "[BOT] (Linter) Format the code" && git push origin ${{ github.head_ref }}
+          git diff --exit-code || git config --global user.email "github-actions[bot]@users.noreply.github.com" && git config --global user.name "github-actions[bot]" && git add . && git commit -m "[BOT] (Linter) Format the code" && git push
 
 
   check_program_compilation_linux:
