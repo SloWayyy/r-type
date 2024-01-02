@@ -35,10 +35,8 @@ jobs:
           
       - name: Configure and build with CMake
         run: |
-          mkdir build
-          cd build
-          cmake ..
-          cmake --build .
+          cmake -B build
+          cmake --build build
 
   push_to_mirror:
     needs: [check_program_compilation_windows]
