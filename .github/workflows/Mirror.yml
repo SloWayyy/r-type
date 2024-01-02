@@ -31,7 +31,7 @@ jobs:
       - name: Check if code is formatted
         run:
           git diff --exit-code
-          Status=$?
+          $Status=$?
 
           if [ $Status -eq 0 ]; then
             echo "Code is formatted"
