@@ -44,7 +44,7 @@ jobs:
     needs: [check_program_compilation_windows]
     name: Linter code
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.event.pull_request
+    if: github.event.pull_request.merged != true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
