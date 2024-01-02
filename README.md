@@ -46,7 +46,7 @@ cd build/
 #### Server
 
 ```bash
-./r-type_server port ip
+./r-type_server [port] [ip]
 ```
 
 <table>

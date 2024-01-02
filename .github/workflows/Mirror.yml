@@ -9,7 +9,40 @@ on:
       - main
 
 jobs:
+
+  linter_code:
+    name: Linter code
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged != true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Install clang-format
+        run: sudo apt-get install -y clang-format
+      - name: Linter code
+        run: |
+          echo "JE SUIS UN LINTER"
+          echo "origin: ${{ github.head_ref }}"
+      - name: Run formmater.sh
+        run: |
+          chmod +x ./formatter.sh
+          ./formatter.sh
+
+      - name: Check if code is formatted
+        shell: bash
+        run: |
+          git diff --exit-code
+          Status=$?
+
+          if [ $Status -eq 0 ]; then
+            echo "Code is formatted"
+          else
+            echo "Code is not formatted"
+            exit 1
+          fi
+
   check_program_compilation_linux:
+    needs: [linter_code]
     container:
       image: epitechcontent/epitest-docker:latest
     runs-on: ubuntu-latest
