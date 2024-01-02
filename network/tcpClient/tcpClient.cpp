@@ -25,7 +25,7 @@ TCPClient::~TCPClient()
 {
     try {
         this->_socket.close();
-        this->_thread.join(); 
+        this->_thread.join();
     } catch (const std::exception& e) {
         std::cerr << "Error joining thread: " << e.what() << std::endl;
     }
