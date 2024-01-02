@@ -32,7 +32,7 @@ class SfmlSystem : public ISystem {
                 sf::Texture texture;
                 if (texture.loadFromFile(file.path())) {
                     _textures.push_back(std::move(texture));
-                    std::cout <<  file.path().stem().string() << " Loaded" << std::endl;
+                    std::cout << file.path().stem().string() << " Loaded" << std::endl;
                 }
             }
         };
