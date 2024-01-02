@@ -21,13 +21,14 @@ class TCPClient {
         void run();
         std::thread _thread;
         void startAsyncOperations();
+        std::vector<std::string> _serverQueueMessages;
+        std::mutex _mtxServerQueueMessages;
 
     private:
         void createClient();
         void handleSend(const asio::error_code &error, std::size_t bytes_transferred);
         void sendToServer();
         void handleReceive();
-        std::vector<std::string> getServerMessages();
         std::size_t _port;
         asio::io_context _ioContext;
         asio::ip::tcp::socket _socket;
@@ -35,7 +36,6 @@ class TCPClient {
         asio::ip::tcp::endpoint _endpoint;
         std::string _ip;
         asio::streambuf buffer;
-        std::vector<std::string> _ServerMessages;
         registry &reg;
 };
 

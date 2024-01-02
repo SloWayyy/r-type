@@ -210,12 +210,11 @@ void Udp::handleReceiveServer(const asio::error_code& error, std::size_t bytes_t
     processReceivedPacket(receivedPacket, receivedComponent);
 }
 
-void Udp::processReceivedPacket(const Packet &receivedPacket, const std::vector<uint8_t>& receivedComponent)
+void Udp::processReceivedPacket(const Packet& receivedPacket, const std::vector<uint8_t>& receivedComponent)
 {
-    const std::map<std::size_t, std::function<void(const Packet&, const std::vector<uint8_t>&)>> ptr_fct = {
-        {NEW_CONNECTION, [this](const Packet& packet, const std::vector<uint8_t>& component) { handleNewConnection(packet); }},
-        {RESPONSE_PACKET, [this](const Packet& packet, const std::vector<uint8_t>& component) { handleResponsePacket(packet); }}
-    };
+    const std::map<std::size_t, std::function<void(const Packet&, const std::vector<uint8_t>&)>> ptr_fct
+        = { { NEW_CONNECTION, [this](const Packet& packet, const std::vector<uint8_t>& component) { handleNewConnection(packet); } },
+              { RESPONSE_PACKET, [this](const Packet& packet, const std::vector<uint8_t>& component) { handleResponsePacket(packet); } } };
     auto it = ptr_fct.find(receivedPacket.packet_type);
 
     if (it != ptr_fct.end()) {
@@ -231,7 +230,7 @@ void Udp::processReceivedPacket(const Packet &receivedPacket, const std::vector<
     }
 }
 
-void Udp::handleNewConnection(const Packet &receivedPacket)
+void Udp::handleNewConnection(const Packet& receivedPacket)
 {
     _clientsUDP[remote_endpoint_.port()] = remote_endpoint_;
     std::vector<std::vector<uint8_t>> entities = updateGame.updateEntity();
@@ -240,7 +239,7 @@ void Udp::handleNewConnection(const Packet &receivedPacket)
     start_receive();
 }
 
-void Udp::handleResponsePacket(const Packet &receivedPacket)
+void Udp::handleResponsePacket(const Packet& receivedPacket)
 {
     mtxSendPacket.lock();
     std::size_t size = _queueSendPacket.size();
@@ -285,7 +284,8 @@ template <typename... Args> void Udp::sendClientToServer(Args... args)
     if (data.size() == 0)
         return;
     try {
-        std::cout << "Sent to server UDP: type(" << data[4] << ") on adress " << _endpointServer.address() << " on port " << _endpointServer.port() << std::endl;
+        std::cout << "Sent to server UDP: type(" << data[4] << ") on adress " << _endpointServer.address() << " on port " << _endpointServer.port()
+                  << std::endl;
         socket_.send_to(asio::buffer(data), _endpointServer);
     } catch (const asio::system_error& ec) {
         std::cerr << "ERROR UDP sending message" << ec.what() << std::endl;

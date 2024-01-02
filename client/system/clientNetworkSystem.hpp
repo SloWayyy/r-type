@@ -18,6 +18,12 @@ class NetworkSystem : public ISystem {
         NetworkSystem(registry &reg, Udp &udpClient, TCPClient &tcpClient): _reg(reg), _udpClient(udpClient), _tcpClient(tcpClient) {};
         ~NetworkSystem() = default;
         void operator()() override {
+            _tcpClient._mtxServerQueueMessages.lock();
+            while (_tcpClient._serverQueueMessages.size() > 0) {
+                std::cout << _tcpClient._serverQueueMessages[0] << std::endl;
+                _tcpClient._serverQueueMessages.erase(_tcpClient._serverQueueMessages.begin());
+            }
+            _tcpClient._mtxServerQueueMessages.unlock();
             _udpClient.mtx.lock();
             while (_udpClient._queue.size() > 0) {
                 _udpClient.updateSparseArray(true);

@@ -31,8 +31,6 @@ TCPClient::~TCPClient()
     }
 }
 
-std::vector<std::string> TCPClient::getServerMessages() { return this->_ServerMessages; }
-
 void TCPClient::createClient()
 {
     try {
@@ -74,11 +72,9 @@ void TCPClient::handleReceive()
             std::istream input_stream(&this->buffer);
             std::string data;
             std::getline(input_stream, data);
-            if (data.find("RFC") != std::string::npos) {
-                std::cout << data << std::endl;
-                this->_ServerMessages.push_back(
-                    data); // stocker toutes les commades reçues du serveur et ensuite recuperer ce vector en faisant un getter pour le passer au game
-            }
+            _mtxServerQueueMessages.lock();
+            this->_serverQueueMessages.push_back(data);
+            _mtxServerQueueMessages.unlock();
             handleReceive();
         } else {
             std::cerr << "Server is disconected." << std::endl;
