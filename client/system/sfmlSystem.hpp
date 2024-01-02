@@ -30,7 +30,7 @@ class SfmlSystem : public ISystem {
 
             for (auto &file : std::filesystem::directory_iterator{assetsPath}) {
                 sf::Texture texture;
-                if (texture.loadFromFile(file.path())) {
+                if (texture.loadFromFile(file.path().stem().string())) {
                     _textures.push_back(std::move(texture));
                     std::cout << file.path().stem().string() << " Loaded" << std::endl;
                 }
