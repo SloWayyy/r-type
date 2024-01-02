@@ -8,6 +8,8 @@
 #ifndef UDP_HPP_
 #define UDP_HPP_
 
+#define CRYPT_KEY 3
+
 #include "../../ecs/registry/registry.hpp"
 #include "../../server/updateGame/updateGame.hpp"
 #include <any>
@@ -65,6 +67,8 @@ class Udp {
         void handleResponsePacket(const Packet &receivedPacket);
         void handle_send(std::shared_ptr<std::string> message, const asio::error_code &error, std::size_t bytes_transferred); // client
         int handleErrorReceive(const asio::error_code &error, std::vector<uint8_t> receivedComponent, Packet receivedPacket, bool isClient);
+
+        std::vector<uint8_t> cryptMessage(std::vector<uint8_t> message);
 
         template <typename ...Args>
         void sendToAll(PacketType packet_type = '0', Args ...args);
