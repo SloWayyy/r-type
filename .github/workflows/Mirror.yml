@@ -56,9 +56,9 @@ jobs:
           echo "origin: ${{ github.head_ref }}"
       - name: Run clang-format
         run: |
-          find network -name '*.hpp' -exec clang-format -i {} \
+          find network -name '*.cpp' -exec clang-format -i {} \
           find client -name '*.cpp' -exec clang-format -i {} \
-          find server -name '*.hpp' -exec clang-format -i {} \
+          find server -name '*.cpp' -exec clang-format -i {} \
       - name: Push if there is changes
         run:
           git diff --exit-code || git config --global user.email "github-actions[bot]@users.noreply.github.com" && git config --global user.name "github-actions[bot]" && git add . && git commit -m "[BOT] (Linter) Format the code" && git push --set-upstream origin ${{ github.head_ref }}
