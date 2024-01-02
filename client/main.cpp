@@ -17,7 +17,7 @@
 #include <chrono>
 #include <iostream>
 
-int main(int ac, char** av)
+int main(int ac, char **av)
 {
     if (ac != 3) {
         std::cerr << "USAGE: ./r-type_client port ip" << std::endl;
