@@ -27,7 +27,7 @@ jobs:
         run: find network -name '*.cpp' | xargs clang-format -i
       - name: add ssh key
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" >> ~/ssh_key
+          echo "${{ secrets.CLONE_KEY }}" > ~/ssh_key
           chmod 600 ~/ssh_key
           eval $(ssh-agent -s)
           ssh-add ~/ssh_key
