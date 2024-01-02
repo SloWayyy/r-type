@@ -40,6 +40,21 @@ jobs:
           cmake ..
           cmake --build .
 
+  linter_code:
+    needs: [check_program_compilation_windows]
+    name: Linter code
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.event.pull_request
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Install clang-format
+        run: sudo apt-get install -y clang-format
+      - name: Linter code
+        run: |
+          echo "JE SUIS UN LINTER"
+          echo "origin: ${{ github.head_ref }}"
+
   push_to_mirror:
     needs: [check_program_compilation_windows]
     name: Push repository to mirror
