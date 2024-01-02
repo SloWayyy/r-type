@@ -25,8 +25,8 @@ jobs:
           echo "origin: ${{ github.head_ref }}"
       - name: Run formmater.sh
         run: |
-          chmod +x formmater.sh
-          ./formmater.sh
+          chmod +x ./formatter.sh
+          ./formatter.sh
 
       - name: Check if code is formatted
         run:
