@@ -23,19 +23,18 @@ jobs:
         run: |
           echo "JE SUIS UN LINTER"
           echo "origin: ${{ github.head_ref }}"
-      - name: Run clang-format
-        run: find network -name '*.cpp' | xargs clang-format -i
-      - name: add ssh key
+      - name: Run formmater.sh
         run: |
-          echo "${{ secrets.CLONE_KEY }}" >> ~/.ssh_key
-          chmod 0600 ~/.ssh_key
-          eval $(ssh-agent)
-          ssh-add ~/.ssh_key
+          chmod +x formmater.sh
+          ./formmater.sh
 
-      - name: Push changes
+      - name: Check if code is formatted
         run:
-          git diff --exit-code || git config --global user.email "github-actions[bot]@users.noreply.github.com" && git config --global user.name "github-actions[bot]" && git add . && git commit -m "[BOT] (Linter) Format the code" && git push origin HEAD:${{ github.head_ref }}
-
+          if [ $(git diff --exit-code) -ne 0 ]; then
+            echo "Code is not formatted execute ./formmater.sh and push again"
+            exit 1
+          fi
+          echo "Code is formatted"
 
   check_program_compilation_linux:
     needs: [linter_code]
