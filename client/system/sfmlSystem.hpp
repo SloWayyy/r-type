@@ -70,7 +70,7 @@ class SfmlSystem : public ISystem {
                 if (_event.type == sf::Event::Closed)
                     _window.close();
                 if (_event.type == sf::Event::TextEntered) {
-                    if (_event.text.unicode < 'z' and _event.text.unicode != 8) {
+                    if (_event.text.unicode < 'z' && _event.text.unicode != 8) {
                         _reg._events.insert({Event_t::TEXT_ENTERED, _event.text.unicode});
                     }
                 }
