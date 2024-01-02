@@ -73,19 +73,6 @@ jobs:
           cmake ..
           cmake --build .
 
-  create_release:
-    needs: [linter_code]
-    name: Create release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Create release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: "TEST release ${{ github.sha }}"
-          generateReleaseNotes: true
-
   push_to_mirror:
     needs: [check_program_compilation_windows]
     name: Push repository to mirror
