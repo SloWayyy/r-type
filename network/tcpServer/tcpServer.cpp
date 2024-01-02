@@ -8,19 +8,24 @@
 #include "tcpServer.hpp"
 
 TCPServer::TCPServer(std::size_t port, std::size_t portUDP, std::string ip)
-    : _port(port), _portUDP(portUDP), _ioContext(), buffer(), _ip(ip),
-      _endpoint(asio::ip::make_address(ip), port),
-      _acceptor(_ioContext, _endpoint)
+    : _port(port)
+    , _portUDP(portUDP)
+    , _ioContext()
+    , buffer()
+    , _ip(ip)
+    , _endpoint(asio::ip::make_address(ip), port)
+    , _acceptor(_ioContext, _endpoint)
 {
     this->createSocket();
     startAccept();
     _thread = std::thread(&TCPServer::run, this);
 }
 
-TCPServer::~TCPServer() {
+TCPServer::~TCPServer()
+{
     _acceptor.close();
     _ioContext.stop();
-    _thread.join(); 
+    _thread.join();
 }
 
 int TCPServer::createSocket()
