@@ -66,10 +66,17 @@ void TCPClient::sendToServer()
         this->_socket, asio::buffer(message + "\n"), std::bind(&TCPClient::handleSend, this, std::placeholders::_1, std::placeholders::_2));
 }
 
+void TCPClient::sendToServer(std::string message)
+{
+    if (message.size() > 1024)
+        return;
+    asio::async_write(
+        this->_socket, asio::buffer(message + "\n"), std::bind(&TCPClient::handleSend, this, std::placeholders::_1, std::placeholders::_2));
+}
+
 void TCPClient::handleReceive()
 {
     asio::async_read_until(this->_socket, this->buffer, "\n", [this](const asio::error_code& error, std::size_t) {
-        std::cout << "RECEIVE TCP" << std::endl;
         if (!error) {
             std::istream input_stream(&this->buffer);
             std::string data;

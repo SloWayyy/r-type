@@ -57,7 +57,11 @@ void TCPServer::handleRead(std::shared_ptr<asio::ip::tcp::socket> client)
             std::getline(input, data);
             std::cout << "Client: " << client->remote_endpoint().address() << ":" << client->remote_endpoint().port() << " Send: " << data
                       << std::endl;
-            this->_ClientMessages.push_back(data);
+            if (data.size() > 10 && data.substr(0, 10) == "(RFC) 210 ") {
+                data.insert(10, "player_id(" + std::to_string(client->remote_endpoint().port()) + ") ");
+                std::cout << "Message received from client " << client->remote_endpoint() << ": " << data << std::endl;
+                this->_ClientMessages.push_back(data);
+            }
             handleRead(client);
         } else {
             std::cerr << "client " << client->remote_endpoint() << " is disconnected." << std::endl;
