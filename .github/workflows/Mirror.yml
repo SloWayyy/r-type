@@ -56,8 +56,9 @@ jobs:
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CURRENT_DATE: ${{ github.event.pull_request.merged_at }}
         with:
-          tag_name: V$(date +'%Y%m%d%H%M%S')
+          tag_name: V-${{ env.CURRENT_DATE }}
           release_name: Version ${{ github.head_ref }}
           draft: false
           prerelease: false
