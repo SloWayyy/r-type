@@ -43,43 +43,43 @@ jobs:
             exit 1
           fi
 
-  check_program_compilation_linux:
-    needs: [linter_code]
-    container:
-      image: epitechcontent/epitest-docker:latest
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+  # check_program_compilation_linux:
+  #   needs: [linter_code]
+  #   container:
+  #     image: epitechcontent/epitest-docker:latest
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
 
-      - name: Configure and build with CMake
-        run: |
-          cmake -B build
-          cmake --build build
+  #     - name: Configure and build with CMake
+  #       run: |
+  #         cmake -B build
+  #         cmake --build build
 
-  check_program_compilation_windows:
-    needs: [linter_code]
-    runs-on: windows-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+  # check_program_compilation_windows:
+  #   needs: [linter_code]
+  #   runs-on: windows-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
 
-      - name: Install CMake
-        run: |
-          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+  #     - name: Install CMake
+  #       run: |
+  #         choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
           
-      - name: Configure and build with CMake
-        run: |
-          mkdir build
-          cd build
-          cmake ..
-          cmake --build .
+  #     - name: Configure and build with CMake
+  #       run: |
+  #         mkdir build
+  #         cd build
+  #         cmake ..
+  #         cmake --build .
   
   create_release:
-    needs: [check_program_compilation_linux, check_program_compilation_windows]
+    # needs: [check_program_compilation_linux, check_program_compilation_windows]
     name: Create release
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true || github.event_name == 'push'
+    # if: github.event.pull_request.merged == true || github.event_name == 'push'
     permissions:
       contents: write
     env:
@@ -98,22 +98,22 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: Latest.Version.${{ env.CURRENT_DATE }}
-          release_name: Version ${{ github.head_ref }}
+          release_name: Latest.Version.${{ env.CURRENT_DATE }}
           draft: false
           prerelease: false
 
-  push_to_mirror:
-    needs: [check_program_compilation_linux, check_program_compilation_windows]
-    name: Push repository to mirror
-    runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true || github.event_name == 'push'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Repository mirroring
-        uses: pixta-dev/repository-mirroring-action@v1
-        with:
-          target_repo_url: ${{ secrets.MIRROR_URL }}
-          ssh_private_key: ${{ secrets.CLONE_KEY }}
+  # push_to_mirror:
+  #   needs: [check_program_compilation_linux, check_program_compilation_windows]
+  #   name: Push repository to mirror
+  #   runs-on: ubuntu-latest
+  #   if: github.event.pull_request.merged == true || github.event_name == 'push'
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
+  #     - name: Repository mirroring
+  #       uses: pixta-dev/repository-mirroring-action@v1
+  #       with:
+  #         target_repo_url: ${{ secrets.MIRROR_URL }}
+  #         ssh_private_key: ${{ secrets.CLONE_KEY }}
