@@ -54,7 +54,7 @@ jobs:
         title: MyReleaseMessage
 
   check_program_compilation_linux:
-    needs: [linter_code]
+    needs: [create_release]
     container:
       image: epitechcontent/epitest-docker:latest
     runs-on: ubuntu-latest
