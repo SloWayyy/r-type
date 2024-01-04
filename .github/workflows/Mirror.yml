@@ -63,7 +63,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: Latest Version.${{ env.CURRENT_DATE }}
+          tag_name: Latest.Version.${{ env.CURRENT_DATE }}
           release_name: Version ${{ github.head_ref }}
           draft: false
           prerelease: false
