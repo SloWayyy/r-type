@@ -24,7 +24,7 @@ jobs:
       - name: Linter code
         run: |
           echo "JE SUIS UN LINTER"
-          echo "origin: ${{ github.head_ref }}"
+          echo "origin: ${{ github.ref }}"
       - name: Run formmater.sh
         run: |
           chmod +x ./formatter.sh
@@ -57,8 +57,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref_name }}
-          release_name: Release ${{ github.ref_name }}
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
 
