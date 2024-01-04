@@ -58,7 +58,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CURRENT_DATE: ${{ github.event.pull_request.merged_at }}
         with:
-          tag_name: V-${{ env.CURRENT_DATE }}
+          tag_name: V${{ env.CURRENT_DATE }}
           release_name: Version ${{ github.head_ref }}
           draft: false
           prerelease: false
