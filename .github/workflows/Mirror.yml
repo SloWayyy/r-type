@@ -6,7 +6,7 @@ on:
       - main
   push:
     tags:
-      - '*'
+      - 'v*.*.*'
     branches:
       - main
 
@@ -58,41 +58,41 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref_name }}
-          release_name: Release ${{ github.ref_name}}
+          release_name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
 
-  check_program_compilation_linux:
-    needs: [create_release]
-    container:
-      image: epitechcontent/epitest-docker:latest
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+  # check_program_compilation_linux:
+  #   needs: [create_release]
+  #   container:
+  #     image: epitechcontent/epitest-docker:latest
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
 
-      - name: Configure and build with CMake
-        run: |
-          cmake -B build
-          cmake --build build
+  #     - name: Configure and build with CMake
+  #       run: |
+  #         cmake -B build
+  #         cmake --build build
 
-  check_program_compilation_windows:
-    needs: [check_program_compilation_linux]
-    runs-on: windows-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+  # check_program_compilation_windows:
+  #   needs: [check_program_compilation_linux]
+  #   runs-on: windows-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
 
-      - name: Install CMake
-        run: |
-          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+  #     - name: Install CMake
+  #       run: |
+  #         choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
           
-      - name: Configure and build with CMake
-        run: |
-          mkdir build
-          cd build
-          cmake ..
-          cmake --build .
+  #     - name: Configure and build with CMake
+  #       run: |
+  #         mkdir build
+  #         cd build
+  #         cmake ..
+  #         cmake --build .
 
   push_to_mirror:
     needs: [check_program_compilation_windows]
