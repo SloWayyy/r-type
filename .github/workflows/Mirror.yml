@@ -48,6 +48,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      CURRENT_DATE: $(date +'%Y%m%d')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -56,9 +58,8 @@ jobs:
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CURRENT_DATE: ${{ github.event.pull_request.merged_at }}
         with:
-          tag_name: V${{ env.CURRENT_DATE }}
+          tag_name: V2${{ env.CURRENT_DATE }}
           release_name: Version ${{ github.head_ref }}
           draft: false
           prerelease: false
