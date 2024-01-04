@@ -35,7 +35,7 @@ class EventManager {
         template<typename T>
         std::vector<std::unique_ptr<T>> &getEvent() {
             try {
-                auto &tmp = _events.at(std::type_index(typeid(T)));
+                _events.at(std::type_index(typeid(T)));
             } catch (const std::exception &e) {
                 this->addEvent<T>();
             }
@@ -52,7 +52,7 @@ class EventManager {
         template<typename T>
         bool checkEvent() {
             try {
-                auto &tmp = _events.at(std::type_index(typeid(T)));
+               _events.at(std::type_index(typeid(T)));
             } catch (const std::exception &e) {
                 _events[std::type_index(typeid(T))];
                 return false;
