@@ -95,7 +95,7 @@ std::vector<uint8_t> Udp::createPacket(PacketType packet_type, uint32_t entity_i
 // Basic packet
 template <typename T> std::vector<uint8_t> Udp::createPacket(PacketType packet_type, T const& component, uint32_t entity_id)
 {
-    size_t type_index = reg.findTypeIndex(component).value_or(reg._typeIndex.size());
+    uint32_t type_index = reg.findTypeIndex(component).value_or(reg._typeIndex.size());
 
     if (type_index == reg._typeIndex.size()) {
         std::cerr << "ERROR: type_index not found message not send" << std::endl;
@@ -293,8 +293,8 @@ template <typename... Args> void Udp::sendClientToServer(Args... args)
     if (data.size() == 0)
         return;
     try {
-        std::cout << "Sent to server UDP: type(" << data[4] << ") on adress " << _endpointServer.address() << " on port " << _endpointServer.port()
-                  << std::endl;
+        // std::cout << "Sent to server UDP: type(" << data[4] << ") on adress " << _endpointServer.address() << " on port " << _endpointServer.port()
+        //           << std::endl;
         socket_.send_to(asio::buffer(cryptData), _endpointServer);
     } catch (const asio::system_error& ec) {
         std::cerr << "ERROR UDP sending message" << ec.what() << std::endl;

@@ -6,7 +6,7 @@
 */
 
 #include "../ecs/registry/registry.hpp"
-#include "../ecs/system/system.hpp"
+#include "../ecs/system/MoveSystem.hpp"
 #include "../network/tcpServer/tcpServer.hpp"
 #include "../network/udp/udp.hpp"
 #include "./system/messageSystem.hpp"
