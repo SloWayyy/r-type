@@ -53,13 +53,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      - name: Get current date
+        run: echo "CURRENT_DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+      - name: Display current date
+        run: echo $CURRENT_DATE
       - name: Create release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: V2${{ env.CURRENT_DATE }}
+          tag_name: Version2 ${{ github.head_ref }}
           release_name: Version ${{ github.head_ref }}
           draft: false
           prerelease: false
