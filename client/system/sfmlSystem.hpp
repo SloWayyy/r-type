@@ -70,23 +70,23 @@ class SfmlSystem : public ISystem {
                     _window.close();
                 if (_event.type == sf::Event::TextEntered) {
                     if (_event.text.unicode < 'z' && _event.text.unicode != 8) {
-                        _reg._events.insert({Event_t::TEXT_ENTERED, _event.text.unicode});
+                        _reg._eventManager.addEvent<textEntered>(_event.text.unicode);
                     }
                 }
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-                    _reg._events.insert({Event_t::KEY_PRESSED, sf::Keyboard::Right});
+                    _reg._eventManager.addEvent<keyPressed>(sf::Keyboard::Right);
                     return;
                 }
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-                    _reg._events.insert({Event_t::KEY_PRESSED, sf::Keyboard::Left});
+                    _reg._eventManager.addEvent<keyPressed>(sf::Keyboard::Left);
                     return;
                 }
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-                    _reg._events.insert({Event_t::KEY_PRESSED, sf::Keyboard::Up});
+                    _reg._eventManager.addEvent<keyPressed>(sf::Keyboard::Up);
                     return;
                 }
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-                    _reg._events.insert({Event_t::KEY_PRESSED, sf::Keyboard::Down});
+                    _reg._eventManager.addEvent<keyPressed>(sf::Keyboard::Down);
                     return;
                 }
             }

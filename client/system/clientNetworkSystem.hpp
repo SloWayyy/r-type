@@ -11,6 +11,7 @@
 #include "../../ecs/system/ISystem.hpp"
 #include "../../network/tcpClient/tcpClient.hpp"
 #include "../../network/udp/udp.hpp"
+#include "../../ecs/event/keyPressed.hpp"
 
 class NetworkSystem : public ISystem {
     public:
@@ -23,14 +24,11 @@ class NetworkSystem : public ISystem {
                 _udpClient.updateSparseArray(true);
             }
             _udpClient.mtx.unlock();
-            if (_reg._events.find(Event_t::KEY_PRESSED) == _reg._events.end())
-                return;
-            else {
+            if(_reg._eventManager.checkEvent<keyPressed>()) {
                 auto &velocity = _reg.getComponent<Velocity>();
                 auto &position = _reg.getComponent<Position>();
                 _udpClient.sendClientToServer(DATA_PACKET, position[_reg._player].value(), _reg._player);
                 _udpClient.sendClientToServer(DATA_PACKET, velocity[_reg._player].value(), _reg._player);
-                _reg._events.erase(Event_t::KEY_PRESSED);
             }
         };
     private:

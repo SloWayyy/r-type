@@ -18,33 +18,29 @@ class PlayerSystem : public ISystem {
         PlayerSystem(registry &reg): _reg(reg) {};
         ~PlayerSystem() = default;
         void operator()() override {
-            Sparse_array<Velocity> &velocity = _reg.getComponent<Velocity>();
-            if (_reg._events.find(Event_t::KEY_PRESSED) == _reg._events.end())
-                return;
-            try
-            {
-                auto &tmp = _reg._events.at(Event_t::KEY_PRESSED);
-                if (tmp == sf::Keyboard::Right) {
-                    velocity[_reg._player].value().x_speed = 1;
-                    velocity[_reg._player].value().y_speed = 0;
-                }
-                if (tmp == sf::Keyboard::Left) {
-                    velocity[_reg._player].value().x_speed = -1;
-                    velocity[_reg._player].value().y_speed = 0;
-                }
-                if (tmp == sf::Keyboard::Up) {
-                    velocity[_reg._player].value().x_speed = 0;
-                    velocity[_reg._player].value().y_speed = -1;
-                }
-                if (tmp == sf::Keyboard::Down) {
-                    velocity[_reg._player].value().x_speed = 0;
-                    velocity[_reg._player].value().y_speed = 1;
-                }
-            }
-            catch(const std::exception& e)
-            {
-                std::cerr << e.what() << '\n';
-            }
+            for_each(_reg._eventManager.getEvent<keyPressed>().begin(), _reg._eventManager.getEvent<keyPressed>().end(), [this](auto &tmp) {
+                auto &velocity = _reg.getComponent<Velocity>();
+                switch(tmp->_key) {
+                    case sf::Keyboard::Right:
+                        velocity[_reg._player].value().x_speed = 1;
+                        velocity[_reg._player].value().y_speed = 0;
+                        break;
+                    case sf::Keyboard::Left:
+                        velocity[_reg._player].value().x_speed = -1;
+                        velocity[_reg._player].value().y_speed = 0;
+                        break;
+                    case sf::Keyboard::Up:
+                        velocity[_reg._player].value().x_speed = 0;
+                        velocity[_reg._player].value().y_speed = -1;
+                        break;
+                    case sf::Keyboard::Down:
+                        velocity[_reg._player].value().x_speed = 0;
+                        velocity[_reg._player].value().y_speed = 1;
+                        break;
+                    default:
+                        break;
+                }       
+            });
         };
     private:
         registry &_reg;
