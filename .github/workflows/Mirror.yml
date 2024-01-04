@@ -7,6 +7,8 @@ on:
   push:
     branches:
       - main
+    tags:
+        - '**'
 
 jobs:
 
@@ -22,7 +24,7 @@ jobs:
       - name: Linter code
         run: |
           echo "JE SUIS UN LINTER"
-          echo "origin: ${{ github.head_ref }}"
+          echo "origin: ${{ github.ref }}"
       - name: Run formmater.sh
         run: |
           chmod +x ./formatter.sh
@@ -41,50 +43,75 @@ jobs:
             exit 1
           fi
 
-  check_program_compilation_linux:
-    needs: [linter_code]
-    container:
-      image: epitechcontent/epitest-docker:latest
+  create_release:
+    name: Create release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      CURRENT_DATE: $(date +'%Y%m%d')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      - name: Get current date
+        run: echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+      - name: Display current date
+        run: echo $CURRENT_DATE
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: V.${{ github.head_ref }}/${{ env.CURRENT_DATE }}
+          release_name: Version ${{ github.head_ref }}
+          draft: false
+          prerelease: false
 
-      - name: Configure and build with CMake
-        run: |
-          cmake -B build
-          cmake --build build
+  # check_program_compilation_linux:
+  #   needs: [create_release]
+  #   container:
+  #     image: epitechcontent/epitest-docker:latest
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
 
-  check_program_compilation_windows:
-    needs: [check_program_compilation_linux]
-    runs-on: windows-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+  #     - name: Configure and build with CMake
+  #       run: |
+  #         cmake -B build
+  #         cmake --build build
 
-      - name: Install CMake
-        run: |
-          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+  # check_program_compilation_windows:
+  #   needs: [check_program_compilation_linux]
+  #   runs-on: windows-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
+
+  #     - name: Install CMake
+  #       run: |
+  #         choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
           
-      - name: Configure and build with CMake
-        run: |
-          mkdir build
-          cd build
-          cmake ..
-          cmake --build .
+  #     - name: Configure and build with CMake
+  #       run: |
+  #         mkdir build
+  #         cd build
+  #         cmake ..
+  #         cmake --build .
 
-  push_to_mirror:
-    needs: [check_program_compilation_windows]
-    name: Push repository to mirror
-    runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true || github.event_name == 'push'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Repository mirroring
-        uses: pixta-dev/repository-mirroring-action@v1
-        with:
-          target_repo_url: ${{ secrets.MIRROR_URL }}
-          ssh_private_key: ${{ secrets.CLONE_KEY }}
+  # push_to_mirror:
+  #   needs: [check_program_compilation_windows]
+  #   name: Push repository to mirror
+  #   runs-on: ubuntu-latest
+  #   if: github.event.pull_request.merged == true || github.event_name == 'push'
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
+  #     - name: Repository mirroring
+  #       uses: pixta-dev/repository-mirroring-action@v1
+  #       with:
+  #         target_repo_url: ${{ secrets.MIRROR_URL }}
+  #         ssh_private_key: ${{ secrets.CLONE_KEY }}
