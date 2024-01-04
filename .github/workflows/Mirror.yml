@@ -103,7 +103,7 @@ jobs:
           prerelease: false
 
   push_to_mirror:
-    needs: [check_program_compilation_linux, check_program_compilation_windows]
+    needs: [create_release]
     name: Push repository to mirror
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true || github.event_name == 'push'
