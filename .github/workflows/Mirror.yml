@@ -5,10 +5,10 @@ on:
     branches:
       - main
   push:
-    tags:
-      - '**'
     branches:
       - main
+    tags:
+        - '**'
 
 jobs:
 
@@ -57,7 +57,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.tag }}
+          tag_name: V${{ github.head_ref }} {${{ github.ref }}}
           release_name: Version ${{ github.head_ref }}
           draft: false
           prerelease: false
