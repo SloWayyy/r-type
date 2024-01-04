@@ -57,7 +57,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.head_ref }}
+          tag_name: ${{ steps.linter_code.outputs.tag_name }}
           release_name: Version ${{ github.head_ref }}
           draft: false
           prerelease: false
