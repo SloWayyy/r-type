@@ -94,18 +94,18 @@ jobs:
   #         cmake ..
   #         cmake --build .
 
-  push_to_mirror:
-    needs: [check_program_compilation_windows]
-    name: Push repository to mirror
-    runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true || github.event_name == 'push'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Repository mirroring
-        uses: pixta-dev/repository-mirroring-action@v1
-        with:
-          target_repo_url: ${{ secrets.MIRROR_URL }}
-          ssh_private_key: ${{ secrets.CLONE_KEY }}
+  # push_to_mirror:
+  #   needs: [check_program_compilation_windows]
+  #   name: Push repository to mirror
+  #   runs-on: ubuntu-latest
+  #   if: github.event.pull_request.merged == true || github.event_name == 'push'
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
+  #     - name: Repository mirroring
+  #       uses: pixta-dev/repository-mirroring-action@v1
+  #       with:
+  #         target_repo_url: ${{ secrets.MIRROR_URL }}
+  #         ssh_private_key: ${{ secrets.CLONE_KEY }}
