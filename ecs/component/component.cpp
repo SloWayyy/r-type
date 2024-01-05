@@ -1,5 +1,6 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
+#include <cstdint>
 #include <iostream>
 
 struct Position {
@@ -47,25 +48,27 @@ struct Controller {
 };
 
 struct Sprite {
-    Sprite(std::string path, sf::IntRect rect)
-        : rect(rect)
+    Sprite(uint8_t textureId, uint32_t left, uint32_t top, uint32_t width, uint32_t height)
+        : textureId(textureId)
+        , rectLeft(left)
+        , rectTop(top)
+        , rectWidth(width)
+        , rectHeight(height)
     {
-        if (!texture.loadFromFile(path)) {
-            std::cerr << "Error loading texture" << std::endl;
-        }
-        sprite.setTexture(texture);
-        sprite.setTextureRect(rect);
-        std::cout << "Sprite created with path: " << path << std::endl;
     }
-    sf::IntRect rect;
-    sf::Texture texture;
-    sf::Sprite sprite;
+    uint8_t textureId;
+    uint32_t rectLeft = 0;
+    uint32_t rectTop = 0;
+    uint32_t rectWidth = 0;
+    uint32_t rectHeight = 0;
+};
 
-    Sprite(const Sprite& other)
+struct Anime {
+    Anime(uint32_t incrementLeft, uint32_t maxWidth)
+        : incrementLeft(incrementLeft)
+        , maxWidth(maxWidth)
     {
-        rect = other.rect;
-        texture = other.texture;
-        sprite = other.sprite;
-        sprite.setTexture(texture);
     }
+    uint32_t incrementLeft;
+    uint32_t maxWidth;
 };

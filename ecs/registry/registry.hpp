@@ -12,6 +12,7 @@
 #include "../entity/entity.hpp"
 #include "../system/ISystem.hpp"
 #include "sparse_array/sparse_array.hpp"
+#include "../event/eventManager.hpp"
 #include <any>
 #include <functional>
 #include <map>
@@ -22,9 +23,6 @@
 #include <typeinfo>
 #include <unordered_map>
 
-enum class Event_t {
-    KEY_PRESSED
-};
 
 class registry
 {
@@ -144,6 +142,7 @@ public:
         for (auto &system : _system) {
             system->operator()();
         }
+        _eventManager.clearEvents();
     };
 
     void registerPacket(size_t type, size_t entity, char *packet)
@@ -171,7 +170,7 @@ public:
         return std::nullopt;
     };
 
-    std::unordered_map<Event_t, uint8_t> _events;
+    EventManager _eventManager;
     std::vector<std::type_index> _typeIndex;
     std::unordered_map<std::type_index, std::any> _components;
     int _player = 0;

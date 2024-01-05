@@ -21,6 +21,7 @@ class TCPClient {
         void run();
         std::thread _thread;
         void startAsyncOperations();
+        void sendToServer(std::string message);
 
     private:
         void createClient();
