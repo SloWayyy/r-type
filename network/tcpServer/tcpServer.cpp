@@ -6,6 +6,7 @@
 */
 
 #include "tcpServer.hpp"
+#include <regex>
 
 TCPServer::TCPServer(std::size_t port, std::size_t portUDP, std::string ip)
     : _port(port)
@@ -56,16 +57,46 @@ void TCPServer::handleRead(std::shared_ptr<asio::ip::tcp::socket> client)
             std::string data;
             std::getline(input, data);
             std::cout << "Client: " << client->remote_endpoint().address() << ":" << client->remote_endpoint().port() << " Send: " << data
-                      << std::endl;
+                    << std::endl;
             if (data.size() > 10 && data.substr(0, 10) == "(RFC) 210 ") {
                 data.insert(10, "player_id(" + std::to_string(client->remote_endpoint().port()) + ") ");
-                std::cout << "Message received from client " << client->remote_endpoint() << ": " << data << std::endl;
+                static std::regex pattern("player_id\\((\\d+)\\)\\s*/(.*)");
+
+                std::smatch match;
+                if (std::regex_search(data, match, pattern)) {
+                    std::string playerIdStr = match[1].str();
+                    try {
+                        int playerId = std::stoi(playerIdStr);
+                        std::string restOfMessage = match[2].str();
+                        if (std::strncmp(match[2].str().c_str(), "kick ", 5) == 0) {
+                            std::cout << "KICKING PLAYER " << match[2].str()[5] << std::endl;
+                            int index = match[2].str()[5] - '0';
+                            size_t id = getClientByIndex(index);
+
+                            if (id != PLAYER_NOT_FOUND) {
+                                // _clientsInfo.erase(id);
+                                // return;
+                                closeConnection(_clientsInfo[id]);
+                                return;
+                            }
+                        }
+                    } catch (const std::invalid_argument& e) {
+                        std::cerr << "Erreur de conversion en entier : " << e.what() << std::endl;
+                    } catch (const std::out_of_range& e) {
+                        std::cerr << "Dépassement de capacité de l'entier : " << e.what() << std::endl;
+                    }
+                _mtx.lock();
                 this->_ClientMessages.push_back(data);
+                _mtx.unlock();
+                }
             }
             handleRead(client);
         } else {
+            std::cout << "JE RENTRE LAAA" << std::endl;
             std::cerr << "client " << client->remote_endpoint() << " is disconnected." << std::endl;
+            _mtx.lock();
             _clientsInfo.erase(client->remote_endpoint().port());
+            _mtx.unlock();
             sendMessageToAllClients("(RFC) PLAYER_ID " + std::to_string(client->remote_endpoint().port()) + " DISCONNECTED ");
         }
     });
@@ -126,4 +157,35 @@ void TCPServer::startAccept()
             std::cerr << "Error accepting connection: " << ec.message() << std::endl;
         }
     });
+}
+
+void TCPServer::closeConnection(std::shared_ptr<asio::ip::tcp::socket> client) {
+    std::cout << "Closing connection for client " << client->remote_endpoint() << std::endl;
+    auto port = client->remote_endpoint().port();
+    try {
+        if (client->is_open()) {
+            std::cout << "Connection closed for client " << client->remote_endpoint() << std::endl;
+            client->close();
+        } else {
+            std::cout << "Connection is not open for client " << client->remote_endpoint() << std::endl;
+        }
+    } catch (const asio::system_error& ec) {
+        std::cerr << "Error closing connection for client " << client->remote_endpoint() << ": " << ec.what() << std::endl;
+    }
+    // throw asio::system_error();
+
+    // auto it = _clientsInfo.find(port);
+    // if (it != _clientsInfo.end()) {
+    //     std::cout << "JE SUPPRIME LE CLIENT" << std::endl;
+    //     _clientsInfo.erase(it);
+    // }
+    // for (const auto& clientInfo : _clientsInfo) {
+    //     if (clientInfo.second == client) {
+    //         _clientsInfo.erase(clientInfo);
+    //         // std::cout << "Client " << client->remote_endpoint() << " is disconnected." << std::endl;
+    //     }
+    // }
+    // _clientsInfo.remove(client->remote_endpoint().port());
+    // _clientsInfo.erase(static_cast<size_t>(port));
+    // sendMessageToAllClients("(RFC) PLAYER_ID " + std::to_string(port) + " DISCONNECTED ");
 }

@@ -216,9 +216,6 @@ void Udp::handleReceiveServer(const asio::error_code& error, std::size_t bytes_t
 
 void Udp::processReceivedPacket(const Packet& receivedPacket, const std::vector<uint8_t>& receivedComponent)
 {
-    const std::map<std::size_t, std::function<void(const Packet&, const std::vector<uint8_t>&)>> ptr_fct
-        = { { NEW_CONNECTION, [this](const Packet& packet, const std::vector<uint8_t>& component) { handleNewConnection(packet); } },
-              { RESPONSE_PACKET, [this](const Packet& packet, const std::vector<uint8_t>& component) { handleResponsePacket(packet); } } };
     auto it = ptr_fct.find(receivedPacket.packet_type);
 
     if (it != ptr_fct.end()) {

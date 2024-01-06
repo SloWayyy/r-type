@@ -118,6 +118,9 @@ class Udp {
         int _entity_id = -1;
         registry &reg;
         UpdateGame &updateGame;
+        const std::map<std::size_t, std::function<void(const Packet&, const std::vector<uint8_t>&)>> ptr_fct
+        = { { NEW_CONNECTION, [this](const Packet& packet, const std::vector<uint8_t>& component) { handleNewConnection(packet); } },
+              { RESPONSE_PACKET, [this](const Packet& packet, const std::vector<uint8_t>& component) { handleResponsePacket(packet); } } };
 };
 
 #include "udp.cpp"
