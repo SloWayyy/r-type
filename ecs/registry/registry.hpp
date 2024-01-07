@@ -23,7 +23,6 @@
 #include <typeinfo>
 #include <unordered_map>
 
-
 class registry
 {
 public:
