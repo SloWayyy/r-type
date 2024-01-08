@@ -14,10 +14,8 @@ Udp::Udp(std::size_t port, std::string ip, registry& reg, UpdateGame& updateGame
     , _magic_number(4242)
     , reg(reg)
     , updateGame(updateGame)
-    , ptr_fct({
-    { NEW_CONNECTION, [this](const Packet& packet, const std::vector<uint8_t>&) { handleNewConnection(packet); } },
-    { RESPONSE_PACKET, [this](const Packet& packet, const std::vector<uint8_t>&) { handleResponsePacket(packet); } }
-    })
+    , ptr_fct({ { NEW_CONNECTION, [this](const Packet& packet, const std::vector<uint8_t>&) { handleNewConnection(packet); } },
+          { RESPONSE_PACKET, [this](const Packet& packet, const std::vector<uint8_t>&) { handleResponsePacket(packet); } } })
 {
     try {
         this->socket_ = asio::ip::udp::socket(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), port));

@@ -25,10 +25,11 @@ TCPServer::TCPServer(std::size_t port, std::size_t portUDP, std::string ip)
     this->_thread = std::thread(&TCPServer::run, this);
 }
 
-TCPServer::~TCPServer() {
+TCPServer::~TCPServer()
+{
     this->_acceptor.close();
     this->_ioContext.stop();
-    this->_thread.join(); 
+    this->_thread.join();
 }
 
 int TCPServer::OpenAndReadAdmin(std::string file)
@@ -64,7 +65,8 @@ int TCPServer::OpenAndReadScoreboard(std::string file)
     ifs.open(file, std::fstream::in);
     if (ifs.is_open()) {
         while (std::getline(ifs, buffer)) {
-            this->_scoreboard.push_back(std::make_pair(std::stoi(buffer.substr(0, buffer.find(":"))), std::stoi(buffer.substr(buffer.find(":") + 1, buffer.size()))));
+            this->_scoreboard.push_back(
+                std::make_pair(std::stoi(buffer.substr(0, buffer.find(":"))), std::stoi(buffer.substr(buffer.find(":") + 1, buffer.size()))));
         }
     } else {
         std::cerr << file << ": No such file or directory" << std::endl;
