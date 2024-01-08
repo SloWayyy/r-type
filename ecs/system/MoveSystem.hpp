@@ -18,30 +18,8 @@ class MoveSystem : public ISystem {
         MoveSystem() = delete;
         MoveSystem(registry &reg): _reg(reg) {};
         ~MoveSystem() = default;
-        void operator()() override {
-            auto &position = _reg.getComponent<Position>();
-            auto &velocity = _reg.getComponent<Velocity>();
 
-            for (long unsigned int i = 0; i < position.size(); i++) {
-                if (position[i] && velocity[i]) {
-                    position[i].value().x += velocity[i].value().x_speed;
-                    position[i].value().y += velocity[i].value().y_speed;
-                }
-            }
-        };
-    private:
-        registry &_reg;
-};
-
-class CollisionSystem : public ISystem {
-    public:
-        CollisionSystem() = delete;
-        CollisionSystem(registry &reg): _reg(reg) {};
-        ~CollisionSystem() = default;
-        void operator()() override {
-            auto &position = _reg.getComponent<Position>();
-            auto &velocity = _reg.getComponent<Velocity>();
-
+        bool isColliding(Sparse_array<Position> &position, Sparse_array<Velocity> &velocity) {
             for (long unsigned int i = 0; i < position.size(); i++) {
                 if (position[i] && velocity[i]) {
                     for (long unsigned int j = 0; j < position.size(); j++) {
@@ -51,9 +29,26 @@ class CollisionSystem : public ISystem {
                                 position[i].value().y < position[j].value().y + AVERAGE_SIZE_SPRITE &&
                                 position[i].value().y + AVERAGE_SIZE_SPRITE > position[j].value().y) {
                                 _reg._eventManager.addEvent<collision>(i, j);
+                                return true;
                             }
                         }
                     }
+                }
+            }
+            return false;
+        }
+
+        void operator()() override {
+            auto &position = _reg.getComponent<Position>();
+            auto &velocity = _reg.getComponent<Velocity>();
+
+            if (isColliding(position, velocity))
+                return;
+
+            for (long unsigned int i = 0; i < position.size(); i++) {
+                if (position[i] && velocity[i]) {
+                    position[i].value().x += velocity[i].value().x_speed;
+                    position[i].value().y += velocity[i].value().y_speed;
                 }
             }
         };
