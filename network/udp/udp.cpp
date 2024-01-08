@@ -5,20 +5,18 @@
 ** udp
 */
 
+#include "../../ecs/event/shoot.hpp"
 #include <random>
 #include <typeindex>
 #include <unordered_map>
-#include "../../ecs/event/shoot.hpp"
 
 Udp::Udp(std::size_t port, std::string ip, registry& reg, UpdateGame& updateGame)
     : socket_(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), 0))
     , _magic_number(4242)
     , reg(reg)
     , updateGame(updateGame)
-    , ptr_fct({
-    { NEW_CONNECTION, [this](const Packet& packet, const std::vector<uint8_t>&) { handleNewConnection(packet); } },
-    { RESPONSE_PACKET, [this](const Packet& packet, const std::vector<uint8_t>&) { handleResponsePacket(packet); } }
-    })
+    , ptr_fct({ { NEW_CONNECTION, [this](const Packet& packet, const std::vector<uint8_t>&) { handleNewConnection(packet); } },
+          { RESPONSE_PACKET, [this](const Packet& packet, const std::vector<uint8_t>&) { handleResponsePacket(packet); } } })
 {
     try {
         this->socket_ = asio::ip::udp::socket(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), port));
@@ -67,11 +65,10 @@ void Udp::start_receive(bool client)
     }
 }
 
-template <typename T>
-std::vector<uint8_t> Udp::createPacket(T &event, uint32_t entity_id)
+template <typename T> std::vector<uint8_t> Udp::createPacket(T& event, uint32_t entity_id)
 {
     std::type_index type_index = typeid(T);
-    Packet packet = { _magic_number, EVENT_PACKET, std::time(nullptr), entity_id, 0, generate_uuid()};
+    Packet packet = { _magic_number, EVENT_PACKET, std::time(nullptr), entity_id, 0, generate_uuid() };
 
     std::vector<uint8_t> result;
     result.resize(sizeof(Packet) + sizeof(T));
@@ -111,8 +108,7 @@ std::vector<uint8_t> Udp::createPacket(PacketType packet_type, uint32_t entity_i
 }
 
 // Basic packet
-template <typename T>
-std::vector<uint8_t> Udp::createPacket(PacketType packet_type, T const& component, uint32_t entity_id)
+template <typename T> std::vector<uint8_t> Udp::createPacket(PacketType packet_type, T const& component, uint32_t entity_id)
 {
     uint32_t type_index = reg.findTypeIndex(component).value_or(reg._typeIndex.size());
 
@@ -312,8 +308,7 @@ void Udp::run()
     std::cout << "Server is closing" << std::endl;
 }
 
-template <typename... Args>
-void Udp::sendClientToServer(Args... args)
+template <typename... Args> void Udp::sendClientToServer(Args... args)
 {
     auto data = createPacket(args...);
 
