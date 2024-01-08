@@ -169,9 +169,10 @@ void Udp::handleReceiveClient(const asio::error_code& error, std::size_t bytes_t
         return;
 
     if (receivedPacket.packet_type == EVENT_PACKET) {
-        std::cout << "JE RECOIS L'EVENT DANS LE VCLIENT MGL HEHE" << std::endl;
-        // shoot test = *reinterpret_cast<const shoot*>(receivedComponent.data());
-        // reg._eventManager.addEvent<shoot>(test.entity_id);
+        shoot test = *reinterpret_cast<const shoot*>(receivedComponent.data());
+        if (test.entity_id != _entity_id) {
+            reg._eventManager.addEvent<shoot>(test.entity_id);
+        }
     } else if (receivedPacket.packet_type == NEW_CONNECTION) {
         handleNewConnection(receivedPacket, receivedComponent);
     } else if (receivedPacket.timestamp >= _last_timestamp) {
@@ -210,7 +211,6 @@ void Udp::handleTimestampUpdate(const Packet& receivedPacket, const std::vector<
 void Udp::handleEvents(Packet& receivedPacket, const std::vector<uint8_t>& receivedComponent)
 {
     shoot test = *reinterpret_cast<const shoot*>(receivedComponent.data());
-    std::cout << "-----------> = --------------> = test: " << test.entity_id << std::endl;
     sendToAll(EVENT_PACKET, receivedComponent, receivedPacket);
 }
 

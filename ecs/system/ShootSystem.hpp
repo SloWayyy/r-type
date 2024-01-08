@@ -19,7 +19,7 @@ class ShootSystem : public ISystem {
         void operator()() override {
             for_each(_reg._eventManager.getEvent<shoot>().begin(), _reg._eventManager.getEvent<shoot>().end(), [this](auto &tmp) {
                 auto &position = _reg.getComponent<Position>();
-                bulletShot(4, position[tmp->entity_id].value().x, position[tmp->entity_id].value().y);
+                bulletShot(tmp->entity_id, position[tmp->entity_id].value().x, position[tmp->entity_id].value().y);
             });
         };
     private:
