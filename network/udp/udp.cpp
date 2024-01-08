@@ -65,9 +65,7 @@ void Udp::start_receive(bool client)
 std::vector<uint8_t> Udp::createPacket(std::vector<uint8_t> component, Packet packet)
 {
     std::vector<uint8_t> data;
-    std::vector<uint8_t> packetBytes(reinterpret_cast<const uint8_t*>(&packet),
-
-        reinterpret_cast<const uint8_t*>(&packet) + sizeof(Packet));
+    std::vector<uint8_t> packetBytes(reinterpret_cast<const uint8_t*>(&packet), reinterpret_cast<const uint8_t*>(&packet) + sizeof(Packet));
     data.insert(data.end(), packetBytes.begin(), packetBytes.end());
     data.insert(data.end(), component.begin(), component.end());
     return data;
