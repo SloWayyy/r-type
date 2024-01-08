@@ -36,7 +36,7 @@ int main(int ac, char** av)
     reg.addEntity();
     auto& sprite = reg.getComponent<Sprite>();
     auto& anime = reg.getComponent<Anime>();
-    anime.emplace_at(0, 32, 198);
+    anime.emplace_at(0, 32, 198, 5);
     sprite.emplace_at(0, 0, 192, 0, 32, 32);
     sprite.emplace_at(1, 1, 192, 0, 32, 32);
     sprite.emplace_at(2, 1, 192, 0, 32, 32);
