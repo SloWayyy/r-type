@@ -13,6 +13,8 @@
 #include <vector>
 #include <cstring>
 
+#define DEFAULT_SIZE 512
+
 template <typename Component> // You can also mirror the definition of std :: vector ,
 
 class Sparse_array {
@@ -27,7 +29,10 @@ class Sparse_array {
         using const_iterator = typename container_t::const_iterator;
 
     public:
-        Sparse_array() = default;                         // You can add more constructors .
+        Sparse_array() {
+            for (size_t i = 0; i < DEFAULT_SIZE; i++)
+                _data.push_back(std::nullopt);
+        }; 
         Sparse_array(Sparse_array const &other): _data(other._data) {}; // copy constructor
         Sparse_array(Sparse_array &&) = default; // move constructor
         ~Sparse_array() = default;
