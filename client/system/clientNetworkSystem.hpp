@@ -30,10 +30,9 @@ class NetworkSystem : public ISystem {
                 _udpClient.sendClientToServer(DATA_PACKET, position[_reg._player].value(), _reg._player);
                 _udpClient.sendClientToServer(DATA_PACKET, velocity[_reg._player].value(), _reg._player);
             }
-            // if(_reg._eventManager.checkEvent<ShootSystem>()) {
-            //     auto &position = _reg.getComponent<Position>();
-            //     _udpClient.sendClientToServer(DATA_PACKET, position[_reg._player].value(), _reg._player);
-            // }
+            if(_reg._eventManager.checkEvent<ShootSystem>()) {
+                // _udpClient.sendClientToServer(EVENT_PACKET);
+            }
         };
     private:
         registry &_reg;

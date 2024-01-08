@@ -44,7 +44,7 @@ class PlayerSystem : public ISystem {
                         break;
                     default:
                         break;
-                }       
+                }
             });
         };
     private:

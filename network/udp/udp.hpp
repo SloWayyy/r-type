@@ -28,6 +28,7 @@ enum PacketType {
     REPEAT_PACKET = '1',
     RESPONSE_PACKET = '2',
     NEW_CONNECTION = '3',
+    EVENT_PACKET = '4',
 };
 
 struct Packet {
@@ -118,6 +119,7 @@ class Udp {
         int _entity_id = -1;
         registry &reg;
         UpdateGame &updateGame;
+        const std::map<std::size_t, std::function<void(const Packet&, const std::vector<uint8_t>&)>> ptr_fct;
 };
 
 #include "udp.cpp"
