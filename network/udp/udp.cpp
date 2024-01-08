@@ -8,6 +8,7 @@
 #include <random>
 #include <typeindex>
 #include <unordered_map>
+#include "../../ecs/event/shoot.hpp"
 
 Udp::Udp(std::size_t port, std::string ip, registry& reg, UpdateGame& updateGame)
     : socket_(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), 0))
@@ -66,6 +67,21 @@ void Udp::start_receive(bool client)
     }
 }
 
+template <typename T>
+std::vector<uint8_t> Udp::createPacket(T &event, uint32_t entity_id)
+{
+    std::type_index type_index = typeid(T);
+    Packet packet = { _magic_number, EVENT_PACKET, std::time(nullptr), entity_id, 0, generate_uuid()};
+
+    std::vector<uint8_t> result;
+    result.resize(sizeof(Packet) + sizeof(T));
+    const uint8_t* packetBytes = reinterpret_cast<const uint8_t*>(&packet);
+    std::copy(packetBytes, packetBytes + sizeof(Packet), result.begin());
+    const uint8_t* eventBytes = reinterpret_cast<const uint8_t*>(&event);
+    std::copy(eventBytes, eventBytes + sizeof(T), result.begin() + sizeof(Packet));
+    return result;
+}
+
 std::vector<uint8_t> Udp::createPacket(std::vector<uint8_t> component, Packet packet)
 {
     std::vector<uint8_t> data;
@@ -95,7 +111,8 @@ std::vector<uint8_t> Udp::createPacket(PacketType packet_type, uint32_t entity_i
 }
 
 // Basic packet
-template <typename T> std::vector<uint8_t> Udp::createPacket(PacketType packet_type, T const& component, uint32_t entity_id)
+template <typename T>
+std::vector<uint8_t> Udp::createPacket(PacketType packet_type, T const& component, uint32_t entity_id)
 {
     uint32_t type_index = reg.findTypeIndex(component).value_or(reg._typeIndex.size());
 
@@ -191,6 +208,12 @@ void Udp::handleTimestampUpdate(const Packet& receivedPacket, const std::vector<
     mtx.unlock();
 }
 
+void Udp::handleEvents(Packet& receivedPacket, const std::vector<uint8_t>& receivedComponent)
+{
+    shoot test = *reinterpret_cast<const shoot*>(receivedComponent.data());
+    std::cout << "-----------> = --------------> = test: " << test.entity_id << std::endl;
+}
+
 void Udp::sendPlayerListToClient(std::vector<std::vector<uint8_t>> entities, Packet receivedPacket)
 {
     for (size_t i = 1; i < entities.size(); i += 1) {
@@ -215,6 +238,11 @@ void Udp::handleReceiveServer(const asio::error_code& error, std::size_t bytes_t
     Packet receivedPacket;
     std::vector<uint8_t> receivedComponent = unpack(receivedPacket, _recv_buffer, bytes_transferred);
 
+    if (receivedPacket.packet_type == EVENT_PACKET) {
+        handleEvents(receivedPacket, receivedComponent);
+        start_receive();
+        return;
+    }
     if (handleErrorReceive(error, receivedComponent, receivedPacket, false) == -1)
         return;
     processReceivedPacket(receivedPacket, receivedComponent);
@@ -284,7 +312,8 @@ void Udp::run()
     std::cout << "Server is closing" << std::endl;
 }
 
-template <typename... Args> void Udp::sendClientToServer(Args... args)
+template <typename... Args>
+void Udp::sendClientToServer(Args... args)
 {
     auto data = createPacket(args...);
 

@@ -18,7 +18,8 @@ class ShootSystem : public ISystem {
         ~ShootSystem() = default;
         void operator()() override {
             for_each(_reg._eventManager.getEvent<shoot>().begin(), _reg._eventManager.getEvent<shoot>().end(), [this](auto &tmp) {
-                bulletShot(4, tmp->_player_x, tmp->_player_y);
+                auto &position = _reg.getComponent<Position>();
+                bulletShot(4, position[tmp->entity_id].value().x, position[tmp->entity_id].value().y);
             });
         };
     private:
