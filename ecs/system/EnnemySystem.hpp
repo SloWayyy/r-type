@@ -28,6 +28,8 @@ class EnnemySystem : public ISystem {
             auto& sprite = _reg.getComponent<Sprite>();
             auto& position = _reg.getComponent<Position>();
             auto &size = _reg.getComponent<Size>();
+            auto &hitbox = _reg.getComponent<HitBox>();
+            hitbox.emplace_at(4, 15, 15); // TODO: change hitbox size
             sprite.emplace_at(Entity_id, 3, 0, 0, 576, 430);
             position.emplace_at(Entity_id, 450, (rand() % 900) - 200);
             size.emplace_at(Entity_id, 1, 1);

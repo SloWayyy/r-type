@@ -19,7 +19,7 @@ std::vector<std::vector<uint8_t>> UpdateGame::updateEntity()
 
     static int y = 50;
     uint32_t entity_id = _reg.addEntity();
-    entities.resize(4);
+    entities.resize(5);
     entities[0].resize(sizeof(uint32_t));
     std::memcpy(entities[0].data(), &entity_id, sizeof(uint32_t));
 
@@ -40,6 +40,12 @@ std::vector<std::vector<uint8_t>> UpdateGame::updateEntity()
     const Size& sz = size[entity_id].value();
     entities[3].resize(sizeof(Size));
     std::memcpy(entities[3].data(), &sz, sizeof(Size));
+
+    auto& hitboxs = _reg.getComponent<HitBox>();
+    hitboxs.emplace_at(entity_id, 32, 32);
+    const HitBox& hitbox = hitboxs[entity_id].value();
+    entities[4].resize(sizeof(HitBox));
+    std::memcpy(entities[4].data(), &hitbox, sizeof(HitBox));
 
     y += 80;
     return entities;
