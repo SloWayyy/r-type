@@ -33,6 +33,9 @@ class NetworkSystem : public ISystem {
             if(_reg._eventManager.checkEvent<ShootSystem>()) {
                 // _udpClient.sendClientToServer(EVENT_PACKET);
             }
+            if(_reg._eventManager.checkEvent<EnnemySystem>()) {
+                // _udpClient.sendClientToServer(EVENT_PACKET);
+            }
         };
     private:
         registry &_reg;

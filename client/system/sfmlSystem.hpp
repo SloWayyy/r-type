@@ -92,6 +92,10 @@ class SfmlSystem : public ISystem {
                     _reg._eventManager.addEvent<keyPressed>(sf::Keyboard::Space);
                     return;
                 }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::X)) {
+                    _reg._eventManager.addEvent<keyPressed>(sf::Keyboard::X);
+                    return;
+                }
             }
         }
         sf::Event _event;

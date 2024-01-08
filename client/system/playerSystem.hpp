@@ -11,7 +11,7 @@
 #include "../../ecs/system/ISystem.hpp"
 #include "../../ecs/registry/registry.hpp"
 #include "../../ecs/event/shoot.hpp"
-
+#include "../../ecs/event/ennemy.hpp"
 
 class PlayerSystem : public ISystem {
     public:
@@ -41,6 +41,9 @@ class PlayerSystem : public ISystem {
                         break;
                     case sf::Keyboard::Space:
                         _reg._eventManager.addEvent<shoot>(position[_reg._player].value().x, position[_reg._player].value().y);
+                        break;
+                    case sf::Keyboard::X:
+                        _reg._eventManager.addEvent<ennemy>(position[_reg._player].value().x, position[_reg._player].value().y);
                         break;
                     default:
                         break;

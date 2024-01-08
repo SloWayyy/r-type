@@ -8,6 +8,7 @@
 #include "../ecs/registry/registry.hpp"
 #include "../ecs/system/MoveSystem.hpp"
 #include "../ecs/system/ShootSystem.hpp"
+#include "../ecs/system/EnnemySystem.hpp"
 #include "../network/tcpClient/tcpClient.hpp"
 #include "../network/udp/udp.hpp"
 #include "./system/animeSystem.hpp"
@@ -36,6 +37,7 @@ int main(int ac, char **av)
     reg.addEntity();
     reg.addEntity();
     reg.addEntity();
+    reg.addEntity();
     auto& sprite = reg.getComponent<Sprite>();
     auto& anime = reg.getComponent<Anime>();
     anime.emplace_at(0, 32, 198);
@@ -43,7 +45,7 @@ int main(int ac, char **av)
     sprite.emplace_at(1, 1, 192, 0, 32, 32);
     sprite.emplace_at(2, 1, 192, 0, 32, 32);
     sprite.emplace_at(3, 1, 192, 0, 32, 32);
-    // bulletShot(reg, 4);
+    // sprite.emplace_at(5, 3, 192, 0, 32, 32);
 
     reg.add_system<messageSystem>(tcpClient);
     reg.add_system<PlayerSystem>();
@@ -51,6 +53,7 @@ int main(int ac, char **av)
     reg.add_system<NetworkSystem>(std::ref(udpClient), std::ref(tcpClient));
     reg.add_system<AnimeSystem>();
     reg.add_system<ShootSystem>();
+    reg.add_system<EnnemySystem>();
     auto current_time = std::chrono::high_resolution_clock::now();
     float refresh_rate = 1.0f / 60.0f;
     float elapsed_time = 0.0f;
