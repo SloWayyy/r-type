@@ -9,7 +9,6 @@
     #define REGISTRY_HPP_
 
 #include "../component/component.cpp"
-#include "../entity/entity.hpp"
 #include "../system/ISystem.hpp"
 #include "sparse_array/sparse_array.hpp"
 #include "../event/eventManager.hpp"
@@ -22,6 +21,8 @@
 #include <typeindex>
 #include <typeinfo>
 #include <unordered_map>
+
+using Entity = uint32_t;
 
 class registry
 {
@@ -103,7 +104,7 @@ public:
         return t;
     };
 
-    void removeEntity(Entity const &entity)
+    void removeEntity(Entity const entity)
     {
         if (entity >= _entity_count)
             return;
@@ -115,17 +116,15 @@ public:
         _entity_graveyard.push_back(entity);
     };
 
-    size_t addEntity()
+    Entity addEntity()
     {
         if (!_entity_graveyard.empty()) {
             Entity tmp = _entity_graveyard.back();
             _entity_graveyard.erase(_entity_graveyard.end() - 1);
             return tmp;
         }
-
-        for (auto &func : _addFunction) {
-            func(*this, _entity_count);
-        }
+        if (_entity_count >= DEFAULT_SIZE)
+            throw std::runtime_error("Entity limit reached");
         _entity_count++;
         return _entity_count - 1;
     };
@@ -180,7 +179,7 @@ private:
     std::vector<std::function<void(registry &, Entity const &)>> _eraseFunction;
     std::vector<std::function<void(registry &, Entity const &)>> _addFunction;
     std::vector<std::function<void(registry &, size_t const &, char *)>> _addPacketFunction;
-    Entity _entity_count = Entity(0);
+    uint32_t _entity_count = 0;
     std::map<std::string, Entity> _linker;
 };
 #endif /* !REGISTRY_HPP_ */

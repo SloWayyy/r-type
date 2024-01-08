@@ -26,10 +26,14 @@ class AnimeSystem : public ISystem {
                     continue;
                 auto &sprite_value = sprite[i].value();
                 auto &anime_value = anime[i].value();
-
-                sprite_value.rectLeft += anime_value.incrementLeft;
-                if (sprite_value.rectLeft >= anime_value.maxWidth)
-                    sprite_value.rectLeft = 0;
+                if (anime_value.internClock == anime_value.targetClock) {
+                    sprite_value.rectLeft += anime_value.incrementLeft;
+                    if (sprite_value.rectLeft >= anime_value.maxWidth)
+                        sprite_value.rectLeft = 0;
+                    anime_value.internClock = 0;
+                } else {
+                    anime_value.internClock++;
+                }
             }
         };
     private:
