@@ -24,11 +24,13 @@ class MoveSystem : public ISystem {
                 if (position[i] && velocity[i]) {
                     for (long unsigned int j = 0; j < position.size(); j++) {
                         if (position[j] && velocity[j] && i != j) {
-                            if (position[i].value().x < position[j].value().x + AVERAGE_SIZE_SPRITE &&
-                                position[i].value().x + AVERAGE_SIZE_SPRITE > position[j].value().x &&
-                                position[i].value().y < position[j].value().y + AVERAGE_SIZE_SPRITE &&
-                                position[i].value().y + AVERAGE_SIZE_SPRITE > position[j].value().y) {
+                            if (position[i].value().x + velocity[i].value().x_speed < position[j].value().x + AVERAGE_SIZE_SPRITE &&
+                                position[i].value().x + velocity[i].value().x_speed + AVERAGE_SIZE_SPRITE > position[j].value().x &&
+                                position[i].value().y + velocity[i].value().y_speed < position[j].value().y + AVERAGE_SIZE_SPRITE &&
+                                position[i].value().y + velocity[i].value().y_speed + AVERAGE_SIZE_SPRITE > position[j].value().y) {
                                 _reg._eventManager.addEvent<collision>(i, j);
+                                velocity[i].value().x_speed = 0;
+                                velocity[i].value().y_speed = 0;
                                 return true;
                             }
                         }
@@ -42,8 +44,7 @@ class MoveSystem : public ISystem {
             auto &position = _reg.getComponent<Position>();
             auto &velocity = _reg.getComponent<Velocity>();
 
-            if (isColliding(position, velocity))
-                return;
+            isColliding(position, velocity);
 
             for (long unsigned int i = 0; i < position.size(); i++) {
                 if (position[i] && velocity[i]) {
