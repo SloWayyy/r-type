@@ -64,11 +64,14 @@ struct Sprite {
 };
 
 struct Anime {
-    Anime(uint32_t incrementLeft, uint32_t maxWidth)
+    Anime(uint32_t incrementLeft, uint32_t maxWidth, uint32_t targetClock)
         : incrementLeft(incrementLeft)
         , maxWidth(maxWidth)
+        , targetClock(targetClock)
     {
     }
     uint32_t incrementLeft;
     uint32_t maxWidth;
+    uint32_t targetClock;
+    uint32_t internClock = 0;
 };
