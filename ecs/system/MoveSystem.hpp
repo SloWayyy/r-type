@@ -34,8 +34,6 @@ class MoveSystem : public ISystem {
                                 position[i].value().x + velocity[i].value().x_speed + AVERAGE_SIZE_SPRITE > position[j].value().x &&
                                 position[i].value().y + velocity[i].value().y_speed < position[j].value().y + AVERAGE_SIZE_SPRITE &&
                                 position[i].value().y + velocity[i].value().y_speed + AVERAGE_SIZE_SPRITE > position[j].value().y) {
-                                std::cout << "First (" << i << ") entity x:" << position[i].value().x << " y:" << position[i].value().y << std::endl;
-                                std::cout << "Second (" << j << ") entity x:" << position[j].value().x << " y:" << position[j].value().y << std::endl;
                                 _reg._eventManager.addEvent<collision>(i, j);
                                 velocity[i].value().x_speed = 0;
                                 velocity[i].value().y_speed = 0;
