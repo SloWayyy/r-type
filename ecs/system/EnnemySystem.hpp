@@ -19,11 +19,11 @@ class EnnemySystem : public ISystem {
         ~EnnemySystem() = default;
         void operator()() override {
             for (auto &tmp : _reg._eventManager.getEvent<ennemy>()) {
-                EnnemyMove(_reg.addEntity(), tmp->_player_x, tmp->_player_y);
+                EnnemyMove(_reg.addEntity());
             };
         };
     private:
-        void EnnemyMove(uint32_t Entity_id, uint32_t player_x, uint32_t player_y) {
+        void EnnemyMove(uint32_t Entity_id) {
             auto &velocity = _reg.getComponent<Velocity>();
             auto& sprite = _reg.getComponent<Sprite>();
             auto& position = _reg.getComponent<Position>();

@@ -26,16 +26,15 @@ class MoveSystem : public ISystem {
                         if (position[j] && velocity[j] && i != j && hitbox[j]) {
                             if (collisionGroup[i] && collisionGroup[j])
                                 if (collisionGroup[i].value().collisionGroup == collisionGroup[j].value().collisionGroup)
-                                    return false;
+                                    continue;
                             if (position[i].value().x + velocity[i].value().x_speed < position[j].value().x + hitbox[j].value().w &&
                                 position[i].value().x + velocity[i].value().x_speed + hitbox[i].value().w > position[j].value().x &&
-
                                 position[i].value().y + velocity[i].value().y_speed < position[j].value().y + hitbox[j].value().h &&
                                 position[i].value().y + velocity[i].value().y_speed + hitbox[i].value().h > position[j].value().y) {
                                     _reg._eventManager.addEvent<collision>(i, j);
                                     velocity[i].value().x_speed = 0;
                                     velocity[i].value().y_speed = 0;
-                                    return true;
+                                    // return true;
                             }
                         }
                     }
