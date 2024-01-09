@@ -26,11 +26,6 @@ class NetworkSystem : public ISystem {
             if (elapsed_seconds.count() >= 0.2) {
                 _udpServer.mtxSendPacket.lock();
                 for (auto &queue : _udpServer._queueSendPacket) {
-                    // std::cout << "SENDING PACKET" << std::endl;
-                    // Packet queryPacket;
-                    // std::memcpy(&queryPacket, queue.second.data(), sizeof(Packet));
-                    // queryPacket.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-                    // queryPacket.packet_type = REPEAT_PACKET;
                     _udpServer.sendServerToAClient(queue.second, queue.first);
                 }
                 _udpServer.mtxSendPacket.unlock();

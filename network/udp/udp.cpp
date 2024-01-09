@@ -219,10 +219,7 @@ void Udp::sendPlayerListToClient(std::vector<std::vector<uint8_t>> entities, Pac
     for (size_t i = 1; i < entities.size(); i += 1) {
         receivedPacket.type_index = i - 1;
         std::memcpy(&receivedPacket.entity_id, entities[0].data(), sizeof(uint32_t));
-        // if (receivedPacket.packet_type == DATA_PACKET)
         sendToAll(DATA_PACKET, entities[i], receivedPacket);
-        // if (receivedPacket.packet_type == EVENT_PACKET)
-        //     sendToAll(EVENT_PACKET, entities[i], receivedPacket);
     }
     for (const auto& _entity : _sparseArray) {
         for (size_t i = 1; i < _entity.size(); i += 1) {
