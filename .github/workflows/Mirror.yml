@@ -77,8 +77,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # - name: Create binary folder
-      #   run: mkdir -p ./binary
+      - name: Create binary folder
+        run: mkdir -p ./binary
 
       - name: Install CMake
         run: |
@@ -90,23 +90,24 @@ jobs:
           cd build
           cmake ..
           cmake --build .
+          cd ..
 
-      # - name: Copy binary
-      #   run: |
-      #     cp Debug/r-type_server.exe ./binary
-      #     cp Debug/r-type_client.exe ./binary
+      - name: Copy binary
+        run: |
+          cp ./build/Debug/r-type_server.exe ./binary
+          cp ./build/Debug/r-type_client.exe ./binary
 
-      # - uses: actions/upload-artifact@v2
-      #   with:
-      #     name: windows-binary
-      #     path: ./binary
+      - uses: actions/upload-artifact@v2
+        with:
+          name: windows-binary
+          path: ./binary
       
   
   create_release:
     needs: [check_program_compilation_linux, check_program_compilation_windows]
     name: Create release
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true || github.event_name == 'push'
+    # if: github.event.pull_request.merged == true || github.event_name == 'push'
     permissions:
       contents: write
     env:
