@@ -29,17 +29,15 @@ int main(int ac, char** av)
         return 84;
     }
     registry reg;
-    reg.addAllComponents<Position, Velocity, Size, CollisionGroup, Anime, Sprite>();
+    reg.addAllComponents<Position, Velocity, Size, HitBox, CollisionGroup, Anime, Sprite>();
     TCPClient tcpClient(std::stoi(av[1]), av[2], reg);
     Udp udpClient(av[2], reg);
     reg.add_system<SfmlSystem>("../game/assets", 800, 600, "R-Type");
-    reg.addEntity();
-    reg.addEntity();
-    reg.addEntity();
-    reg.addEntity();
-    reg.addEntity();
-    reg.addEntity();
     auto& sprite = reg.getComponent<Sprite>();
+    reg.addEntity();
+    reg.addEntity();
+    reg.addEntity();
+    reg.addEntity();
     sprite.emplace_at(0, 0, 192, 0, 32, 32);
     sprite.emplace_at(1, 1, 192, 0, 32, 32);
     sprite.emplace_at(2, 1, 192, 0, 32, 32);

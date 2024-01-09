@@ -10,6 +10,7 @@
 
 #include "../../ecs/system/ISystem.hpp"
 #include "../../ecs/registry/registry.hpp"
+#include "../../ecs/event/collision.hpp"
 
 class EntityDestroyerSystem : public ISystem {
 public:
@@ -27,6 +28,14 @@ public:
                 if (i <= 3)
                     continue;
                 _reg.removeEntity(i);
+            }
+        }
+        if (_reg._eventManager.checkEvent<collision>()) {
+            for (auto &tmp : _reg._eventManager.getEvent<collision>()) {
+                if (tmp->_id1 <= 3 || tmp->_id2 <= 3)
+                    continue;
+                _reg.removeEntity(tmp->_id1);
+                _reg.removeEntity(tmp->_id2);
             }
         }
     };

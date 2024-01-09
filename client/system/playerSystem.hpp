@@ -23,21 +23,22 @@ class PlayerSystem : public ISystem {
                 auto &velocity = _reg.getComponent<Velocity>();
                 auto &position = _reg.getComponent<Position>();
                 switch(tmp->_key) {
+                    std::cout << "key pressed: " << tmp->_key << std::endl;
                     case sf::Keyboard::Right:
-                        velocity[_reg._player].value().x_speed = 1;
+                        velocity[_reg._player].value().x_speed = 2;
                         velocity[_reg._player].value().y_speed = 0;
                         break;
                     case sf::Keyboard::Left:
-                        velocity[_reg._player].value().x_speed = -1;
+                        velocity[_reg._player].value().x_speed = -2;
                         velocity[_reg._player].value().y_speed = 0;
                         break;
                     case sf::Keyboard::Up:
                         velocity[_reg._player].value().x_speed = 0;
-                        velocity[_reg._player].value().y_speed = -1;
+                        velocity[_reg._player].value().y_speed = -2;
                         break;
                     case sf::Keyboard::Down:
                         velocity[_reg._player].value().x_speed = 0;
-                        velocity[_reg._player].value().y_speed = 1;
+                        velocity[_reg._player].value().y_speed = 2;
                         break;
                     case sf::Keyboard::Space:
                         _reg._eventManager.addEvent<shoot>(position[_reg._player].value().x, position[_reg._player].value().y);
