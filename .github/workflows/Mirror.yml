@@ -93,8 +93,9 @@ jobs:
 
       - name: Copy binary
         run: |
-          cp r-type_server.exe ./binary
-          cp r-type_client.exe ./binary
+          ls -l
+          cp Debug/r-type_server.exe ./binary
+          cp Debug/r-type_client.exe ./binary
 
       - uses: actions/upload-artifact@v2
         with:
