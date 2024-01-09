@@ -90,12 +90,11 @@ jobs:
           cd build
           cmake ..
           cmake --build .
-          cd ..
 
       - name: Copy binary
         run: |
-          cp ./build/r-type_server.exe ./binary
-          cp ./build/r-type_client.exe ./binary
+          cp r-type_server.exe ./binary
+          cp r-type_client.exe ./binary
 
       - uses: actions/upload-artifact@v2
         with:
