@@ -29,12 +29,10 @@ class EnnemySystem : public ISystem {
             auto& position = _reg.getComponent<Position>();
             auto &size = _reg.getComponent<Size>();
             auto &hitbox = _reg.getComponent<HitBox>();
-            hitbox.emplace_at(Entity_id, 15, 15); // TODO: change hitbox size
-            sprite.emplace_at(Entity_id, 3, 0, 0, 576, 430);
-            std::cout <<"JE RENTRE LAAAAAAAAAAAAA" << std::endl;
-            position.emplace_at(Entity_id, 450, 50);
-            // position.emplace_at(Entity_id, 450, (rand() % 900) - 200);
-            size.emplace_at(Entity_id, 1.5, 1.5);
+            hitbox.emplace_at(Entity_id, 66, 37);
+            sprite.emplace_at(Entity_id, 3, 0, 0, 66, 37);
+            position.emplace_at(Entity_id, 800, 50 + (rand() % 600));
+            size.emplace_at(Entity_id, 1.0, 1.0);
             velocity.emplace_at(Entity_id, 0, 0, 0, -5, 0);
         }
         registry &_reg;
