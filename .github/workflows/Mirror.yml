@@ -77,8 +77,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Create binary folder
-        run: mkdir -p ./binary
+      - name: Create Windows folder
+        run: mkdir -p ./windows
 
       - name: Install CMake
         run: |
@@ -94,13 +94,12 @@ jobs:
 
       - name: Copy binary
         run: |
-          cp ./build/Debug/r-type_server.exe ./binary
-          cp ./build/Debug/r-type_client.exe ./binary
+          cp ./build/Debug/r-type_server.exe ./windows
 
       - uses: actions/upload-artifact@v2
         with:
           name: windows-binary
-          path: ./binary
+          path: ./windows
       
   
   create_release:
@@ -151,7 +150,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./binary/r-type_server.exe
+          asset_path: ./windows/r-type_server.exe
           asset_name: r-type_server.exe
           asset_content_type: application/octet-stream
 
