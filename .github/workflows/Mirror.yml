@@ -143,14 +143,14 @@ jobs:
           asset_name: r-type_server
           asset_content_type: application/octet-stream
 
-      - name: Upload r-type_server binary Linux
+      - name: Upload r-type_server binary Windows
         id: upload-release-asset-windows
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./windows/r-type_server.exe
+          asset_path: ./windows/Debug/r-type_server.exe
           asset_name: r-type_server.exe
           asset_content_type: application/octet-stream
 
