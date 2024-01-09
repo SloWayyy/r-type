@@ -133,8 +133,8 @@ jobs:
           release_name: Latest.Version.${{ env.CURRENT_DATE }}
           draft: false
           prerelease: false
-      - name: Upload release asset
-        id: upload-release-asset 
+      - name: Upload r-type_server binary Linux
+        id: upload-release-asset-linux
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -142,6 +142,17 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }} 
           asset_path: ./binary/r-type_server
           asset_name: r-type_server
+          asset_content_type: application/octet-stream
+
+      - name: Upload r-type_server binary Linux
+        id: upload-release-asset-windows
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: ./binary/r-type_server.exe
+          asset_name: r-type_server.exe
           asset_content_type: application/octet-stream
 
   push_to_mirror:
