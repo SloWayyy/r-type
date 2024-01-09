@@ -10,7 +10,8 @@
 
 #include "../../ecs/system/ISystem.hpp"
 #include "../../ecs/registry/registry.hpp"
-
+#include "../../ecs/event/shoot.hpp"
+#include "../../ecs/event/ennemy.hpp"
 
 class PlayerSystem : public ISystem {
     public:
@@ -18,8 +19,9 @@ class PlayerSystem : public ISystem {
         PlayerSystem(registry &reg): _reg(reg) {};
         ~PlayerSystem() = default;
         void operator()() override {
-            for_each(_reg._eventManager.getEvent<keyPressed>().begin(), _reg._eventManager.getEvent<keyPressed>().end(), [this](auto &tmp) {
+            for (auto &tmp : _reg._eventManager.getEvent<keyPressed>()) {
                 auto &velocity = _reg.getComponent<Velocity>();
+                auto &position = _reg.getComponent<Position>();
                 switch(tmp->_key) {
                     case sf::Keyboard::Right:
                         velocity[_reg._player].value().x_speed = 1;
@@ -37,10 +39,16 @@ class PlayerSystem : public ISystem {
                         velocity[_reg._player].value().x_speed = 0;
                         velocity[_reg._player].value().y_speed = 1;
                         break;
+                    case sf::Keyboard::Space:
+                        _reg._eventManager.addEvent<shoot>(position[_reg._player].value().x, position[_reg._player].value().y);
+                        break;
+                    case sf::Keyboard::X:
+                        _reg._eventManager.addEvent<ennemy>(position[_reg._player].value().x, position[_reg._player].value().y);
+                        break;
                     default:
                         break;
-                }       
-            });
+                }
+            };
         };
     private:
         registry &_reg;

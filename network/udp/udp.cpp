@@ -14,6 +14,8 @@ Udp::Udp(std::size_t port, std::string ip, registry& reg, UpdateGame& updateGame
     , _magic_number(4242)
     , reg(reg)
     , updateGame(updateGame)
+    , ptr_fct({ { NEW_CONNECTION, [this](const Packet& packet, const std::vector<uint8_t>&) { handleNewConnection(packet); } },
+          { RESPONSE_PACKET, [this](const Packet& packet, const std::vector<uint8_t>&) { handleResponsePacket(packet); } } })
 {
     try {
         this->socket_ = asio::ip::udp::socket(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), port));
@@ -21,9 +23,9 @@ Udp::Udp(std::size_t port, std::string ip, registry& reg, UpdateGame& updateGame
         std::cerr << "ERROR UDP binding socket: " << ec.what() << std::endl;
         std::exit(84);
     }
-
     this->_port = socket_.local_endpoint().port();
     _thread = std::thread(&Udp::run, this);
+    // std::cout << "id client: " << remote_endpoint_.port() << std::endl;
     start_receive();
 }
 
@@ -159,6 +161,7 @@ void Udp::handleReceiveClient(const asio::error_code& error, std::size_t bytes_t
         std::cout << "OUTDATED PACKET" << std::endl;
     }
     receivedPacket.packet_type = RESPONSE_PACKET;
+    // receivedPacket.display_packet();
     sendClientToServer(receivedPacket);
     start_receive(true);
 }
@@ -191,7 +194,10 @@ void Udp::sendPlayerListToClient(std::vector<std::vector<uint8_t>> entities, Pac
     for (size_t i = 1; i < entities.size(); i += 1) {
         receivedPacket.type_index = i - 1;
         std::memcpy(&receivedPacket.entity_id, entities[0].data(), sizeof(uint32_t));
+        // if (receivedPacket.packet_type == DATA_PACKET)
         sendToAll(DATA_PACKET, entities[i], receivedPacket);
+        // if (receivedPacket.packet_type == EVENT_PACKET)
+        //     sendToAll(EVENT_PACKET, entities[i], receivedPacket);
     }
     for (const auto& _entity : _sparseArray) {
         for (size_t i = 1; i < _entity.size(); i += 1) {
@@ -214,9 +220,6 @@ void Udp::handleReceiveServer(const asio::error_code& error, std::size_t bytes_t
 
 void Udp::processReceivedPacket(const Packet& receivedPacket, const std::vector<uint8_t>& receivedComponent)
 {
-    const std::map<std::size_t, std::function<void(const Packet&, const std::vector<uint8_t>&)>> ptr_fct
-        = { { NEW_CONNECTION, [this](const Packet& packet, const std::vector<uint8_t>& component) { handleNewConnection(packet); } },
-              { RESPONSE_PACKET, [this](const Packet& packet, const std::vector<uint8_t>& component) { handleResponsePacket(packet); } } };
     auto it = ptr_fct.find(receivedPacket.packet_type);
 
     if (it != ptr_fct.end()) {
@@ -310,7 +313,7 @@ template <typename... Args> void Udp::sendServerToClient(PacketType packet_type,
         return;
     try {
         socket_.send_to(asio::buffer(cryptData), remote_endpoint_);
-        if (packet_type == DATA_PACKET) {
+        if (packet_type == DATA_PACKET || packet_type == EVENT_PACKET) {
             mtxSendPacket.lock();
             _queueSendPacket.push_back(std::make_pair(remote_endpoint_, data));
             mtxSendPacket.unlock();
@@ -345,7 +348,7 @@ template <typename... Args> void Udp::sendToAll(PacketType packet_type, Args... 
     try {
         for (const auto& client : _clientsUDP) {
             socket_.send_to(asio::buffer(cryptData), client.second);
-            if (packet_type == DATA_PACKET) {
+            if (packet_type == DATA_PACKET || packet_type == EVENT_PACKET) {
                 mtxSendPacket.lock();
                 _queueSendPacket.push_back(std::make_pair(client.second, data));
                 mtxSendPacket.unlock();
@@ -364,8 +367,12 @@ void Udp::updateSparseArray(bool isClient)
         char component[64] = { 0 };
         std::memcpy(component, data.data(), data.size());
         reg.registerPacket(header.type_index, header.entity_id, component);
-        if (!isClient)
-            sendToAll(DATA_PACKET, data, header);
+        if (!isClient) {
+            if (header.packet_type == DATA_PACKET)
+                sendToAll(DATA_PACKET, data, header);
+            if (header.packet_type == EVENT_PACKET)
+                sendToAll(EVENT_PACKET, data, header);
+        }
     }
     _queue.clear();
 }

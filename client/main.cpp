@@ -6,7 +6,10 @@
 */
 
 #include "../ecs/registry/registry.hpp"
+#include "../ecs/system/EnnemySystem.hpp"
+#include "../ecs/system/EntityDestroyerSystem.hpp"
 #include "../ecs/system/MoveSystem.hpp"
+#include "../ecs/system/ShootSystem.hpp"
 #include "../network/tcpClient/tcpClient.hpp"
 #include "../network/udp/udp.hpp"
 #include "./system/animeSystem.hpp"
@@ -26,10 +29,12 @@ int main(int ac, char** av)
         return 84;
     }
     registry reg;
-    reg.addAllComponents<Position, Velocity, Size, Sprite, Anime>();
+    reg.addAllComponents<Position, Velocity, Size, Sprite, Anime, CollisionGroup>();
     TCPClient tcpClient(std::stoi(av[1]), av[2], reg);
     Udp udpClient(av[2], reg);
     reg.add_system<SfmlSystem>("../game/assets", 800, 600, "R-Type");
+    reg.addEntity();
+    reg.addEntity();
     reg.addEntity();
     reg.addEntity();
     reg.addEntity();
@@ -41,12 +46,16 @@ int main(int ac, char** av)
     sprite.emplace_at(1, 1, 192, 0, 32, 32);
     sprite.emplace_at(2, 1, 192, 0, 32, 32);
     sprite.emplace_at(3, 1, 192, 0, 32, 32);
+    // sprite.emplace_at(5, 3, 192, 0, 32, 32);
 
     reg.add_system<messageSystem>(tcpClient);
     reg.add_system<PlayerSystem>();
     reg.add_system<MoveSystem>();
     reg.add_system<AnimeSystem>();
+    reg.add_system<ShootSystem>();
+    reg.add_system<EnnemySystem>();
     reg.add_system<NetworkSystem>(std::ref(udpClient), std::ref(tcpClient));
+    reg.add_system<EntityDestroyerSystem>();
     auto current_time = std::chrono::high_resolution_clock::now();
     float refresh_rate = 1.0f / 60.0f;
     float elapsed_time = 0.0f;
@@ -62,6 +71,7 @@ int main(int ac, char** av)
         if (elapsed_time >= refresh_rate) {
             reg.run_system();
             elapsed_time = 0.0f;
+            std::cout << "Entity Count" << reg._entity_count << std::endl;
         }
     }
 }
