@@ -29,6 +29,13 @@ struct Size {
     float h;
 };
 
+struct Life {
+    Life(int life)
+        : l(life) {};
+    void print() { std::cout << "Life l: " << l << std::endl; };
+    float l;
+};
+
 struct Velocity {
     Velocity(int velocity = 0, int time = 0, int acc = 0, int x_speed = 0, int y_speed = 0)
         : x_speed(x_speed)
