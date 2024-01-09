@@ -41,7 +41,7 @@ std::vector<std::vector<uint8_t>> UpdateGame::updateEntity()
     entities[3].resize(sizeof(Size));
     std::memcpy(entities[3].data(), &sz, sizeof(Size));
 
-    auto &collision = _reg.getComponent<CollisionGroup>();
+    auto& collision = _reg.getComponent<CollisionGroup>();
     collision.emplace_at(entity_id, 0);
     const CollisionGroup& col = collision[entity_id].value();
     entities[4].resize(sizeof(CollisionGroup));
