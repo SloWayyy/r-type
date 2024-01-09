@@ -95,6 +95,7 @@ jobs:
       - name: Copy binary
         run: |
           cp ./build/Debug/r-type_server.exe ./windows
+          dir ./windows
 
       - uses: actions/upload-artifact@v2
         with:
