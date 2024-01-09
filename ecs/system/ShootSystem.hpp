@@ -28,7 +28,7 @@ class ShootSystem : public ISystem {
             auto &size = _reg.getComponent<Size>();
             auto &velocity = _reg.getComponent<Velocity>();
             auto &hitbox = _reg.getComponent<HitBox>();
-            hitbox.emplace_at(4, 15, 15); // TODO: change hitbox size
+            hitbox.emplace_at(4, 14, 14); // TODO: change hitbox size
             sprite.emplace_at(4, 2, 0, 0, 32, 28);
             position.emplace_at(4, player_x + 32, player_y + 14);
             size.emplace_at(4, 1, 1);

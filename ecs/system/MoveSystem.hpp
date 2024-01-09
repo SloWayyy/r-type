@@ -20,11 +20,24 @@ class MoveSystem : public ISystem {
         ~MoveSystem() = default;
 
         bool isColliding(Sparse_array<Position> &position, Sparse_array<Velocity> &velocity, Sparse_array<HitBox> &hitbox) {
-            for (long unsigned int i = 0; i < position.size(); i++) {
+            // static int toto = 0;
+            // toto++;
+            // // std::cout << "position size: " << position.size() << " velocity size: " << velocity.size() << " hitbox size: " << hitbox.size() << std::endl;
+            // std::cout << "toto: " << toto << std::endl;
+            // if (toto > 150) {
+            //         std::cout <<"CAAAAA:"<< position[0].value().x  << " velo: "<< velocity[0].value().x_speed << " hitbox " << hitbox[0].value().w << std::endl;
+            //         std::cout <<"CAAAAA:"<< position[4].value().x  << " velo: "<< velocity[4].value().x_speed << " hitbox " << hitbox[4].value().w << std::endl;
+            //         std::cout <<"CAAAAA:"<< position[5].value().x  << " velo: "<< velocity[5].value().x_speed << " hitbox " << hitbox[5].value().w << std::endl;
+            // }
+            for (long unsigned int i = 0; i < DEFAULT_SIZE; i++) {
                 if (position[i] && velocity[i] && hitbox[i]) {
-                    for (long unsigned int j = 0; j < position.size(); j++) {
+                    for (long unsigned int j = 0; j < DEFAULT_SIZE; j++) {
                         if (position[j] && velocity[j] && i != j && hitbox[j]) {
-                            std::cout << hitbox[i].value().w << " h: " << hitbox[i].value().h<<std::endl;
+                            // std::cout << "player : " << std::endl;
+                            // position[0].value().print();
+                            // std::cout << "ennemy : "<< std::endl;
+                            // position[5].value().print();
+
                             if (position[i].value().x + velocity[i].value().x_speed < position[j].value().x + hitbox[j].value().w &&
                                 position[i].value().x + velocity[i].value().x_speed + hitbox[i].value().h > position[j].value().x &&
 
