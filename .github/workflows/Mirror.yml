@@ -109,7 +109,7 @@ jobs:
     needs: [check_program_compilation_linux, check_program_compilation_windows]
     name: Create release
     runs-on: ubuntu-latest
-    # if: github.event.pull_request.merged == true || github.event_name == 'push'
+    if: github.event.pull_request.merged == true || github.event_name == 'push'
     permissions:
       contents: write
     env:
