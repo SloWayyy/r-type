@@ -95,7 +95,7 @@ cd build/
 
 ## Internal documentation
 
-- [Server](server/Readme.md)
+- [Server](network/Readme.md)
 
 - [Game Engine](ecs/Readme.md)
 

@@ -19,7 +19,7 @@ class PlayerSystem : public ISystem {
         PlayerSystem(registry &reg): _reg(reg) {};
         ~PlayerSystem() = default;
         void operator()() override {
-            for_each(_reg._eventManager.getEvent<keyPressed>().begin(), _reg._eventManager.getEvent<keyPressed>().end(), [this](auto &tmp) {
+            for (auto &tmp : _reg._eventManager.getEvent<keyPressed>()) {
                 auto &velocity = _reg.getComponent<Velocity>();
                 auto &position = _reg.getComponent<Position>();
                 switch(tmp->_key) {
@@ -49,7 +49,7 @@ class PlayerSystem : public ISystem {
                     default:
                         break;
                 }
-            });
+            };
         };
     private:
         registry &_reg;

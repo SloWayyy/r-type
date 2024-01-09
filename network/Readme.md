@@ -236,4 +236,5 @@ We have 4 types of packets:
   </table>
 </details>
 
+For more information about the protocol, you can check the [RFC](docs/RFC.txt) of the protocol.
 
