@@ -11,6 +11,8 @@
 #include "../network/udp/udp.hpp"
 #include "./system/messageSystem.hpp"
 #include "./system/serverNetworkSystem.hpp"
+#include "./system/serverEventLoaderSystem.hpp"
+#include "./system/ServerShootSystem.hpp"
 #include "./updateGame/updateGame.hpp"
 #include <asio.hpp>
 #include <iostream>
@@ -38,11 +40,27 @@ int main(int ac, char const** av)
     UpdateGame updateGame(reg);
     Udp udpServer(4242, av[2], reg, updateGame);
     TCPServer tcpServer(std::atoi(av[1]), udpServer.getPort(), av[2]);
+    reg.add_system<ServerEventLoaderSystem>(std::ref(udpServer));
     reg.add_system<messageSystem>(std::ref(tcpServer));
+    reg.add_system<ServerShootSystem>();
     reg.add_system<NetworkSystem>(std::ref(udpServer), std::ref(tcpServer));
 
+    auto current_time = std::chrono::high_resolution_clock::now();
+    float refresh_rate = 1.0f / 60.0f;
+    float elapsed_time = 0.0f;
+
     while (1) {
-        reg.run_system();
+        auto new_time = std::chrono::high_resolution_clock::now();
+        auto time_diff = new_time - current_time;
+        current_time = new_time;
+
+        float delta_time = std::chrono::duration<float>(time_diff).count();
+        elapsed_time += delta_time;
+
+        if (elapsed_time >= refresh_rate) {
+            reg.run_system();
+            elapsed_time = 0.0f;
+        }
     }
     return 0;
 }

@@ -9,6 +9,7 @@
 #define NETWORKSYSTEM_HPP_
 
 #include "../../ecs/system/ISystem.hpp"
+#include "../event/bullet.hpp"
 #include "../../network/tcpServer/tcpServer.hpp"
 #include "../../network/udp/udp.hpp"
 #include <chrono>
@@ -39,6 +40,24 @@ class NetworkSystem : public ISystem {
                 _udpServer.updateSparseArray(false);
             }
             _udpServer.mtxQueue.unlock();
+
+            auto &sprite = _reg.getComponent<Sprite>();
+            auto &position = _reg.getComponent<Position>();
+            auto &size = _reg.getComponent<Size>();
+            auto &velocity = _reg.getComponent<Velocity>();
+            auto &collision = _reg.getComponent<CollisionGroup>();
+            auto &hitbox = _reg.getComponent<HitBox>();
+
+            if(_reg._eventManager.checkEvent<bullet>()) {
+                for (auto &tmp : _reg._eventManager.getEvent<bullet>()) {
+                    _udpServer.sendToAll(DATA_PACKET, sprite[tmp->entity_id].value(), tmp->entity_id);
+                    _udpServer.sendToAll(DATA_PACKET, position[tmp->entity_id].value(), tmp->entity_id);
+                    _udpServer.sendToAll(DATA_PACKET, size[tmp->entity_id].value(), tmp->entity_id);
+                    _udpServer.sendToAll(DATA_PACKET, velocity[tmp->entity_id].value(), tmp->entity_id);
+                    _udpServer.sendToAll(DATA_PACKET, collision[tmp->entity_id].value(), tmp->entity_id);
+                    _udpServer.sendToAll(DATA_PACKET, hitbox[tmp->entity_id].value(), tmp->entity_id);
+                }
+            }
         };
 
     private:

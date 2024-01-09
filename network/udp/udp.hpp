@@ -106,6 +106,8 @@ class Udp {
         std::mutex mtxSendPacket;
         std::mutex mtxQueue;
         std::vector<std::vector<std::vector<uint8_t>>> _sparseArray;
+        std::mutex _eventmtx;
+        std::vector<std::any> _eventQueue;
 
     private:
         std::thread _thread;

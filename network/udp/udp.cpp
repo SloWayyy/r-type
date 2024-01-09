@@ -68,7 +68,7 @@ void Udp::start_receive(bool client)
 template <typename T> std::vector<uint8_t> Udp::createPacket(T& event, uint32_t entity_id)
 {
     std::type_index type_index = typeid(T);
-    Packet packet = { _magic_number, EVENT_PACKET, std::time(nullptr), entity_id, 0, generate_uuid() };
+    Packet packet = { _magic_number, EVENT_PACKET, std::time(nullptr), entity_id, 1, generate_uuid() };
 
     std::vector<uint8_t> result;
     result.resize(sizeof(Packet) + sizeof(T));
@@ -211,7 +211,9 @@ void Udp::handleTimestampUpdate(const Packet& receivedPacket, const std::vector<
 void Udp::handleEvents(Packet& receivedPacket, const std::vector<uint8_t>& receivedComponent)
 {
     shoot test = *reinterpret_cast<const shoot*>(receivedComponent.data());
-    sendToAll(EVENT_PACKET, receivedComponent, receivedPacket);
+    _eventmtx.lock();
+    _eventQueue.push_back(test);
+    _eventmtx.unlock();
 }
 
 void Udp::sendPlayerListToClient(std::vector<std::vector<uint8_t>> entities, Packet receivedPacket)
