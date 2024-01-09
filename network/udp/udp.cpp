@@ -160,7 +160,6 @@ void Udp::handleReceiveClient(const asio::error_code& error, std::size_t bytes_t
         std::cout << "OUTDATED PACKET" << std::endl;
     }
     receivedPacket.packet_type = RESPONSE_PACKET;
-    // receivedPacket.display_packet();
     sendClientToServer(receivedPacket);
     start_receive(true);
 }
@@ -309,7 +308,7 @@ template <typename... Args> void Udp::sendServerToClient(PacketType packet_type,
         return;
     try {
         socket_.send_to(asio::buffer(cryptData), remote_endpoint_);
-        if (packet_type == DATA_PACKET || packet_type == EVENT_PACKET) {
+        if (packet_type == DATA_PACKET || packet_type == EVENT_PACKET || packet_type == DESTROY_ENTITY) {
             mtxSendPacket.lock();
             _queueSendPacket.push_back(std::make_pair(remote_endpoint_, data));
             mtxSendPacket.unlock();
@@ -344,7 +343,7 @@ template <typename... Args> void Udp::sendToAll(PacketType packet_type, Args... 
     try {
         for (const auto& client : _clientsUDP) {
             socket_.send_to(asio::buffer(cryptData), client.second);
-            if (packet_type == DATA_PACKET || packet_type == EVENT_PACKET) {
+            if (packet_type == DATA_PACKET || packet_type == EVENT_PACKET || packet_type == DESTROY_ENTITY) {
                 mtxSendPacket.lock();
                 _queueSendPacket.push_back(std::make_pair(client.second, data));
                 mtxSendPacket.unlock();

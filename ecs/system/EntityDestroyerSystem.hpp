@@ -32,10 +32,18 @@ public:
         }
         if (_reg._eventManager.checkEvent<collision>()) {
             for (auto &tmp : _reg._eventManager.getEvent<collision>()) {
-                if (tmp->_id1 <= 3 || tmp->_id2 <= 3)
+                if (tmp->_id1 <= 3) {
+                    if (tmp->_id2 <= 3)
+                        continue;
+                    _reg.removeEntity(tmp->_id2);
                     continue;
-                _reg.removeEntity(tmp->_id1);
-                _reg.removeEntity(tmp->_id2);
+                } else if (tmp->_id2 <= 3) {
+                    _reg.removeEntity(tmp->_id1);
+                    continue;
+                } else {
+                    _reg.removeEntity(tmp->_id1);
+                    _reg.removeEntity(tmp->_id2);
+                }
             }
         }
     };

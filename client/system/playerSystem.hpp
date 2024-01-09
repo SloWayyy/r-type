@@ -23,7 +23,6 @@ class PlayerSystem : public ISystem {
                 auto &velocity = _reg.getComponent<Velocity>();
                 auto &position = _reg.getComponent<Position>();
                 switch(tmp->_key) {
-                    std::cout << "key pressed: " << tmp->_key << std::endl;
                     case sf::Keyboard::Right:
                         velocity[_reg._player].value().x_speed = 2;
                         velocity[_reg._player].value().y_speed = 0;
