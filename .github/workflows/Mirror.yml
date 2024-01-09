@@ -77,8 +77,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # - name: Create binary folder
-      #   run: mkdir -p ./binary
+      - name: Create Windows folder
+        run: mkdir -p ./windows
 
       - name: Install CMake
         run: |
@@ -90,23 +90,23 @@ jobs:
           cd build
           cmake ..
           cmake --build .
+          cd ..
 
-      # - name: Copy binary
-      #   run: |
-      #     cp Debug/r-type_server.exe ./binary
-      #     cp Debug/r-type_client.exe ./binary
+      - name: Copy binary
+        run: |
+          cp ./build/Debug/r-type_server.exe ./windows
 
-      # - uses: actions/upload-artifact@v2
-      #   with:
-      #     name: windows-binary
-      #     path: ./binary
+      - uses: actions/upload-artifact@v2
+        with:
+          name: windows-binary
+          path: ./windows
       
   
   create_release:
     needs: [check_program_compilation_linux, check_program_compilation_windows]
     name: Create release
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true || github.event_name == 'push'
+    # if: github.event.pull_request.merged == true || github.event_name == 'push'
     permissions:
       contents: write
     env:
@@ -132,8 +132,8 @@ jobs:
           release_name: Latest.Version.${{ env.CURRENT_DATE }}
           draft: false
           prerelease: false
-      - name: Upload release asset
-        id: upload-release-asset 
+      - name: Upload r-type_server binary Linux
+        id: upload-release-asset-linux
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -141,6 +141,17 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }} 
           asset_path: ./binary/r-type_server
           asset_name: r-type_server
+          asset_content_type: application/octet-stream
+
+      - name: Upload r-type_server binary Windows
+        id: upload-release-asset-windows
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: ./windows/Debug/r-type_server.exe
+          asset_name: r-type_server.exe
           asset_content_type: application/octet-stream
 
   push_to_mirror:
