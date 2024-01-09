@@ -28,12 +28,16 @@ class SfmlSystem : public ISystem {
                 exit(84);
             }
             for (auto &file : std::filesystem::directory_iterator{assetsPath}) {
-                sf::Texture texture;
-                if (texture.loadFromFile(file.path().string())) {
-                    _textures.push_back(std::move(texture));
-                    std::cout << file.path().stem().string() << " Loaded" << std::endl;
-                }
+                _assetName.push_back(file.path().string());
             }
+            std::sort(_assetName.begin(), _assetName.end());
+            for_each(_assetName.begin(), _assetName.end(), [this](auto &file) {
+                sf::Texture texture;
+                if (texture.loadFromFile(file)) {
+                    this->_textures.push_back(std::move(texture));
+                    std::cout << file << " Loaded" << std::endl;
+                }
+            });
         };
         ~SfmlSystem() = default;
         void operator()() override {
@@ -99,6 +103,7 @@ class SfmlSystem : public ISystem {
             }
         }
         sf::Event _event;
+        std::vector<std::string> _assetName;
         std::vector<sf::Texture> _textures;
         registry &_reg;
         sf::RenderWindow _window;
