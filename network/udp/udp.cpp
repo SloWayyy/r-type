@@ -171,7 +171,7 @@ void Udp::handleReceiveClient(const asio::error_code& error, std::size_t bytes_t
     if (receivedPacket.packet_type == EVENT_PACKET) {
         shoot test = *reinterpret_cast<const shoot*>(receivedComponent.data());
         if (test.entity_id != _entity_id) {
-            reg._eventManager.addEvent<shoot>(test.entity_id);
+            // reg._eventManager.addEvent<shoot>(test.entity_id);
         }
     } else if (receivedPacket.packet_type == NEW_CONNECTION) {
         handleNewConnection(receivedPacket, receivedComponent);
@@ -342,7 +342,7 @@ template <typename... Args> void Udp::sendServerToClient(PacketType packet_type,
         return;
     try {
         socket_.send_to(asio::buffer(cryptData), remote_endpoint_);
-        if (packet_type == DATA_PACKET || packet_type == EVENT_PACKET) {
+        if (packet_type == DATA_PACKET) {
             mtxSendPacket.lock();
             _queueSendPacket.push_back(std::make_pair(remote_endpoint_, data));
             mtxSendPacket.unlock();
@@ -377,7 +377,7 @@ template <typename... Args> void Udp::sendToAll(PacketType packet_type, Args... 
     try {
         for (const auto& client : _clientsUDP) {
             socket_.send_to(asio::buffer(cryptData), client.second);
-            if (packet_type == DATA_PACKET || packet_type == EVENT_PACKET) {
+            if (packet_type == DATA_PACKET) {
                 mtxSendPacket.lock();
                 _queueSendPacket.push_back(std::make_pair(client.second, data));
                 mtxSendPacket.unlock();

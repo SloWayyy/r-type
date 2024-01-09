@@ -27,6 +27,7 @@ class NetworkSystem : public ISystem {
             if (elapsed_seconds.count() >= 0.2) {
                 _udpServer.mtxSendPacket.lock();
                 for (auto &queue : _udpServer._queueSendPacket) {
+                    std::cout << "send packet to client" << std::endl;
                     _udpServer.sendServerToAClient(queue.second, queue.first);
                 }
                 _udpServer.mtxSendPacket.unlock();
@@ -50,12 +51,12 @@ class NetworkSystem : public ISystem {
 
             if(_reg._eventManager.checkEvent<bullet>()) {
                 for (auto &tmp : _reg._eventManager.getEvent<bullet>()) {
-                    _udpServer.sendToAll(DATA_PACKET, sprite[tmp->entity_id].value(), tmp->entity_id);
-                    _udpServer.sendToAll(DATA_PACKET, position[tmp->entity_id].value(), tmp->entity_id);
-                    _udpServer.sendToAll(DATA_PACKET, size[tmp->entity_id].value(), tmp->entity_id);
-                    _udpServer.sendToAll(DATA_PACKET, velocity[tmp->entity_id].value(), tmp->entity_id);
-                    _udpServer.sendToAll(DATA_PACKET, collision[tmp->entity_id].value(), tmp->entity_id);
-                    _udpServer.sendToAll(DATA_PACKET, hitbox[tmp->entity_id].value(), tmp->entity_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, sprite[tmp->entity_id].value(), tmp->entity_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, position[tmp->entity_id].value(), tmp->entity_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, size[tmp->entity_id].value(), tmp->entity_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, velocity[tmp->entity_id].value(), tmp->entity_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, collision[tmp->entity_id].value(), tmp->entity_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, hitbox[tmp->entity_id].value(), tmp->entity_id);
                 }
             }
         };
