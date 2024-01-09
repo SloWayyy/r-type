@@ -20,11 +20,11 @@ public:
     void operator()() override
     {
         auto& pos = _reg.getComponent<Position>();
-        for (uint32_t i = 0; i < pos.size(); i++) {
+        for (uint32_t i = 0; i < DEFAULT_SIZE; i++) {
             if (!pos[i])
                 continue;
             if (pos[i].value().x > 1920 || pos[i].value().x < 0 || pos[i].value().y > 1080 || pos[i].value().y < 0) {
-                if (i == _reg._player)
+                if (i <= 3)
                     continue;
                 _reg.removeEntity(i);
             }
