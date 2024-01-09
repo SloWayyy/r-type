@@ -75,3 +75,9 @@ struct Anime {
     uint32_t targetClock;
     uint32_t internClock = 0;
 };
+
+struct CollisionGroup {
+    CollisionGroup(uint8_t collisionGroup = 0)
+        : collisionGroup(collisionGroup) {};
+    uint8_t collisionGroup;
+};

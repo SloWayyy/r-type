@@ -37,6 +37,9 @@ class NetworkSystem : public ISystem {
                     _udpClient.sendClientToServer(*tmp, tmp->entity_id);
                 });
             }
+            if(_reg._eventManager.checkEvent<EnnemySystem>()) {
+                // _udpClient.sendClientToServer(EVENT_PACKET);
+            }
         };
     private:
         registry &_reg;

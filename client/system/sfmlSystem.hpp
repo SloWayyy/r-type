@@ -28,12 +28,16 @@ class SfmlSystem : public ISystem {
                 exit(84);
             }
             for (auto &file : std::filesystem::directory_iterator{assetsPath}) {
-                sf::Texture texture;
-                if (texture.loadFromFile(file.path().string())) {
-                    _textures.push_back(std::move(texture));
-                    std::cout << file.path().stem().string() << " Loaded" << std::endl;
-                }
+                _assetName.push_back(file.path().string());
             }
+            std::sort(_assetName.begin(), _assetName.end());
+            for_each(_assetName.begin(), _assetName.end(), [this](auto &file) {
+                sf::Texture texture;
+                if (texture.loadFromFile(file)) {
+                    this->_textures.push_back(std::move(texture));
+                    std::cout << file << " Loaded" << std::endl;
+                }
+            });
         };
         ~SfmlSystem() = default;
         void operator()() override {
@@ -65,36 +69,25 @@ class SfmlSystem : public ISystem {
 
         void eventHandler() {
             while (_window.pollEvent(_event)) {
-                if (_event.type == sf::Event::Closed)
-                    _window.close();
-                if (_event.type == sf::Event::TextEntered) {
-                    if (_event.text.unicode < 'z' && _event.text.unicode != 8) {
-                        _reg._eventManager.addEvent<textEntered>(_event.text.unicode);
-                    }
-                }
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-                    _reg._eventManager.addEvent<keyPressed>(sf::Keyboard::Right);
-                    return;
-                }
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-                    _reg._eventManager.addEvent<keyPressed>(sf::Keyboard::Left);
-                    return;
-                }
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-                    _reg._eventManager.addEvent<keyPressed>(sf::Keyboard::Up);
-                    return;
-                }
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-                    _reg._eventManager.addEvent<keyPressed>(sf::Keyboard::Down);
-                    return;
-                }
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-                    _reg._eventManager.addEvent<keyPressed>(sf::Keyboard::Space);
-                    return;
+                switch(_event.type) {
+                    case sf::Event::Closed:
+                        _window.close();
+                        break;
+                    case sf::Event::TextEntered:
+                        if (_event.text.unicode < 'z' && _event.text.unicode != 8) {
+                            _reg._eventManager.addEvent<textEntered>(_event.text.unicode);
+                        }
+                        break;
+                    case sf::Event::KeyPressed:
+                        _reg._eventManager.addEvent<keyPressed>(_event.key.code);
+                        break;
+                    default:
+                        break;
                 }
             }
         }
         sf::Event _event;
+        std::vector<std::string> _assetName;
         std::vector<sf::Texture> _textures;
         registry &_reg;
         sf::RenderWindow _window;

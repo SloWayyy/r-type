@@ -34,7 +34,7 @@ int main(int ac, char const** av)
         return -1;
 
     registry reg;
-    reg.addAllComponents<Position, Velocity, Size, Anime, Sprite>();
+    reg.addAllComponents<Position, Velocity, Size, CollisionGroup, Anime, Sprite>();
     UpdateGame updateGame(reg);
     Udp udpServer(4242, av[2], reg, updateGame);
     TCPServer tcpServer(std::atoi(av[1]), udpServer.getPort(), av[2]);
