@@ -171,7 +171,8 @@ public:
     EventManager _eventManager;
     std::vector<std::type_index> _typeIndex;
     std::unordered_map<std::type_index, std::any> _components;
-    int _player = 0;
+    uint32_t _player = 0;
+    uint32_t _entity_count = 0;
 
 private:
     std::vector<std::unique_ptr<ISystem>> _system;
@@ -179,7 +180,6 @@ private:
     std::vector<std::function<void(registry &, Entity const &)>> _eraseFunction;
     std::vector<std::function<void(registry &, Entity const &)>> _addFunction;
     std::vector<std::function<void(registry &, size_t const &, char *)>> _addPacketFunction;
-    uint32_t _entity_count = 0;
     std::map<std::string, Entity> _linker;
 };
 #endif /* !REGISTRY_HPP_ */

@@ -18,9 +18,9 @@ class EnnemySystem : public ISystem {
         EnnemySystem(registry &reg): _reg(reg) {};
         ~EnnemySystem() = default;
         void operator()() override {
-            for_each(_reg._eventManager.getEvent<ennemy>().begin(), _reg._eventManager.getEvent<ennemy>().end(), [this](auto &tmp) {
-                EnnemyMove(5, tmp->_player_x, tmp->_player_y);
-            });
+            for (auto &tmp : _reg._eventManager.getEvent<ennemy>()) {
+                EnnemyMove(_reg.addEntity(), tmp->_player_x, tmp->_player_y);
+            };
         };
     private:
         void EnnemyMove(uint32_t Entity_id, uint32_t player_x, uint32_t player_y) {
@@ -28,6 +28,8 @@ class EnnemySystem : public ISystem {
             auto& sprite = _reg.getComponent<Sprite>();
             auto& position = _reg.getComponent<Position>();
             auto &size = _reg.getComponent<Size>();
+            auto &collision = _reg.getComponent<CollisionGroup>();
+            collision.emplace_at(Entity_id, 3);
             sprite.emplace_at(Entity_id, 3, 0, 0, 576, 430);
             position.emplace_at(Entity_id, 450, (rand() % 900) - 200);
             size.emplace_at(Entity_id, 1, 1);
