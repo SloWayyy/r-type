@@ -36,8 +36,9 @@ std::vector<std::string> TCPClient::getServerMessages() { return this->_ServerMe
 void TCPClient::createClient()
 {
     try {
-        asio::connect(this->_socket, this->_resolver.resolve(_ip, std::to_string(this->_port)));
-        std::cout << "Connected to Server (TCP) " << this->_endpoint << " successfully!\n";
+        asio::error_code ec;
+        this->_socket.connect(this->_endpoint, ec);
+        std::cout << "Connected to Server (TCP) " << _endpoint << " successfully!\n";
     } catch (const std::exception& e) {
         std::cerr << "Connection error: " << e.what() << std::endl;
     }
