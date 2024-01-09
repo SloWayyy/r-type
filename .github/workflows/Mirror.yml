@@ -52,10 +52,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Create binary folder
+        run: mkdir -p ./binary
+
       - name: Configure and build with CMake
         run: |
           cmake -B build
           cmake --build build
+      
+      - name: Copy binary
+        run: |
+          cp ./build/r-type_server ./binary
+          cp ./build/r-type_client ./binary
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: linux-binary
+          path: ./binary
 
   check_program_compilation_windows:
     needs: [linter_code]
@@ -63,6 +76,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      # - name: Create binary folder
+      #   run: mkdir -p ./binary
 
       - name: Install CMake
         run: |
@@ -74,12 +90,23 @@ jobs:
           cd build
           cmake ..
           cmake --build .
+
+      # - name: Copy binary
+      #   run: |
+      #     cp Debug/r-type_server.exe ./binary
+      #     cp Debug/r-type_client.exe ./binary
+
+      # - uses: actions/upload-artifact@v2
+      #   with:
+      #     name: windows-binary
+      #     path: ./binary
+      
   
   create_release:
     needs: [check_program_compilation_linux, check_program_compilation_windows]
     name: Create release
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true || github.event_name == 'push'
+    # if: github.event.pull_request.merged == true || github.event_name == 'push'
     permissions:
       contents: write
     env:
@@ -87,6 +114,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      - uses: actions/download-artifact@v2
+        with:
+          name: linux-binary
+          path: ./binary
       - name: Get current date
         run: echo "CURRENT_DATE=$(date +'%Y-%m-%d.%Hh%Mm%Ss')" >> $GITHUB_ENV
       - name: Display current date
@@ -101,6 +132,16 @@ jobs:
           release_name: Latest.Version.${{ env.CURRENT_DATE }}
           draft: false
           prerelease: false
+      - name: Upload release asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: ./binary/r-type_server
+          asset_name: r-type_server
+          asset_content_type: application/octet-stream
 
   push_to_mirror:
     needs: [create_release]
