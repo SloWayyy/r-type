@@ -29,6 +29,7 @@ enum PacketType {
     RESPONSE_PACKET = '2',
     NEW_CONNECTION = '3',
     EVENT_PACKET = '4',
+    DESTROY_ENTITY = '5',
 };
 
 struct Packet {

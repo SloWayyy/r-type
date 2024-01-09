@@ -11,6 +11,7 @@
 #include "../../ecs/system/ISystem.hpp"
 #include "../../network/tcpServer/tcpServer.hpp"
 #include "../../network/udp/udp.hpp"
+#include "../../ecs/event/collision.hpp"
 #include <chrono>
 #include <iostream>
 
@@ -31,9 +32,6 @@ class NetworkSystem : public ISystem {
                 _udpServer.mtxSendPacket.unlock();
                 _start = std::chrono::system_clock::now();
             }
-            // verif si les clients ont tous repondu au packet sionn on renvoi
-            // si le packet est ancien : on recup le packet, meme le composant apres
-            // ATTENTION VERFIER AUSSI LE REMOTE ENDPOINT COMME DANS HANDLERECEIVE SERVER
             _udpServer.mtxQueue.lock();
             while (_udpServer._queue.size() > 0) {
                 _udpServer.updateSparseArray(false);

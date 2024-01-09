@@ -359,6 +359,11 @@ void Udp::updateSparseArray(bool isClient)
 {
     for (auto& i : _queue) {
         Packet header = i.first;
+        if (header.packet_type == DESTROY_ENTITY) {
+            std::cout << "ENTITY DESTROYED" << std::endl;
+            reg.removeEntity(header.entity_id);
+            continue;
+        }
         auto data = i.second;
         char component[64] = { 0 };
         std::memcpy(component, data.data(), data.size());
