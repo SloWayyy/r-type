@@ -19,12 +19,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
       - name: Install clang-format
         run: sudo apt-get install -y clang-format
+
       - name: Linter code
         run: |
           echo "JE SUIS UN LINTER"
           echo "origin: ${{ github.ref }}"
+
       - name: Run formmater.sh
         run: |
           chmod +x ./formatter.sh
@@ -77,8 +80,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # - name: Create binary folder
-      #   run: mkdir -p ./binary
+      - name: Create Windows folder
+        run: mkdir -p ./windows
 
       - name: Install CMake
         run: |
@@ -90,16 +93,16 @@ jobs:
           cd build
           cmake ..
           cmake --build .
+          cd ..
 
-      # - name: Copy binary
-      #   run: |
-      #     cp Debug/r-type_server.exe ./binary
-      #     cp Debug/r-type_client.exe ./binary
+      - name: Copy binary
+        run: |
+          cp ./build/Debug/r-type_server.exe ./windows
 
-      # - uses: actions/upload-artifact@v2
-      #   with:
-      #     name: windows-binary
-      #     path: ./binary
+      - uses: actions/upload-artifact@v2
+        with:
+          name: windows-binary
+          path: ./windows
       
   
   create_release:
@@ -114,14 +117,23 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
       - uses: actions/download-artifact@v2
         with:
           name: linux-binary
           path: ./binary
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: windows-binary
+          path: ./windows
+
       - name: Get current date
         run: echo "CURRENT_DATE=$(date +'%Y-%m-%d.%Hh%Mm%Ss')" >> $GITHUB_ENV
+
       - name: Display current date
         run: echo $CURRENT_DATE
+
       - name: Create release
         id: create_release
         uses: actions/create-release@v1
@@ -132,8 +144,9 @@ jobs:
           release_name: Latest.Version.${{ env.CURRENT_DATE }}
           draft: false
           prerelease: false
-      - name: Upload release asset
-        id: upload-release-asset 
+
+      - name: Upload r-type_server binary Linux
+        id: upload-release-asset-linux
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -141,6 +154,17 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }} 
           asset_path: ./binary/r-type_server
           asset_name: r-type_server
+          asset_content_type: application/octet-stream
+
+      - name: Upload r-type_server binary Windows
+        id: upload-release-asset-windows
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: ./windows/r-type_server.exe
+          asset_name: r-type_server.exe
           asset_content_type: application/octet-stream
 
   push_to_mirror:
