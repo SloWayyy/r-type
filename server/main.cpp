@@ -6,12 +6,13 @@
 */
 
 #include "../ecs/registry/registry.hpp"
-#include "../ecs/system/MoveSystem.hpp"
 #include "../network/tcpServer/tcpServer.hpp"
 #include "../network/udp/udp.hpp"
 #include "./system/ServerShootSystem.hpp"
 #include "./system/messageSystem.hpp"
 #include "./system/serverEventLoaderSystem.hpp"
+#include "../ecs/system/EntityDestroyerSystem.hpp"
+#include "../ecs/system/MoveSystem.hpp"
 #include "./system/serverNetworkSystem.hpp"
 #include "./updateGame/updateGame.hpp"
 #include <asio.hpp>
@@ -47,6 +48,8 @@ int main(int ac, char const** av)
     reg.add_system<ServerEventLoaderSystem>(std::ref(udpServer));
     reg.add_system<messageSystem>(std::ref(tcpServer));
     reg.add_system<ServerShootSystem>();
+    reg.add_system<MoveSystem>();
+    reg.add_system<EntityDestroyerSystem>();
     reg.add_system<NetworkSystem>(std::ref(udpServer), std::ref(tcpServer));
 
     auto current_time = std::chrono::high_resolution_clock::now();

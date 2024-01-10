@@ -51,12 +51,13 @@ class NetworkSystem : public ISystem {
 
             if(_reg._eventManager.checkEvent<bullet>()) {
                 for (auto &tmp : _reg._eventManager.getEvent<bullet>()) {
-                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, sprite[tmp->entity_id].value(), tmp->entity_id);
-                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, position[tmp->entity_id].value(), tmp->entity_id);
-                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, size[tmp->entity_id].value(), tmp->entity_id);
-                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, velocity[tmp->entity_id].value(), tmp->entity_id);
-                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, collision[tmp->entity_id].value(), tmp->entity_id);
-                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, hitbox[tmp->entity_id].value(), tmp->entity_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, position[tmp->shoot_id].value(), tmp->shoot_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, sprite[tmp->bullet_id].value(), tmp->bullet_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, position[tmp->bullet_id].value(), tmp->bullet_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, size[tmp->bullet_id].value(), tmp->bullet_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, velocity[tmp->bullet_id].value(), tmp->bullet_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, collision[tmp->bullet_id].value(), tmp->bullet_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, hitbox[tmp->bullet_id].value(), tmp->bullet_id);
                 }
             }
         };

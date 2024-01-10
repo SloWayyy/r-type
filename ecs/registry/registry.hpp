@@ -106,7 +106,7 @@ public:
 
     void removeEntity(Entity const entity)
     {
-        if (entity >= _entity_count)
+        if (entity >= DEFAULT_SIZE)
             return;
         if (std::find(_entity_graveyard.begin(), _entity_graveyard.end(), entity) != _entity_graveyard.end())
             return;
