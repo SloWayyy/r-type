@@ -68,6 +68,7 @@ class Udp {
         void handleResponsePacket(const Packet &receivedPacket);
         void handle_send(std::shared_ptr<std::string> message, const asio::error_code &error, std::size_t bytes_transferred); // client
         int handleErrorReceive(const asio::error_code &error, std::vector<uint8_t> receivedComponent, Packet receivedPacket, bool isClient);
+        void handleEvents(Packet& receivedPacket, const std::vector<uint8_t>& receivedComponent);
 
         std::vector<uint8_t> cryptMessage(std::vector<uint8_t> message);
 
@@ -89,6 +90,7 @@ class Udp {
 
         template <typename T>
         std::vector<uint8_t> createPacket(PacketType packet_type, T const &component, uint32_t entity_id);
+        template <typename T> std::vector<uint8_t> createPacket(T& event, uint32_t entity_id);
         std::vector<uint8_t> createPacket(std::vector<uint8_t> component, Packet packet);
         std::vector<uint8_t> createPacket(PacketType packet_type, uint32_t entity_id);
         std::array<uint8_t, sizeof(Packet)> createPacket(Packet packet);
@@ -104,6 +106,8 @@ class Udp {
         std::mutex mtxSendPacket;
         std::mutex mtxQueue;
         std::vector<std::vector<std::vector<uint8_t>>> _sparseArray;
+        std::mutex _eventmtx;
+        std::vector<std::any> _eventQueue;
 
     private:
         std::thread _thread;

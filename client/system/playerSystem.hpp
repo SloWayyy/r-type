@@ -41,10 +41,7 @@ class PlayerSystem : public ISystem {
                         velocity[_reg._player].value().y_speed = 2;
                         break;
                     case sf::Keyboard::Space:
-                        _reg._eventManager.addEvent<shoot>(position[_reg._player].value().x, position[_reg._player].value().y);
-                        break;
-                    case sf::Keyboard::X:
-                        _reg._eventManager.addEvent<ennemy>(position[_reg._player].value().x, position[_reg._player].value().y);
+                        _reg._eventManager.addEvent<shoot>(_reg._player);
                         break;
                     default:
                         break;

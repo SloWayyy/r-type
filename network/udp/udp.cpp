@@ -5,6 +5,7 @@
 ** udp
 */
 
+#include "../../ecs/event/shoot.hpp"
 #include <random>
 #include <typeindex>
 #include <unordered_map>
@@ -62,6 +63,20 @@ void Udp::start_receive(bool client)
         std::cerr << "ERROR UDP binding socket: " << ec.what() << std::endl;
         return;
     }
+}
+
+template <typename T> std::vector<uint8_t> Udp::createPacket(T& event, uint32_t entity_id)
+{
+    std::type_index type_index = typeid(T);
+    Packet packet = { _magic_number, EVENT_PACKET, std::time(nullptr), entity_id, 1, generate_uuid() };
+
+    std::vector<uint8_t> result;
+    result.resize(sizeof(Packet) + sizeof(T));
+    const uint8_t* packetBytes = reinterpret_cast<const uint8_t*>(&packet);
+    std::copy(packetBytes, packetBytes + sizeof(Packet), result.begin());
+    const uint8_t* eventBytes = reinterpret_cast<const uint8_t*>(&event);
+    std::copy(eventBytes, eventBytes + sizeof(T), result.begin() + sizeof(Packet));
+    return result;
 }
 
 std::vector<uint8_t> Udp::createPacket(std::vector<uint8_t> component, Packet packet)
@@ -152,7 +167,13 @@ void Udp::handleReceiveClient(const asio::error_code& error, std::size_t bytes_t
 
     if (handleErrorReceive(error, receivedComponent, receivedPacket, true) == -1)
         return;
-    if (receivedPacket.packet_type == NEW_CONNECTION) {
+
+    if (receivedPacket.packet_type == EVENT_PACKET) {
+        shoot test = *reinterpret_cast<const shoot*>(receivedComponent.data());
+        if (test.entity_id != _entity_id) {
+            // reg._eventManager.addEvent<shoot>(test.entity_id);
+        }
+    } else if (receivedPacket.packet_type == NEW_CONNECTION) {
         handleNewConnection(receivedPacket, receivedComponent);
     } else if (receivedPacket.timestamp >= _last_timestamp) {
         handleTimestampUpdate(receivedPacket, receivedComponent);
@@ -160,7 +181,6 @@ void Udp::handleReceiveClient(const asio::error_code& error, std::size_t bytes_t
         std::cout << "OUTDATED PACKET" << std::endl;
     }
     receivedPacket.packet_type = RESPONSE_PACKET;
-    // receivedPacket.display_packet();
     sendClientToServer(receivedPacket);
     start_receive(true);
 }
@@ -188,6 +208,14 @@ void Udp::handleTimestampUpdate(const Packet& receivedPacket, const std::vector<
     mtx.unlock();
 }
 
+void Udp::handleEvents(Packet& receivedPacket, const std::vector<uint8_t>& receivedComponent)
+{
+    shoot test = *reinterpret_cast<const shoot*>(receivedComponent.data());
+    _eventmtx.lock();
+    _eventQueue.push_back(test);
+    _eventmtx.unlock();
+}
+
 void Udp::sendPlayerListToClient(std::vector<std::vector<uint8_t>> entities, Packet receivedPacket)
 {
     for (size_t i = 1; i < entities.size(); i += 1) {
@@ -209,6 +237,11 @@ void Udp::handleReceiveServer(const asio::error_code& error, std::size_t bytes_t
     Packet receivedPacket;
     std::vector<uint8_t> receivedComponent = unpack(receivedPacket, _recv_buffer, bytes_transferred);
 
+    if (receivedPacket.packet_type == EVENT_PACKET) {
+        handleEvents(receivedPacket, receivedComponent);
+        start_receive();
+        return;
+    }
     if (handleErrorReceive(error, receivedComponent, receivedPacket, false) == -1)
         return;
     processReceivedPacket(receivedPacket, receivedComponent);
@@ -234,7 +267,7 @@ void Udp::processReceivedPacket(const Packet& receivedPacket, const std::vector<
 void Udp::handleNewConnection(const Packet& receivedPacket)
 {
     _clientsUDP[remote_endpoint_.port()] = remote_endpoint_;
-    std::vector<std::vector<uint8_t>> entities = updateGame.updateEntity();
+    std::vector<std::vector<uint8_t>> entities = updateGame.updateEntity(_clientsUDP.size() - 1);
     _sparseArray.push_back(entities);
     sendPlayerListToClient(entities, receivedPacket);
     start_receive();
