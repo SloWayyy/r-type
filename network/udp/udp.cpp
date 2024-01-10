@@ -267,7 +267,7 @@ void Udp::processReceivedPacket(const Packet& receivedPacket, const std::vector<
 void Udp::handleNewConnection(const Packet& receivedPacket)
 {
     _clientsUDP[remote_endpoint_.port()] = remote_endpoint_;
-    std::vector<std::vector<uint8_t>> entities = updateGame.updateEntity();
+    std::vector<std::vector<uint8_t>> entities = updateGame.updateEntity(_clientsUDP.size() - 1);
     _sparseArray.push_back(entities);
     sendPlayerListToClient(entities, receivedPacket);
     start_receive();

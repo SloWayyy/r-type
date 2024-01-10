@@ -32,10 +32,15 @@ public:
         }
         if (_reg._eventManager.checkEvent<collision>()) {
             for (auto &tmp : _reg._eventManager.getEvent<collision>()) {
-                if (tmp->_id1 <= 3 || tmp->_id2 <= 3)
-                    continue;
-                _reg.removeEntity(tmp->_id1);
-                _reg.removeEntity(tmp->_id2);
+                std::cout << "collision between id1 == " << tmp->_id1 << " and if2 == " << tmp->_id2 << std::endl;
+                if (tmp->_id1 > 3) {
+                    _reg.removeEntity(tmp->_id1);
+                    std::cout << "removed id1" << std::endl;
+                }
+                if (tmp->_id2 > 3) {
+                    _reg.removeEntity(tmp->_id2);
+                    std::cout << "removed id2" << std::endl;
+                }
             }
         }
     };

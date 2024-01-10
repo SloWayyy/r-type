@@ -40,6 +40,10 @@ int main(int ac, char const** av)
     UpdateGame updateGame(reg);
     Udp udpServer(4242, av[2], reg, updateGame);
     TCPServer tcpServer(std::atoi(av[1]), udpServer.getPort(), av[2]);
+    reg.addEntity();
+    reg.addEntity();
+    reg.addEntity();
+    reg.addEntity();
     reg.add_system<ServerEventLoaderSystem>(std::ref(udpServer));
     reg.add_system<messageSystem>(std::ref(tcpServer));
     reg.add_system<ServerShootSystem>();

@@ -22,7 +22,7 @@ class MoveSystem : public ISystem {
         bool isColliding(Sparse_array<Position> &position, Sparse_array<Velocity> &velocity, Sparse_array<HitBox> &hitbox, Sparse_array<CollisionGroup> &collisionGroup) {
             for (long unsigned int i = 0; i < DEFAULT_SIZE; i++) {
                 if (position[i] && velocity[i] && hitbox[i]) {
-                    for (long unsigned int j = 0; j < DEFAULT_SIZE; j++) {
+                    for (long unsigned int j = i + 1; j < DEFAULT_SIZE; j++) {
                         if (position[j] && velocity[j] && i != j && hitbox[j]) {
                             if (collisionGroup[i] && collisionGroup[j])
                                 if (collisionGroup[i].value().collisionGroup == collisionGroup[j].value().collisionGroup)
@@ -33,8 +33,7 @@ class MoveSystem : public ISystem {
                                 position[i].value().y + velocity[i].value().y_speed + hitbox[i].value().h > position[j].value().y) {
                                     _reg._eventManager.addEvent<collision>(i, j);
                                     velocity[i].value().x_speed = 0;
-                                    velocity[i].value().y_speed = 0;
-                                    // return true;
+                                    velocity[i].value().y_speed = 0;                                    // return true;
                             }
                         }
                     }
