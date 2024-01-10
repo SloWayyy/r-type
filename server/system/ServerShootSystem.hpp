@@ -22,7 +22,6 @@ public:
     {
         auto& position = _reg.getComponent<Position>();
         for (auto &tmp : _reg._eventManager.getEvent<shoot>()) {
-            std::cout << "size " << _reg._eventManager.getEvent<shoot>().size() << std::endl;
             uint32_t id = _reg.addEntity();
             bulletShot(id, position[tmp->entity_id].value().x, position[tmp->entity_id].value().y);
             _reg._eventManager.addEvent<bullet>(tmp->entity_id, id);

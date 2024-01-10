@@ -38,9 +38,9 @@ class EnnemySystem : public ISystem {
             hitbox.emplace_at(Entity_id, 45, 23);
             collision.emplace_at(Entity_id, 3);
             sprite.emplace_at(Entity_id, 3, 0, 0, 576, 430);
-            position.emplace_at(Entity_id, 750, (rand() % 800));
+            position.emplace_at(Entity_id, 750, (rand() % 750));
             size.emplace_at(Entity_id, 1, 1);
-            velocity.emplace_at(Entity_id, 0, 0, 0, -2, 0);
+            velocity.emplace_at(Entity_id, 0, 0, 0, -3, 0);
         }
         registry &_reg;
         uint32_t inside_clock = 0;
