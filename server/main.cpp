@@ -9,10 +9,10 @@
 #include "../ecs/system/MoveSystem.hpp"
 #include "../network/tcpServer/tcpServer.hpp"
 #include "../network/udp/udp.hpp"
-#include "./system/messageSystem.hpp"
-#include "./system/serverNetworkSystem.hpp"
-#include "./system/serverEventLoaderSystem.hpp"
 #include "./system/ServerShootSystem.hpp"
+#include "./system/messageSystem.hpp"
+#include "./system/serverEventLoaderSystem.hpp"
+#include "./system/serverNetworkSystem.hpp"
 #include "./updateGame/updateGame.hpp"
 #include <asio.hpp>
 #include <iostream>
