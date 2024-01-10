@@ -6,11 +6,11 @@
 */
 
 #include "../ecs/registry/registry.hpp"
-#include "../ecs/system/EntityDestroyerSystem.hpp"
 #include "../ecs/system/MoveSystem.hpp"
 #include "../ecs/system/ShootSystem.hpp"
 #include "../network/tcpClient/tcpClient.hpp"
 #include "../network/udp/udp.hpp"
+#include "./system/EntityDestroyerSystem.hpp"
 #include "./system/animeSystem.hpp"
 #include "./system/clientNetworkSystem.hpp"
 #include "./system/messageSystem.hpp"

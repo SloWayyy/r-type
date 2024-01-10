@@ -67,7 +67,6 @@ void Udp::start_receive(bool client)
 
 template <typename T> std::vector<uint8_t> Udp::createPacket(T& event, uint32_t entity_id)
 {
-    std::type_index type_index = typeid(T);
     Packet packet = { _magic_number, EVENT_PACKET, std::time(nullptr), entity_id, 1, generate_uuid() };
 
     std::vector<uint8_t> result;
@@ -153,7 +152,8 @@ int Udp::handleErrorReceive(const asio::error_code& error, std::vector<uint8_t> 
 {
     if (error)
         return -1;
-    if (receivedComponent.size() == 0 && receivedPacket.packet_type != NEW_CONNECTION && receivedPacket.packet_type != RESPONSE_PACKET) {
+    if (receivedComponent.size() == 0 && receivedPacket.packet_type != NEW_CONNECTION && receivedPacket.packet_type != RESPONSE_PACKET
+        && receivedPacket.packet_type != DESTROY_ENTITY) {
         start_receive(isClient);
         return -1;
     }
@@ -167,13 +167,7 @@ void Udp::handleReceiveClient(const asio::error_code& error, std::size_t bytes_t
 
     if (handleErrorReceive(error, receivedComponent, receivedPacket, true) == -1)
         return;
-
-    if (receivedPacket.packet_type == EVENT_PACKET) {
-        shoot test = *reinterpret_cast<const shoot*>(receivedComponent.data());
-        if (test.entity_id != _entity_id) {
-            // reg._eventManager.addEvent<shoot>(test.entity_id);
-        }
-    } else if (receivedPacket.packet_type == NEW_CONNECTION) {
+    if (receivedPacket.packet_type == NEW_CONNECTION) {
         handleNewConnection(receivedPacket, receivedComponent);
     } else if (receivedPacket.timestamp >= _last_timestamp) {
         handleTimestampUpdate(receivedPacket, receivedComponent);
@@ -208,7 +202,7 @@ void Udp::handleTimestampUpdate(const Packet& receivedPacket, const std::vector<
     mtx.unlock();
 }
 
-void Udp::handleEvents(Packet& receivedPacket, const std::vector<uint8_t>& receivedComponent)
+void Udp::handleEvents(const std::vector<uint8_t>& receivedComponent)
 {
     shoot test = *reinterpret_cast<const shoot*>(receivedComponent.data());
     _eventmtx.lock();
@@ -238,7 +232,7 @@ void Udp::handleReceiveServer(const asio::error_code& error, std::size_t bytes_t
     std::vector<uint8_t> receivedComponent = unpack(receivedPacket, _recv_buffer, bytes_transferred);
 
     if (receivedPacket.packet_type == EVENT_PACKET) {
-        handleEvents(receivedPacket, receivedComponent);
+        handleEvents(receivedComponent);
         start_receive();
         return;
     }
@@ -342,7 +336,7 @@ template <typename... Args> void Udp::sendServerToClient(PacketType packet_type,
         return;
     try {
         socket_.send_to(asio::buffer(cryptData), remote_endpoint_);
-        if (packet_type == DATA_PACKET || packet_type == EVENT_PACKET) {
+        if (packet_type == DATA_PACKET || packet_type == EVENT_PACKET || packet_type == DESTROY_ENTITY) {
             mtxSendPacket.lock();
             _queueSendPacket.push_back(std::make_pair(remote_endpoint_, data));
             mtxSendPacket.unlock();
@@ -377,7 +371,7 @@ template <typename... Args> void Udp::sendToAll(PacketType packet_type, Args... 
     try {
         for (const auto& client : _clientsUDP) {
             socket_.send_to(asio::buffer(cryptData), client.second);
-            if (packet_type == DATA_PACKET || packet_type == EVENT_PACKET) {
+            if (packet_type == DATA_PACKET || packet_type == EVENT_PACKET || packet_type == DESTROY_ENTITY) {
                 mtxSendPacket.lock();
                 _queueSendPacket.push_back(std::make_pair(client.second, data));
                 mtxSendPacket.unlock();
@@ -392,6 +386,10 @@ void Udp::updateSparseArray(bool isClient)
 {
     for (auto& i : _queue) {
         Packet header = i.first;
+        if (header.packet_type == DESTROY_ENTITY) {
+            reg.removeEntity(header.entity_id);
+            continue;
+        }
         auto data = i.second;
         char component[64] = { 0 };
         std::memcpy(component, data.data(), data.size());
