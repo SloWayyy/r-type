@@ -153,7 +153,7 @@ int Udp::handleErrorReceive(const asio::error_code& error, std::vector<uint8_t> 
     if (error)
         return -1;
     if (receivedComponent.size() == 0 && receivedPacket.packet_type != NEW_CONNECTION && receivedPacket.packet_type != RESPONSE_PACKET
-    && receivedPacket.packet_type != DESTROY_ENTITY) {
+        && receivedPacket.packet_type != DESTROY_ENTITY) {
         start_receive(isClient);
         return -1;
     }
@@ -167,7 +167,7 @@ void Udp::handleReceiveClient(const asio::error_code& error, std::size_t bytes_t
 
     if (handleErrorReceive(error, receivedComponent, receivedPacket, true) == -1)
         return;
-     if (receivedPacket.packet_type == NEW_CONNECTION) {
+    if (receivedPacket.packet_type == NEW_CONNECTION) {
         handleNewConnection(receivedPacket, receivedComponent);
     } else if (receivedPacket.timestamp >= _last_timestamp) {
         handleTimestampUpdate(receivedPacket, receivedComponent);
