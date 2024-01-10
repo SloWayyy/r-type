@@ -24,7 +24,7 @@ public:
         for (uint32_t i = 0; i < DEFAULT_SIZE; i++) {
             if (!pos[i])
                 continue;
-            if (pos[i].value().x > 950 || pos[i].value().x < 0 || pos[i].value().y > 750 || pos[i].value().y < 0) {
+            if (pos[i].value().x > 1080 || pos[i].value().x < 0 || pos[i].value().y > 1920 || pos[i].value().y < 0) {
                 if (i <= 3)
                     continue;
                 std::cout << "removed id " << i << std::endl;

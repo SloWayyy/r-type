@@ -43,9 +43,6 @@ class PlayerSystem : public ISystem {
                     case sf::Keyboard::Space:
                         _reg._eventManager.addEvent<shoot>(_reg._player);
                         break;
-                    case sf::Keyboard::X:
-                        _reg._eventManager.addEvent<ennemy>(position[_reg._player].value().x, position[_reg._player].value().y);
-                        break;
                     default:
                         break;
                 }

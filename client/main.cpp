@@ -6,7 +6,6 @@
 */
 
 #include "../ecs/registry/registry.hpp"
-#include "../ecs/system/EnnemySystem.hpp"
 #include "../ecs/system/EntityDestroyerSystem.hpp"
 #include "../ecs/system/MoveSystem.hpp"
 #include "../ecs/system/ShootSystem.hpp"
@@ -47,7 +46,6 @@ int main(int ac, char** av)
     reg.add_system<PlayerSystem>();
     reg.add_system<MoveSystem>();
     reg.add_system<AnimeSystem>();
-    reg.add_system<EnnemySystem>();
     reg.add_system<NetworkSystem>(std::ref(udpClient), std::ref(tcpClient));
     reg.add_system<EntityDestroyerSystem>();
     auto current_time = std::chrono::high_resolution_clock::now();

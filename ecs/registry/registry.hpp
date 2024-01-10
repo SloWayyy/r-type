@@ -108,11 +108,11 @@ public:
     {
         if (entity >= DEFAULT_SIZE)
             return;
-        if (std::find(_entity_graveyard.begin(), _entity_graveyard.end(), entity) != _entity_graveyard.end())
-            return;
         for (auto &func : _eraseFunction) {
             func(*this, entity);
         }
+        if (std::find(_entity_graveyard.begin(), _entity_graveyard.end(), entity) != _entity_graveyard.end())
+            return;
         _entity_graveyard.push_back(entity);
     };
 

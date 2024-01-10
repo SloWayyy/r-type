@@ -10,6 +10,7 @@
 
 #include "../../ecs/system/ISystem.hpp"
 #include "../event/bullet.hpp"
+#include "../event/spawnedEnnemy.hpp"
 #include "../../network/tcpServer/tcpServer.hpp"
 #include "../../network/udp/udp.hpp"
 #include <chrono>
@@ -58,6 +59,16 @@ class NetworkSystem : public ISystem {
                     _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, velocity[tmp->bullet_id].value(), tmp->bullet_id);
                     _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, collision[tmp->bullet_id].value(), tmp->bullet_id);
                     _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, hitbox[tmp->bullet_id].value(), tmp->bullet_id);
+                }
+            }
+            if(_reg._eventManager.checkEvent<spawnedEnnemy>()) {
+                for (auto &tmp : _reg._eventManager.getEvent<spawnedEnnemy>()) {
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, sprite[tmp->ennemy_id].value(), tmp->ennemy_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, position[tmp->ennemy_id].value(), tmp->ennemy_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, size[tmp->ennemy_id].value(), tmp->ennemy_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, velocity[tmp->ennemy_id].value(), tmp->ennemy_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, collision[tmp->ennemy_id].value(), tmp->ennemy_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, hitbox[tmp->ennemy_id].value(), tmp->ennemy_id);
                 }
             }
         };
