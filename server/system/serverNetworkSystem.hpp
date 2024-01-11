@@ -55,23 +55,27 @@ public:
 
         if (_reg._eventManager.checkEvent<bullet>()) {
             for (auto& tmp : _reg._eventManager.getEvent<bullet>()) {
-                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, position[tmp->shoot_id].value(), tmp->shoot_id);
-                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, sprite[tmp->bullet_id].value(), tmp->bullet_id);
-                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, position[tmp->bullet_id].value(), tmp->bullet_id);
-                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, size[tmp->bullet_id].value(), tmp->bullet_id);
-                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, velocity[tmp->bullet_id].value(), tmp->bullet_id);
-                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, collision[tmp->bullet_id].value(), tmp->bullet_id);
-                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, hitbox[tmp->bullet_id].value(), tmp->bullet_id);
+                if (position[tmp->shoot_id] && position[tmp->bullet_id] && sprite[tmp->bullet_id] && size[tmp->bullet_id] && velocity[tmp->bullet_id] && collision[tmp->bullet_id] && hitbox[tmp->bullet_id]) {
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, position[tmp->shoot_id].value(), tmp->shoot_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, position[tmp->bullet_id].value(), tmp->bullet_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, sprite[tmp->bullet_id].value(), tmp->bullet_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, size[tmp->bullet_id].value(), tmp->bullet_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, velocity[tmp->bullet_id].value(), tmp->bullet_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, collision[tmp->bullet_id].value(), tmp->bullet_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, hitbox[tmp->bullet_id].value(), tmp->bullet_id);
+                }
             }
         }
         if (_reg._eventManager.checkEvent<spawnedEnnemy>()) {
             for (auto& tmp : _reg._eventManager.getEvent<spawnedEnnemy>()) {
-                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, sprite[tmp->ennemy_id].value(), tmp->ennemy_id);
-                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, position[tmp->ennemy_id].value(), tmp->ennemy_id);
-                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, size[tmp->ennemy_id].value(), tmp->ennemy_id);
-                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, velocity[tmp->ennemy_id].value(), tmp->ennemy_id);
-                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, collision[tmp->ennemy_id].value(), tmp->ennemy_id);
-                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, hitbox[tmp->ennemy_id].value(), tmp->ennemy_id);
+                if (position[tmp->ennemy_id] && sprite[tmp->ennemy_id] && size[tmp->ennemy_id] && velocity[tmp->ennemy_id] && collision[tmp->ennemy_id] && hitbox[tmp->ennemy_id]) {
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, sprite[tmp->ennemy_id].value(), tmp->ennemy_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, position[tmp->ennemy_id].value(), tmp->ennemy_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, size[tmp->ennemy_id].value(), tmp->ennemy_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, velocity[tmp->ennemy_id].value(), tmp->ennemy_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, collision[tmp->ennemy_id].value(), tmp->ennemy_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, hitbox[tmp->ennemy_id].value(), tmp->ennemy_id);
+                }
             }
         }
         if (_reg._eventManager.checkEvent<destroyEntity>()) {

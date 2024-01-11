@@ -22,6 +22,8 @@ public:
     {
         auto& position = _reg.getComponent<Position>();
         for (auto &tmp : _reg._eventManager.getEvent<shoot>()) {
+            if (!position[tmp->entity_id])
+                continue;
             uint32_t id = _reg.addEntity();
             bulletShot(id, position[tmp->entity_id].value().x, position[tmp->entity_id].value().y);
             _reg._eventManager.addEvent<bullet>(tmp->entity_id, id);
