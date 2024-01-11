@@ -13,12 +13,12 @@ UpdateGame::UpdateGame(registry& reg)
 {
 }
 
-std::vector<std::vector<uint8_t>> UpdateGame::updateEntity()
+std::vector<std::vector<uint8_t>> UpdateGame::updateEntity(uint32_t entity_id)
 {
     std::vector<std::vector<uint8_t>> entities;
 
     static int y = 50;
-    uint32_t entity_id = _reg.addEntity();
+    // uint32_t entity_id = _reg.addEntity();
     entities.resize(8);
     entities[0].resize(sizeof(uint32_t));
     std::memcpy(entities[0].data(), &entity_id, sizeof(uint32_t));
@@ -60,7 +60,7 @@ std::vector<std::vector<uint8_t>> UpdateGame::updateEntity()
     std::memcpy(entities[6].data(), &an, sizeof(Anime));
 
     auto& health = _reg.getComponent<Health>();
-    health.emplace_at(entity_id, 10);
+    health.emplace_at(entity_id, 3);
     const Health& he = health[entity_id].value();
     entities[7].resize(sizeof(Health));
     std::memcpy(entities[7].data(), &he, sizeof(Health));

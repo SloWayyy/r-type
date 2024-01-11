@@ -22,6 +22,8 @@ class PlayerSystem : public ISystem {
             for (auto &tmp : _reg._eventManager.getEvent<keyPressed>()) {
                 auto &velocity = _reg.getComponent<Velocity>();
                 auto &position = _reg.getComponent<Position>();
+                if (!position[_reg._player] && !velocity[_reg._player])
+                    return;
                 switch(tmp->_key) {
                     case sf::Keyboard::Right:
                         velocity[_reg._player].value().x_speed = 2;
@@ -40,10 +42,7 @@ class PlayerSystem : public ISystem {
                         velocity[_reg._player].value().y_speed = 2;
                         break;
                     case sf::Keyboard::Space:
-                        _reg._eventManager.addEvent<shoot>(position[_reg._player].value().x, position[_reg._player].value().y);
-                        break;
-                    case sf::Keyboard::X:
-                        _reg._eventManager.addEvent<ennemy>(position[_reg._player].value().x, position[_reg._player].value().y);
+                        _reg._eventManager.addEvent<shoot>(_reg._player);
                         break;
                     default:
                         break;

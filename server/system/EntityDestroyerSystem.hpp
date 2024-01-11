@@ -8,9 +8,10 @@
 #ifndef ENTITYDESTROYERSYSTEM_HPP_
 #define ENTITYDESTROYERSYSTEM_HPP_
 
-#include "../../ecs/system/ISystem.hpp"
-#include "../../ecs/registry/registry.hpp"
 #include "../../ecs/event/collision.hpp"
+#include "../../ecs/event/destroyEntity.hpp"
+#include "../../ecs/registry/registry.hpp"
+#include "../../ecs/system/ISystem.hpp"
 
 class EntityDestroyerSystem : public ISystem {
 public:
@@ -24,25 +25,21 @@ public:
         for (uint32_t i = 0; i < DEFAULT_SIZE; i++) {
             if (!pos[i])
                 continue;
-            if (pos[i].value().x > 1920 || pos[i].value().x < 0 || pos[i].value().y > 1080 || pos[i].value().y < 0) {
+            if (pos[i].value().x > 1080 || pos[i].value().x < -30 || pos[i].value().y > 1920 || pos[i].value().y < 0) {
                 if (i <= 3)
                     continue;
                 _reg.removeEntity(i);
             }
         }
         if (_reg._eventManager.checkEvent<collision>()) {
-            for (auto &tmp : _reg._eventManager.getEvent<collision>()) {
-                if (tmp->_id1 <= 3) {
-                    if (tmp->_id2 <= 3)
-                        continue;
-                    _reg.removeEntity(tmp->_id2);
-                    continue;
-                } else if (tmp->_id2 <= 3) {
+            for (auto& tmp : _reg._eventManager.getEvent<collision>()) {
+                if (tmp->_id1 > 3) {
                     _reg.removeEntity(tmp->_id1);
-                    continue;
-                } else {
-                    _reg.removeEntity(tmp->_id1);
+                    _reg._eventManager.addEvent<destroyEntity>(tmp->_id1);
+                }
+                if (tmp->_id2 > 3) {
                     _reg.removeEntity(tmp->_id2);
+                    _reg._eventManager.addEvent<destroyEntity>(tmp->_id2);
                 }
             }
         }

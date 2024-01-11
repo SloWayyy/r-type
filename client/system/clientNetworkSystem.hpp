@@ -12,6 +12,7 @@
 #include "../../network/tcpClient/tcpClient.hpp"
 #include "../../network/udp/udp.hpp"
 #include "../../ecs/event/keyPressed.hpp"
+#include "../../ecs/event/shoot.hpp"
 
 class NetworkSystem : public ISystem {
     public:
@@ -27,14 +28,16 @@ class NetworkSystem : public ISystem {
             if(_reg._eventManager.checkEvent<keyPressed>()) {
                 auto &velocity = _reg.getComponent<Velocity>();
                 auto &position = _reg.getComponent<Position>();
-                _udpClient.sendClientToServer(DATA_PACKET, position[_reg._player].value(), _reg._player);
-                _udpClient.sendClientToServer(DATA_PACKET, velocity[_reg._player].value(), _reg._player);
+                if (position[_reg._player]) {
+                    _udpClient.sendClientToServer(DATA_PACKET, position[_reg._player].value(), _reg._player);
+                    _udpClient.sendClientToServer(DATA_PACKET, velocity[_reg._player].value(), _reg._player);
+                }
             }
-            if(_reg._eventManager.checkEvent<ShootSystem>()) {
-                // _udpClient.sendClientToServer(EVENT_PACKET);
-            }
-            if(_reg._eventManager.checkEvent<EnnemySystem>()) {
-                // _udpClient.sendClientToServer(EVENT_PACKET);
+            if(_reg._eventManager.checkEvent<shoot>()) {
+                auto &tmp = _reg._eventManager.getEvent<shoot>();
+                for_each(tmp.begin(), tmp.end(), [this](auto &tmp) {
+                    _udpClient.sendClientToServer(*tmp, tmp->entity_id);
+                });
             }
         };
     private:

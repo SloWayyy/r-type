@@ -5,23 +5,28 @@
 ** ShootSystem
 */
 
-#ifndef SHOOTSYSTEM_HPP_
-#define SHOOTSYSTEM_HPP_
+#ifndef SHOOTSYSTEM2_HPP_
+#define SHOOTSYSTEM2_HPP_
 
-#include "../event/shoot.hpp"
-#include "../registry/registry.hpp"
+#include "../../ecs/event/shoot.hpp"
+#include "../../ecs/registry/registry.hpp"
+#include "../event/bullet.hpp"
 
-class ShootSystem : public ISystem {
+class ServerShootSystem : public ISystem {
 public:
-    ShootSystem() = delete;
-    ShootSystem(registry& reg)
+    ServerShootSystem() = delete;
+    ServerShootSystem(registry& reg)
         : _reg(reg) {};
-    ~ShootSystem() = default;
+    ~ServerShootSystem() = default;
     void operator()() override
     {
         auto& position = _reg.getComponent<Position>();
         for (auto &tmp : _reg._eventManager.getEvent<shoot>()) {
-            bulletShot(_reg.addEntity(), position[tmp->entity_id].value().x, position[tmp->entity_id].value().y);
+            if (!position[tmp->entity_id])
+                continue;
+            uint32_t id = _reg.addEntity();
+            bulletShot(id, position[tmp->entity_id].value().x, position[tmp->entity_id].value().y);
+            _reg._eventManager.addEvent<bullet>(tmp->entity_id, id);
         }
     };
 

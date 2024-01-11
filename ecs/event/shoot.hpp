@@ -14,13 +14,12 @@
 
 class shoot : public IEvent {
     public:
-        shoot(uint32_t player_x, uint32_t player_y): _player_x(player_x), _player_y(player_y) {};
+        shoot(uint32_t entity_id) : entity_id(entity_id) {};
         ~shoot() = default;
         void debug() override {
-            std::cout << "shoot with " << _player_x << " and " << _player_y << std::endl;
+            std::cout << "event shoot: entity id -> " << entity_id  << std::endl;
         };
-        uint32_t _player_x;
-        uint32_t _player_y;
+        uint32_t entity_id;
     protected:
     private:
 };

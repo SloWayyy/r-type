@@ -17,7 +17,7 @@ class UpdateGame {
         UpdateGame(registry &reg);
         ~UpdateGame() = default;
 
-        std::vector<std::vector<uint8_t>> updateEntity();
+        std::vector<std::vector<uint8_t>> updateEntity(uint32_t entity_id);
     private:
         registry &_reg;
 };

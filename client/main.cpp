@@ -6,13 +6,12 @@
 */
 
 #include "../ecs/registry/registry.hpp"
-#include "../ecs/system/EnnemySystem.hpp"
-#include "../ecs/system/EntityDestroyerSystem.hpp"
+#include "../ecs/system/HealthSystem.hpp"
 #include "../ecs/system/MoveSystem.hpp"
 #include "../ecs/system/ShootSystem.hpp"
-#include "../ecs/system/HealthSystem.hpp"
 #include "../network/tcpClient/tcpClient.hpp"
 #include "../network/udp/udp.hpp"
+#include "./system/EntityDestroyerSystem.hpp"
 #include "./system/animeSystem.hpp"
 #include "./system/clientNetworkSystem.hpp"
 #include "./system/messageSystem.hpp"
@@ -47,10 +46,8 @@ int main(int ac, char** av)
     reg.add_system<messageSystem>(tcpClient);
     reg.add_system<PlayerSystem>();
     reg.add_system<MoveSystem>();
-    reg.add_system<AnimeSystem>();
-    reg.add_system<ShootSystem>();
     reg.add_system<HealthSystem>();
-    reg.add_system<EnnemySystem>();
+    reg.add_system<AnimeSystem>();
     reg.add_system<NetworkSystem>(std::ref(udpClient), std::ref(tcpClient));
     reg.add_system<EntityDestroyerSystem>();
     auto current_time = std::chrono::high_resolution_clock::now();

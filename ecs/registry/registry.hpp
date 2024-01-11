@@ -106,13 +106,13 @@ public:
 
     void removeEntity(Entity const entity)
     {
-        if (entity >= _entity_count)
-            return;
-        if (std::find(_entity_graveyard.begin(), _entity_graveyard.end(), entity) != _entity_graveyard.end())
+        if (entity >= DEFAULT_SIZE)
             return;
         for (auto &func : _eraseFunction) {
             func(*this, entity);
         }
+        if (std::find(_entity_graveyard.begin(), _entity_graveyard.end(), entity) != _entity_graveyard.end())
+            return;
         _entity_graveyard.push_back(entity);
     };
 
