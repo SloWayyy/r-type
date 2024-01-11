@@ -7,3 +7,7 @@ r-type_client
 r-type_server
 .vscode/
 _deps
+cmake_install.cmake
+CMakeCache.txt
+Makefile
+CMakeLists.txt

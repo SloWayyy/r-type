@@ -18,120 +18,156 @@ Status of this Memo
 Table of Contents
 
     1. Introduction
-    2. R-Type architecture
-    3. Protocol
-        1. Packets
-        2. Player Events
-        3. Packet Type
+    2. UDP
+        2.1. R-Type architecture
+        2.2. Protocol
+            2.2.1. Packets
+            2.2.2. Player Events
+            2.2.3. Packet Type
+        2.3. Security
+    3. TCP
+        3.1 Prococol RFC
 
 
 1   .Introduction
 
     The goal of this project is to create an 4-multiplayer game.
 
-2.  R-Type architecture
+2. UDP
 
-    The R-Type architecture is a client-server game architecture.
-    A client connects at the start to the server by using the Protocol.
-    And then Spawn in a game.
+    2.1  R-Type architecture
 
-3.  Protocol
+        The R-Type architecture is a client-server game architecture.
+        A client connects at the start to the server by using the Protocol.
+        And then Spawn in a game.
 
-    1. Packets
+    2.2  Protocol
 
-    When the Player is in the game, the client-server communications are done
-    by using this R-Type UDP Protocol.
-    The UDP Protocol is used to transmit to all clients when an ENTITY has been updated.
+        2.2.1. Packets
 
-    In order to communicate with the server/client, we MUST follow the following
-    Packet containing this 7 datas:
+        When the Player is in the game, the client-server communications are done
+        by using this R-Type UDP Protocol.
+        The UDP Protocol is used to transmit to all clients when an ENTITY has been updated.
 
-        uint32_t MAGIC_NUMBER;
-        PacketType PACKET_TYPE;
-        long TIMESTAMP;
-        uint32_t ENTITY_ID;
-        uint32_t TYPE_INDEX;
-        std::array<char, 37> UUID;
-        T component;
+        In order to communicate with the server/client, we MUST follow the following
+        Packet containing this 7 datas:
 
-    where "MAGIC_NUMBER" is a 4-byte to know if the Packet is correct, "PACKET_TYPE" is
-    a 1-byte an element of the PacketType enumeration (described below) representation
-    the type of Packet, "TIMESTAMP" is the time when the Packet was sent, "ENTITY_ID" is
-    the data to know which player sent the Packet, "TYPE_INDEX" is to know which
-    component has been updated of the ENTITY_ID, "UUID" is the unique generated for detecting
-    a particul packet.
+            MAGIC_NUMBER;
+            PACKET_TYPE;
+            TIMESTAMP;
+            ENTITY_ID;
+            TYPE_INDEX;
+            UUID;
+            component;
 
-    The PacketType enumeration:
+        where "MAGIC_NUMBER" is a 4-byte to know if the Packet is correct, "PACKET_TYPE" is
+        a 1-byte an element of the PacketType enumeration (described below) representation
+        the type of Packet, "TIMESTAMP" is the time when the Packet was sent, "ENTITY_ID" is
+        the data to know which player sent the Packet, "TYPE_INDEX" is to know which
+        component has been updated of the ENTITY_ID, "UUID" is the unique generated for detecting
+        a particul packet.
 
-    enum PacketType {
-        DATA_PACKET = '0',
-        REPEAT_PACKET = '1',
-        RESPONSE_PACKET = '2',
-        NEW_CONNECTION = '3',
-    };
+        The PacketType enumeration:
 
-    To send a Packet, you MUST write the data on UDP socket in this order :
-    MAGIC_NUMBER, PACKET_TYPE, TIMESTAMP, ENTITY_ID, TYPE_INDEX, UUID;
+        PacketType {
+            DATA_PACKET = '0',
+            REPEAT_PACKET = '1',
+            RESPONSE_PACKET = '2',
+            NEW_CONNECTION = '3',
+        };
 
-    To received a Packet you MUST read the 4 first bytes (corresponding to the 
-    MAGIC_NUMBER data), read the 1 following byte (corresponding to the
-    PACKET_TYPE), read the 8 following bytes (corresponding to the TIMESTAMP),
-    read the 4 following bytes (corresponding to the ENTITY_ID), read the 4 
-    following bytes (corresponding to the ENTITY_ID) and finally read the 37 
-    last bytes (corresponding to the UUID).
-    
-    2. Player Events
+        To send a Packet, you MUST write the data on UDP socket in this order :
+        MAGIC_NUMBER, PACKET_TYPE, TIMESTAMP, ENTITY_ID, TYPE_INDEX, UUID;
 
-        The player, on the client-side, can execute several actions.
-        On each action, the client MUST send to the server:
+        To received a Packet you MUST read the 4 first bytes (corresponding to the 
+        MAGIC_NUMBER data), read the 1 following byte (corresponding to the
+        PACKET_TYPE), read the 8 following bytes (corresponding to the TIMESTAMP),
+        read the 4 following bytes (corresponding to the ENTITY_ID), read the 4 
+        following bytes (corresponding to the ENTITY_ID) and finally read the 37 
+        last bytes (corresponding to the UUID).
 
-        For example:
+        2.2.2. Player Events
 
-        Player 1 move UP
+            The player, on the client-side, can execute several actions.
+            On each action, the client MUST send to the server:
 
-        He sends the following packet:
+            For example:
 
-            {
-                MAGIC_NUMBER = 45678
+            Player 1 move UP
+
+            He sends the following packet:
+
+                {
+                    MAGIC_NUMBER = 45678
+                    PACKET_TYPE = DATA_PACKET
+                    long TIMESTAMP = time is sent
+                    ENTITY_ID = 1
+                    TYPE_INDEX = typeid to to read the component
+                    UUID = "eyzue1tuyzuyezyizyezyeieiye"
+                    T component;
+                }
+
+            then the server sends to allClient the query if it is correct
+            if not the server sends nothing back.
+
+        2.2.3. Packet TYPE
+
+            In order, to specify each packet we need to specify a PACKET_TYPE in the header.
+
+            The client sends to server the packet to notify that a component of the player
+            changed.
+                        OR
+            The server sends to all clients the packet to notify that a component of a
+            player changed.
+
+            We have to send the packet containing: 
+
                 PACKET_TYPE = DATA_PACKET
-                long TIMESTAMP = time is sent
-                ENTITY_ID = 1
-                TYPE_INDEX = typeid to to read the component
-                UUID = "eyzue1tuyzuyezyizyezyeieiye"
-                T component;
-            }
 
-        then the server sends to allClient the query if it is correct
-        if not the server sends nothing back.
+            The server sends, in a laps of 200ms, the same packet if the client does not
+            receive it.
 
-    3. Packet TYPE
+            In order to know if the client received it, the client MUST respond when he
+            receives.
 
-        In order, to specify each packet we need to specify a PACKET_TYPE in the header.
+            The clients have to send the packet containing:
 
-        The client sends to server the packet to notify that a component of the player
-        changed.
-                    OR
-        The server sends to all clients the packet to notify that a component of a
-        player changed.
+                PACKET_TYPE = RESPONSE_PACKET 
 
-        We have to send the packet containing: 
+            Until the server does not receive it will receive in loop the packet.
+            With the following header:
 
-            PACKET_TYPE = DATA_PACKET
+                PACKET_TYPE = REPEAT_PACKET
 
-        The server sends, in a laps of 200ms, the same packet if the client does not
-        receive it.
+    2.3 Security
 
-        In order to know if the client received it, the client MUST respond when he
-        receives.
+    In order to protect the tranmission of Packets between client and server.
 
-        The clients have to send the packet containing:
+    Before each send we MUST crypy the data using the XOR encryption using the
+    CRYPT_KEY and his value is 3.
 
-            PACKET_TYPE = RESPONSE_PACKET 
+    And each byte is crypted.
 
-        Until the server does not receive it will receive in loop the packet.
-        With the following header:
+    At the reception of the Packet, we MUST decrypt the Packet after using the same
+    method.
 
-            PACKET_TYPE = REPEAT_PACKET
+
+3. TCP
+
+We implement also a TCP Protocol for game interations.
+
+    3.1 Prococol RFC
+
+    Code           MESSAGE                                      Description
+
+    200             PLAYER_ID [PLAYER_ID]                       When is connected all the clients connected
+                                                                receive this to inform a new player is connected                                                            
+
+    201             PORT_UDP [PORT_UDP] YOUR_ID [YOUR_ID]       Once the client is connected , hereceives this message
+                                                                to inform what is his ID and UDP port to connect.
+
+    210             [PLAYER_ID] [MESSAGE]                       During the game, players can send messages in the group
+                                                                chat.
 
 
                             R-Type Protocols

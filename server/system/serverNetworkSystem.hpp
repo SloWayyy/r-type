@@ -9,48 +9,83 @@
 #define NETWORKSYSTEM_HPP_
 
 #include "../../ecs/system/ISystem.hpp"
+#include "../../ecs/event/destroyEntity.hpp"
 #include "../../network/tcpServer/tcpServer.hpp"
 #include "../../network/udp/udp.hpp"
+#include "../event/bullet.hpp"
+#include "../event/spawnedEnnemy.hpp"
 #include <chrono>
 #include <iostream>
 
 class NetworkSystem : public ISystem {
-    public:
-        NetworkSystem() = delete;
-        NetworkSystem(registry &reg, Udp &udpServer, TCPServer &tcpServer): _reg(reg), _udpServer(udpServer), _tcpServer(tcpServer), _start(std::chrono::system_clock::now()) {};
-        ~NetworkSystem() = default;
+public:
+    NetworkSystem() = delete;
+    NetworkSystem(registry& reg, Udp& udpServer, TCPServer& tcpServer)
+        : _reg(reg)
+        , _udpServer(udpServer)
+        , _tcpServer(tcpServer)
+        , _start(std::chrono::system_clock::now()) {};
+    ~NetworkSystem() = default;
 
-        void operator()() override {
-            std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
-            std::chrono::duration<double> elapsed_seconds = end - _start;
-            if (elapsed_seconds.count() >= 0.2) {
-                _udpServer.mtxSendPacket.lock();
-                for (auto &queue : _udpServer._queueSendPacket) {
-                    std::cout << "RE SENDING PACKET" << std::endl;
-                    // Packet queryPacket;
-                    // std::memcpy(&queryPacket, queue.second.data(), sizeof(Packet));
-                    // queryPacket.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-                    // queryPacket.packet_type = REPEAT_PACKET;
-                    _udpServer.sendServerToAClient(queue.second, queue.first);
-                }
-                _udpServer.mtxSendPacket.unlock();
-                _start = std::chrono::system_clock::now();
+    void operator()() override
+    {
+        std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end - _start;
+        if (elapsed_seconds.count() >= 0.2) {
+            _udpServer.mtxSendPacket.lock();
+            for (auto& queue : _udpServer._queueSendPacket) {
+                std::cout << "send packet to client" << std::endl;
+                _udpServer.sendServerToAClient(queue.second, queue.first);
             }
-            // verif si les clients ont tous repondu au packet sionn on renvoi
-            // si le packet est ancien : on recup le packet, meme le composant apres
-            // ATTENTION VERFIER AUSSI LE REMOTE ENDPOINT COMME DANS HANDLERECEIVE SERVER
-            _udpServer.mtxQueue.lock();
-            while (_udpServer._queue.size() > 0) {
-                _udpServer.updateSparseArray(false);
-            }
-            _udpServer.mtxQueue.unlock();
-        };
+            _udpServer.mtxSendPacket.unlock();
+            _start = std::chrono::system_clock::now();
+        }
+        _udpServer.mtxQueue.lock();
+        while (_udpServer._queue.size() > 0) {
+            _udpServer.updateSparseArray(false);
+        }
+        _udpServer.mtxQueue.unlock();
 
-    private:
-        registry &_reg;
-        Udp &_udpServer;
-        TCPServer &_tcpServer;
-        std::chrono::time_point<std::chrono::system_clock> _start;
+        auto& sprite = _reg.getComponent<Sprite>();
+        auto& position = _reg.getComponent<Position>();
+        auto& size = _reg.getComponent<Size>();
+        auto& velocity = _reg.getComponent<Velocity>();
+        auto& collision = _reg.getComponent<CollisionGroup>();
+        auto& hitbox = _reg.getComponent<HitBox>();
+
+        if (_reg._eventManager.checkEvent<bullet>()) {
+            for (auto& tmp : _reg._eventManager.getEvent<bullet>()) {
+                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, position[tmp->shoot_id].value(), tmp->shoot_id);
+                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, sprite[tmp->bullet_id].value(), tmp->bullet_id);
+                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, position[tmp->bullet_id].value(), tmp->bullet_id);
+                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, size[tmp->bullet_id].value(), tmp->bullet_id);
+                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, velocity[tmp->bullet_id].value(), tmp->bullet_id);
+                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, collision[tmp->bullet_id].value(), tmp->bullet_id);
+                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, hitbox[tmp->bullet_id].value(), tmp->bullet_id);
+            }
+        }
+        if (_reg._eventManager.checkEvent<spawnedEnnemy>()) {
+            for (auto& tmp : _reg._eventManager.getEvent<spawnedEnnemy>()) {
+                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, sprite[tmp->ennemy_id].value(), tmp->ennemy_id);
+                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, position[tmp->ennemy_id].value(), tmp->ennemy_id);
+                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, size[tmp->ennemy_id].value(), tmp->ennemy_id);
+                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, velocity[tmp->ennemy_id].value(), tmp->ennemy_id);
+                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, collision[tmp->ennemy_id].value(), tmp->ennemy_id);
+                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, hitbox[tmp->ennemy_id].value(), tmp->ennemy_id);
+            }
+        }
+        if (_reg._eventManager.checkEvent<destroyEntity>()) {
+            for (auto& tmp : _reg._eventManager.getEvent<destroyEntity>()) {
+                _udpServer.sendToAll(DESTROY_ENTITY, DESTROY_ENTITY, tmp->entity_id);
+            }
+        }
+    };
+
+private:
+    registry& _reg;
+    Udp& _udpServer;
+    TCPServer& _tcpServer;
+    std::chrono::time_point<std::chrono::system_clock> _start;
 };
 
 #endif /* !NETWORKSYSTEM_HPP_ */

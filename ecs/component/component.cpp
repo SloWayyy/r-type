@@ -12,6 +12,15 @@ struct Position {
     int y;
 };
 
+struct HitBox {
+    HitBox(int width = 0, int height = 0)
+        : w(width)
+        , h(height) {};
+    void print() { std::cout << "HitBox w: " << w << "\nHitBox h: " << h << std::endl; };
+    int w;
+    int h;
+};
+
 struct Size {
     Size(float width = 0, float height = 0)
         : w(width)
@@ -64,11 +73,20 @@ struct Sprite {
 };
 
 struct Anime {
-    Anime(uint32_t incrementLeft, uint32_t maxWidth)
+    Anime(uint32_t incrementLeft, uint32_t maxWidth, uint32_t targetClock)
         : incrementLeft(incrementLeft)
         , maxWidth(maxWidth)
+        , targetClock(targetClock)
     {
     }
     uint32_t incrementLeft;
     uint32_t maxWidth;
+    uint32_t targetClock;
+    uint32_t internClock = 0;
+};
+
+struct CollisionGroup {
+    CollisionGroup(uint8_t collisionGroup = 0)
+        : collisionGroup(collisionGroup) {};
+    uint8_t collisionGroup;
 };

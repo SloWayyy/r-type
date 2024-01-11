@@ -13,6 +13,8 @@
     #include <unordered_map>
     #include <functional>
     #include <memory>
+    #include <fstream>
+    #include <sstream>
 
     #define PLAYER_NOT_FOUND 15
 
@@ -20,13 +22,14 @@ class TCPServer {
     public:
         TCPServer(std::size_t port, std::size_t portUDP, std::string ip);
         ~TCPServer();
+        int OpenAndReadScoreboard(std::string path);
+        int OpenAndReadAdmin(std::string path);
         int createSocket();
         void run();
         void startAccept();
         void handleRead(std::shared_ptr<asio::ip::tcp::socket> client);
         void sendMessageToAllClients(const std::string &message);
         void sendMessageToAClient(const std::string &message, std::shared_ptr<asio::ip::tcp::socket> client);
-        void closeConnection(std::shared_ptr<asio::ip::tcp::socket> client);
         size_t getClientByIndex(int index) {
             int i = 0;
         
@@ -41,6 +44,8 @@ class TCPServer {
         std::vector<std::string> _ClientMessages;
         std::thread _thread;
         std::mutex _mtx;
+        std::mutex _mtxQueueAdminCommand;
+        std::vector<std::pair<int, std::string>> _queueAdminCommand;
 
     private:
         std::size_t _port;
@@ -51,6 +56,8 @@ class TCPServer {
         asio::ip::tcp::endpoint _endpoint;
         asio::ip::tcp::acceptor _acceptor;
         asio::error_code _ec;
+        std::vector<std::pair<std::size_t, std::size_t>> _scoreboard;
+        std::string _adminPassword;
     protected:
 };
 

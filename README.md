@@ -4,7 +4,7 @@
 
 RTYPE is a 2D shoot'em up game in C++<br>
 The player joins a team of 4 spaceships and has to fight enemies in order to stay alive.<br>
-The last survivor wins the game.
+And when you killed all the enemies, you win the game.<br>
 
 ## Prerequisites
 
@@ -95,7 +95,7 @@ cd build/
 
 ## Internal documentation
 
-- [Server](server/Readme.md)
+- [Server](network/Readme.md)
 
 - [Game Engine](ecs/Readme.md)
 
