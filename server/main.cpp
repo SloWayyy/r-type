@@ -49,7 +49,7 @@ int main(int ac, char const** av)
     reg.addEntity();
     reg.add_system<ServerEventLoaderSystem>(std::ref(udpServer));
     reg.add_system<messageSystem>(std::ref(tcpServer));
-    reg.add_system<adminCommandSystem>(std::ref(tcpServer));
+    reg.add_system<adminCommandSystem>(std::ref(tcpServer), std::ref(udpServer));
     reg.add_system<ServerShootSystem>();
     reg.add_system<MoveSystem>();
     reg.add_system<EnnemySystem>();
