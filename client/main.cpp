@@ -22,9 +22,9 @@
 #include <iostream>
 <<<<<<< Updated upstream
 =======
-#include "udp/udp.hpp"
 #include "tcp/tcp.hpp"
-// #include "GameLoop.hpp"
+#include "udp/udp.hpp"
+    // #include "GameLoop.hpp"
 >>>>>>> Stashed changes
 
 int main(int ac, char** av)
@@ -77,8 +77,7 @@ int main(int ac, char** av)
         TCPClient tcpClient(std::stoi(av[1]), av[2]);
         UDPClient udpClient(4243, av[2]);
         // gameLoop.run();
-    }
-    catch (std::exception &e) {
+    } catch (std::exception& e) {
         std::cerr << "Erreur : " << e.what() << std::endl;
         return 84;
 >>>>>>> Stashed changes

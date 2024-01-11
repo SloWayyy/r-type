@@ -8,40 +8,35 @@
 #include "udp.hpp"
 
 UDPClient::UDPClient(std::size_t port, std::string ip)
-    : _port(port),
-    _endpointServer(asio::ip::make_address(ip), 4242),
-    socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0)), _last_timestamp(0)
+    : _port(port)
+    , _endpointServer(asio::ip::make_address(ip), 4242)
+    , socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0))
+    , _last_timestamp(0)
 {
     _thread = std::thread(&UDPClient::run, this);
     start_receive();
     send(" ", 2, NEW_CONNECTION);
 }
 
-UDPClient::~UDPClient()
-{
-    _thread.join();
-}
+UDPClient::~UDPClient() { _thread.join(); }
 
 void UDPClient::start_receive()
 {
     socket_.async_receive_from(
-        asio::buffer(_recv_buffer), remote_endpoint_,
-        std::bind(&UDPClient::handle_receive, this,
-                  std::placeholders::_1,
-                  std::placeholders::_2));
+        asio::buffer(_recv_buffer), remote_endpoint_, std::bind(&UDPClient::handle_receive, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 // std::unordered_map<uint32_t, std::type_index> _typeIndex = {
 //     {2, typeid(Position)}
 // };
 
-std::string UDPClient::unpack(Packet &packet)
+std::string UDPClient::unpack(Packet& packet)
 {
     try {
         std::memcpy(&packet, _recv_buffer.data(), sizeof(Packet));
         std::string component(_recv_buffer.data() + sizeof(Packet), _recv_buffer.data() + sizeof(Packet) + sizeof(component));
         return component;
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         std::cerr << "ERROR unpack: " << e.what() << std::endl;
         return nullptr;
     }
@@ -52,13 +47,13 @@ std::string UDPClient::unpack(Packet &packet)
 // using value_type = std::optional<Component>;
 // using container_t = std::vector<value_type>;
 // std::unordered_map<std::type_index, std::any> _components;
-        // Packet packet;
-        // std::string compo = unpack(packet);
-        // std::type_index Index = _typeIndex[packet.type_index];
-        // container_t components = _components[Index];
-        // components[packet.entity_id] = std::any_cast<value_type>(compo);
+// Packet packet;
+// std::string compo = unpack(packet);
+// std::type_index Index = _typeIndex[packet.type_index];
+// container_t components = _components[Index];
+// components[packet.entity_id] = std::any_cast<value_type>(compo);
 
-void UDPClient::handle_receive(const asio::error_code &error, std::size_t bytes_transferred)
+void UDPClient::handle_receive(const asio::error_code& error, std::size_t bytes_transferred)
 {
     if (!error) {
         std::cout << "bytes transferred: " << bytes_transferred << std::endl;
@@ -75,9 +70,9 @@ void UDPClient::handle_receive(const asio::error_code &error, std::size_t bytes_
             // send(pos, packet.entity_id, RESPONSE_PACKET);
             _last_timestamp = packet.timestamp;
             // traiter l'information et stocker l'info pour que le game loop puisse l'utiliser
-                //exemple
+            // exemple
 
-                // std::cout << "je traite l'information" << receivedComponent << std::endl;
+            // std::cout << "je traite l'information" << receivedComponent << std::endl;
             // send(receivedComponent, packet.entity_id, RESPONSE_PACKET);
         } else {
             std::cout << "je ne traite pas l'information mais j envoi qd meme au serv" << std::endl;
@@ -87,8 +82,7 @@ void UDPClient::handle_receive(const asio::error_code &error, std::size_t bytes_
     }
 }
 
-template <typename T>
-std::string UDPClient::pack(const T &component, uint32_t entity_id, PacketType packet_type)
+template <typename T> std::string UDPClient::pack(const T& component, uint32_t entity_id, PacketType packet_type)
 {
     std::type_index targetType = typeid(T);
     int type_index = 2;
@@ -103,12 +97,11 @@ std::string UDPClient::pack(const T &component, uint32_t entity_id, PacketType p
         std::cerr << "ERROR: type_index not found message not send" << std::endl;
         return "";
     } else {
-        Packet packet = {_magic_number, packet_type, std::time(nullptr), entity_id, static_cast<u_int32_t>(type_index)};
+        Packet packet = { _magic_number, packet_type, std::time(nullptr), entity_id, static_cast<u_int32_t>(type_index) };
         try {
-            return std::string(reinterpret_cast<char *>(&packet),
-            sizeof(packet)) + std::string(reinterpret_cast<const char *>(&component),
-            sizeof(component));
-        } catch (const std::exception &e) {
+            return std::string(reinterpret_cast<char*>(&packet), sizeof(packet))
+                + std::string(reinterpret_cast<const char*>(&component), sizeof(component));
+        } catch (const std::exception& e) {
             std::cerr << "ERROR: " << e.what() << std::endl;
             return "";
         }
@@ -121,8 +114,7 @@ void UDPClient::run()
     _io_context.run();
 }
 
-template <typename T>
-void UDPClient::send(const T &component, uint32_t entity_id, PacketType packet_type)
+template <typename T> void UDPClient::send(const T& component, uint32_t entity_id, PacketType packet_type)
 {
     std::string data = pack(component, entity_id, packet_type);
     if (data.empty()) {
@@ -130,14 +122,12 @@ void UDPClient::send(const T &component, uint32_t entity_id, PacketType packet_t
         return;
     }
     try {
-        std::cout << "Message sent to server UDP: " << " on adress " << _endpointServer.address() << " on port " << _endpointServer.port() << std::endl;
+        std::cout << "Message sent to server UDP: "
+                  << " on adress " << _endpointServer.address() << " on port " << _endpointServer.port() << std::endl;
         socket_.send_to(asio::buffer(data), _endpointServer);
-    } catch (const asio::system_error &ec) {
+    } catch (const asio::system_error& ec) {
         std::cerr << "ERROR UDP sending message" << ec.what() << std::endl;
     }
 }
 
-void UDPClient::handle_send(std::shared_ptr<std::string>, const asio::error_code&, std::size_t)
-{
-    std::cout << "Message envoyé" << std::endl;
-}
+void UDPClient::handle_send(std::shared_ptr<std::string>, const asio::error_code&, std::size_t) { std::cout << "Message envoyé" << std::endl; }
