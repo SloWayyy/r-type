@@ -6,6 +6,7 @@
 */
 
 #include "../ecs/registry/registry.hpp"
+#include "../ecs/system/HealthSystem.hpp"
 #include "../ecs/system/MoveSystem.hpp"
 #include "../ecs/system/ShootSystem.hpp"
 #include "../network/tcpServer/tcpServer.hpp"
@@ -51,6 +52,7 @@ int main(int ac, char const** av)
     reg.add_system<messageSystem>(std::ref(tcpServer));
     reg.add_system<ServerShootSystem>();
     reg.add_system<MoveSystem>();
+    reg.add_system<HealthSystem>();
     reg.add_system<EnnemySystem>();
     reg.add_system<EntityDestroyerSystem>();
     reg.add_system<NetworkSystem>(std::ref(udpServer), std::ref(tcpServer));
