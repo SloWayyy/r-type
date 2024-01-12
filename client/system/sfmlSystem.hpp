@@ -38,6 +38,20 @@ class SfmlSystem : public ISystem {
                     std::cout << file << " Loaded" << std::endl;
                 }
             });
+            try {
+                if (!std::filesystem::exists(assetsPath + "/font"))
+                    throw std::runtime_error("Assets path does not exist");
+            } catch (std::exception &e) {
+                std::cerr << e.what() << std::endl;
+                exit(84);
+            }
+            for (auto &file : std::filesystem::directory_iterator{assetsPath + "/font"}) {
+                sf::Font font;
+                if (font.loadFromFile(file.path().string())) {
+                    this->_fonts.push_back(std::move(font));
+                    std::cout << file.path().string() << " Loaded" << std::endl;
+                }
+            }
         };
         ~SfmlSystem() = default;
         void operator()() override {
@@ -67,6 +81,12 @@ class SfmlSystem : public ISystem {
                 sprite.setScale(size_value.w, size_value.h);
                 _window.draw(sprite);
             }
+            if (health[_reg._player]) {
+                sf::Text text("Life: " + std::to_string(health[_reg._player].value().health), _fonts[0]);
+                text.setCharacterSize(30);
+                text.setFillColor(sf::Color::Red);
+                _window.draw(text);
+            }
             _window.display();
         }
 
@@ -92,6 +112,7 @@ class SfmlSystem : public ISystem {
         sf::Event _event;
         std::vector<std::string> _assetName;
         std::vector<sf::Texture> _textures;
+        std::vector<sf::Font> _fonts;
         registry &_reg;
         sf::RenderWindow _window;
         std::string _assetsPath;
