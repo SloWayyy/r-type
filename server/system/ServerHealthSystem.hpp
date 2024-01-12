@@ -33,8 +33,11 @@ class HealthSystem : public ISystem {
                             healthVector[tmp->_id1].value().health -= 1;
                             if (healthVector[tmp->_id1].value().health <= 0) {
                                 std::cout << "first destroying entity " << tmp->_id1 << std::endl;
-                                auto& pos = _reg.getComponent<Position>();
-                                pos[tmp->_id1] = std::optional<Position>();
+                                auto &velocity = _reg.getComponent<Velocity>();
+                                velocity[tmp->_id1].value().x_speed = 0;
+                                velocity[tmp->_id1].value().y_speed = 0;
+                                // auto& pos = _reg.getComponent<Position>();
+                                // pos[tmp->_id1] = std::optional<Position>();
                                 _reg._eventManager.addEvent<health>(tmp->_id1);
                             }
                         }
@@ -43,8 +46,11 @@ class HealthSystem : public ISystem {
                             std::cout << "second destroying entity " << tmp->_id2 << std::endl;
                             healthVector[tmp->_id2].value().health -= 1;
                             if (healthVector[tmp->_id2].value().health <= 0) {
-                                auto& pos = _reg.getComponent<Position>();
-                                pos[tmp->_id2] = std::optional<Position>();
+                                auto &velocity = _reg.getComponent<Velocity>();
+                                velocity[tmp->_id2].value().x_speed = 0;
+                                velocity[tmp->_id2].value().y_speed = 0;
+                                // auto& pos = _reg.getComponent<Position>();
+                                // pos[tmp->_id2] = std::optional<Position>();
                                 _reg._eventManager.addEvent<health>(tmp->_id2);
                             }
                         }

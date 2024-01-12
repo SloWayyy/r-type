@@ -6,6 +6,7 @@
 */
 
 #include "tcpServer.hpp"
+#include <regex>
 
 TCPServer::TCPServer(std::size_t port, std::size_t portUDP, std::string ip)
     : _port(port)
@@ -106,17 +107,30 @@ void TCPServer::handleRead(std::shared_ptr<asio::ip::tcp::socket> client)
             std::istream input(&this->buffer);
             std::string data;
             std::getline(input, data);
+            size_t size = data.size();
             std::cout << "Client: " << client->remote_endpoint().address() << ":" << client->remote_endpoint().port() << " Send: " << data
                       << std::endl;
-            if (data.size() > 10 && data.substr(0, 10) == "(RFC) 210 ") {
-                data.insert(10, "player_id(" + std::to_string(client->remote_endpoint().port()) + ") ");
-                std::cout << "Message received from client " << client->remote_endpoint() << ": " << data << std::endl;
-                this->_ClientMessages.push_back(data);
+            if (size > 10 && data.substr(0, 10) == "(RFC) 210 ") {
+                if (size > 15 && data[10] == '/') {
+                    _mtxQueueAdminCommand.lock();
+                    std::pair<int, std::string> command;
+                    command.first = client->remote_endpoint().port();
+                    command.second = data.substr(10, size - 10);
+                    _queueAdminCommand.push_back(command);
+                    _mtxQueueAdminCommand.unlock();
+                } else {
+                    data.insert(10, "player_id(" + std::to_string(client->remote_endpoint().port()) + ") ");
+                    _mtx.lock();
+                    this->_ClientMessages.push_back(data);
+                    _mtx.unlock();
+                }
             }
             handleRead(client);
         } else {
             std::cerr << "client " << client->remote_endpoint() << " is disconnected." << std::endl;
+            _mtx.lock();
             _clientsInfo.erase(client->remote_endpoint().port());
+            _mtx.unlock();
             sendMessageToAllClients("(RFC) PLAYER_ID " + std::to_string(client->remote_endpoint().port()) + " DISCONNECTED ");
         }
     });

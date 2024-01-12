@@ -9,6 +9,7 @@
 #include "../ecs/system/MoveSystem.hpp"
 #include "../network/tcpServer/tcpServer.hpp"
 #include "../network/udp/udp.hpp"
+#include "./system/AdminCommandSystem.hpp"
 #include "./system/EnnemySystem.hpp"
 #include "./system/EntityDestroyerSystem.hpp"
 #include "./system/ServerHealthSystem.hpp"
@@ -49,6 +50,7 @@ int main(int ac, char const** av)
     reg.addEntity();
     reg.add_system<ServerEventLoaderSystem>(std::ref(udpServer));
     reg.add_system<messageSystem>(std::ref(tcpServer));
+    reg.add_system<adminCommandSystem>(std::ref(tcpServer), std::ref(udpServer));
     reg.add_system<ServerShootSystem>();
     reg.add_system<MoveSystem>();
     reg.add_system<HealthSystem>();

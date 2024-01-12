@@ -50,8 +50,11 @@ class SfmlSystem : public ISystem {
             auto &sprite_array = _reg.getComponent<Sprite>();
             auto &position = _reg.getComponent<Position>();
             auto &size = _reg.getComponent<Size>();
+            auto &health = _reg.getComponent<Health>();
             for (long unsigned int i = 0; i < sprite_array.size(); i++) {
                 if (!sprite_array[i] || !position[i] || !size[i])
+                    continue;
+                if (i <= 3 && health[i] && health[i].value().health <= 0)
                     continue;
                 auto &sprite_val = sprite_array[i].value();
                 auto &pos_value = position[i].value();
