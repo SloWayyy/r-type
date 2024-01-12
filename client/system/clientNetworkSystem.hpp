@@ -28,8 +28,10 @@ class NetworkSystem : public ISystem {
             if(_reg._eventManager.checkEvent<keyPressed>()) {
                 auto &velocity = _reg.getComponent<Velocity>();
                 auto &position = _reg.getComponent<Position>();
-                _udpClient.sendClientToServer(DATA_PACKET, position[_reg._player].value(), _reg._player);
-                _udpClient.sendClientToServer(DATA_PACKET, velocity[_reg._player].value(), _reg._player);
+                if (position[_reg._player]) {
+                    _udpClient.sendClientToServer(DATA_PACKET, position[_reg._player].value(), _reg._player);
+                    _udpClient.sendClientToServer(DATA_PACKET, velocity[_reg._player].value(), _reg._player);
+                }
             }
             if(_reg._eventManager.checkEvent<shoot>()) {
                 auto &tmp = _reg._eventManager.getEvent<shoot>();
