@@ -356,7 +356,7 @@ void Udp::sendServerToAClient(std::vector<uint8_t> data, asio::ip::udp::endpoint
 {
     // Encryptage en XOR
     std::vector<uint8_t> cryptData = cryptMessage(data);
-    std::cout << "data :" << data.data() << " cryptData :" << cryptData.data() << std::endl;
+    // std::cout << "data :" << data.data() << " cryptData :" << cryptData.data() << std::endl;
 
     try {
         socket_.send_to(asio::buffer(cryptData), endpoint);

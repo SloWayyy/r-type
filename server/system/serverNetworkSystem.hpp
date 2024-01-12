@@ -15,6 +15,7 @@
 #include "../event/bullet.hpp"
 #include "../event/spawnedEnnemy.hpp"
 #include "../event/health.hpp"
+#include "../event/score.hpp"
 #include <chrono>
 #include <iostream>
 
@@ -35,7 +36,7 @@ public:
         if (elapsed_seconds.count() >= 0.2) {
             _udpServer.mtxSendPacket.lock();
             for (auto& queue : _udpServer._queueSendPacket) {
-                std::cout << "send packet to client" << std::endl;
+                // std::cout << "send packet to client" << std::endl;
                 _udpServer.sendServerToAClient(queue.second, queue.first);
             }
             _udpServer.mtxSendPacket.unlock();
@@ -50,9 +51,11 @@ public:
         auto& sprite = _reg.getComponent<Sprite>();
         auto& position = _reg.getComponent<Position>();
         auto& size = _reg.getComponent<Size>();
+        auto& score1 = _reg.getComponent<Score>();
         auto& velocity = _reg.getComponent<Velocity>();
         auto& collision = _reg.getComponent<CollisionGroup>();
         auto& hitbox = _reg.getComponent<HitBox>();
+        auto& owner = _reg.getComponent<Owner>();
 
         if (_reg._eventManager.checkEvent<bullet>()) {
             for (auto& tmp : _reg._eventManager.getEvent<bullet>()) {
@@ -64,6 +67,7 @@ public:
                     _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, velocity[tmp->bullet_id].value(), tmp->bullet_id);
                     _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, collision[tmp->bullet_id].value(), tmp->bullet_id);
                     _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, hitbox[tmp->bullet_id].value(), tmp->bullet_id);
+                    _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, owner[tmp->bullet_id].value(), tmp->bullet_id);
                 }
             }
         }
@@ -90,6 +94,11 @@ public:
                 auto &vel = _reg.getComponent<Velocity>()[tmp->entity_id];
                 _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, vel.value(), tmp->entity_id);
                 _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, hp.value(), tmp->entity_id);
+            }
+        }
+        if (_reg._eventManager.checkEvent<score>()) {
+            for (auto& tmp : _reg._eventManager.getEvent<score>()) {
+                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, score1[tmp->entity_id].value(), tmp->entity_id);
             }
         }
     };

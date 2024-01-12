@@ -17,6 +17,7 @@
 #include "./system/messageSystem.hpp"
 #include "./system/serverEventLoaderSystem.hpp"
 #include "./system/serverNetworkSystem.hpp"
+#include "./system/serverScoreSystem.hpp"
 #include "./updateGame/updateGame.hpp"
 #include <asio.hpp>
 #include <iostream>
@@ -40,7 +41,7 @@ int main(int ac, char const** av)
         return -1;
 
     registry reg;
-    reg.addAllComponents<Position, Velocity, Size, HitBox, CollisionGroup, Anime, Health, Sprite>();
+    reg.addAllComponents<Position, Velocity, Size, HitBox, CollisionGroup, Anime, Health, Score, Owner, Sprite>();
     UpdateGame updateGame(reg);
     Udp udpServer(4242, av[2], reg);
     TCPServer tcpServer(std::atoi(av[1]), udpServer.getPort(), av[2]);
@@ -55,6 +56,7 @@ int main(int ac, char const** av)
     reg.add_system<MoveSystem>();
     reg.add_system<HealthSystem>();
     reg.add_system<EnnemySystem>();
+    reg.add_system<ServerScoreSystem>();
     reg.add_system<EntityDestroyerSystem>();
     reg.add_system<NetworkSystem>(std::ref(udpServer), std::ref(tcpServer));
 

@@ -60,15 +60,19 @@ class SfmlSystem : public ISystem {
         };
     private:
         void drawSprite() {
-            _window.clear();
+            _window.clear(sf::Color::Cyan);
             auto &sprite_array = _reg.getComponent<Sprite>();
             auto &position = _reg.getComponent<Position>();
             auto &size = _reg.getComponent<Size>();
-            auto &health = _reg.getComponent<Health>();
-
+            auto &score = _reg.getComponent<Score>();
             sf::Sprite spriteBg;
             spriteBg.setTexture(_textures[4]);
-            spriteBg.setScale(1.25, 1.7);
+            _window.draw(spriteBg);
+            auto &health = _reg.getComponent<Health>();
+
+            sf::Sprite spriteGameOver;
+            spriteGameOver.setTexture(_textures[5]);
+            spriteGameOver.setScale(1.25, 1.7);
 
             for (long unsigned int i = 0; i < sprite_array.size(); i++) {
                 if (!sprite_array[i] || !position[i] || !size[i])
@@ -86,8 +90,15 @@ class SfmlSystem : public ISystem {
                 sprite.setScale(size_value.w, size_value.h);
                 _window.draw(sprite);
             }
+            if (score[_reg._player]) {
+                sf::Text textScore("Score: " + std::to_string(score[_reg._player].value().s), _fonts[0]);
+                textScore.setCharacterSize(30);
+                textScore.setFillColor(sf::Color::Blue);
+                textScore.setPosition(400, 0);
+                _window.draw(textScore);
+            }
             if (health[_reg.getPlayerEntity()] && health[_reg.getPlayerEntity()].value().health <= 0)
-                _window.draw(spriteBg);
+                _window.draw(spriteGameOver);
             if (health[_reg._player]) {
                 sf::Text text("Life: " + std::to_string(health[_reg._player].value().health), _fonts[0]);
                 text.setCharacterSize(30);
