@@ -10,6 +10,8 @@
 
 #include "../../ecs/system/ISystem.hpp"
 #include "../../ecs/registry/registry.hpp"
+#include "../../ecs/event/keyPressed.hpp"
+#include "../../ecs/event/textEntered.hpp"
 
 enum Component {
     DEFAULT,
