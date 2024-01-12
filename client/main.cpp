@@ -30,7 +30,7 @@ int main(int ac, char** av)
         return 84;
     }
     registry reg;
-    reg.addAllComponents<Position, Velocity, Size, HitBox, CollisionGroup, Anime, Health, Sprite>();
+    reg.addAllComponents<Position, Velocity, Size, HitBox, CollisionGroup, Anime, Score, Owner, Health, Sprite>();
     TCPClient tcpClient(std::stoi(av[1]), av[2], reg);
     Udp udpClient(av[2], reg);
     reg.add_system<SfmlSystem>("../game/assets", 800, 600, "R-Type");
