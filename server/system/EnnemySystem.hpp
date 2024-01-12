@@ -22,6 +22,9 @@ class EnnemySystem : public ISystem {
                 inside_clock++;
                 return;
             }
+            auto& velocity = _reg.getComponent<Velocity>();
+            if (!(velocity[0] && velocity[1] && velocity[2] && velocity[3]))
+                return;
             uint32_t Entity_id = _reg.addEntity();
             CreateEnnemy(Entity_id);
             _reg._eventManager.addEvent<spawnedEnnemy>(Entity_id);
