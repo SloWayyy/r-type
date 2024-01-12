@@ -13,9 +13,7 @@
 
 class collision : public IEvent {
     public:
-        collision(uint32_t id1, uint32_t id2): _id1(id1), _id2(id2) {
-            debug();
-        };
+        collision(uint32_t id1, uint32_t id2): _id1(id1), _id2(id2) {};
         ~collision() = default;
         void debug() override {
             std::cout << "collision with " << _id1 << " and " << _id2 << std::endl;
