@@ -17,7 +17,7 @@ enum Component {
     DEFAULT,
     POSITION,
     VELOCITY,
-    SIZE,
+    NOT_WINDOW_SIZE,
     SPRITE,
     COLLISION,
     HITBOX,
@@ -102,7 +102,7 @@ class LoggerSystem : public ISystem {
                     }
                     break;
 
-                case SIZE:
+                case NOT_WINDOW_SIZE:
                     if (size[_target]) {
                         std::cout << "entity [" << _target << "] ";
                         size[_target].value().print();
