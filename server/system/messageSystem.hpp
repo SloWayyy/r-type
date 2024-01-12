@@ -11,6 +11,7 @@
 #include "../../ecs/system/ISystem.hpp"
 #include "../../ecs/registry/registry.hpp"
 #include "../../network/tcpServer/tcpServer.hpp"
+#include <regex>
 
 class messageSystem : public ISystem {
     public:
@@ -18,13 +19,20 @@ class messageSystem : public ISystem {
         messageSystem(registry &reg, TCPServer &tcpServer): _reg(reg), _tcpServer(tcpServer) {};
         ~messageSystem() = default;
         void operator()() override {
+            _tcpServer._mtx.lock();
             while (_tcpServer._ClientMessages.size() > 0) {
                 auto &tmp = _tcpServer._ClientMessages.back();
-                if (tmp.size() > 10 && tmp.substr(0, 10) == "(RFC) 210 ") {
+                auto msgSize = tmp.size();
+                if (msgSize < 25) {
+                    _tcpServer._ClientMessages.pop_back();
+                    return;
+                }
+                 if (msgSize > 10 && tmp.substr(0, 10) == "(RFC) 210 ") {
                     _tcpServer.sendMessageToAllClients(tmp);
                 }
                 _tcpServer._ClientMessages.pop_back();
             }
+            _tcpServer._mtx.unlock();
         };
     private:
         int _textMode = 0;

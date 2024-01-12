@@ -9,6 +9,7 @@
 #include "../ecs/system/MoveSystem.hpp"
 #include "../network/tcpServer/tcpServer.hpp"
 #include "../network/udp/udp.hpp"
+#include "./system/AdminCommandSystem.hpp"
 #include "./system/EnnemySystem.hpp"
 #include "./system/EntityDestroyerSystem.hpp"
 #include "./system/ServerHealthSystem.hpp"
@@ -40,7 +41,7 @@ int main(int ac, char const** av)
         return -1;
 
     registry reg;
-    reg.addAllComponents<Position, Velocity, Size, HitBox, CollisionGroup, Anime, Score, Owner, Health, Sprite>();
+    reg.addAllComponents<Position, Velocity, Size, HitBox, CollisionGroup, Anime, Health, Score, Owner, Sprite>();
     UpdateGame updateGame(reg);
     Udp udpServer(4242, av[2], reg);
     TCPServer tcpServer(std::atoi(av[1]), udpServer.getPort(), av[2]);
@@ -50,6 +51,7 @@ int main(int ac, char const** av)
     reg.addEntity();
     reg.add_system<ServerEventLoaderSystem>(std::ref(udpServer));
     reg.add_system<messageSystem>(std::ref(tcpServer));
+    reg.add_system<adminCommandSystem>(std::ref(tcpServer), std::ref(udpServer));
     reg.add_system<ServerShootSystem>();
     reg.add_system<MoveSystem>();
     reg.add_system<HealthSystem>();

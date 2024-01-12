@@ -21,7 +21,6 @@ class messageSystem : public ISystem {
         void operator()() override {
                 auto &tmp = _reg._eventManager.getEvent<textEntered>();
                 for_each(tmp.begin(), tmp.end(), [this](auto &tmp) {
-                    // std::cout << "Message " << tmp->_key << std::endl;
                     if ((tmp->_key == '\r' || tmp->_key == '\n') && _textMode == 0) {
                         _textMode = 1;
                     } else if (_textMode == 1) {

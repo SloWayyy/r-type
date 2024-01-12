@@ -90,8 +90,10 @@ public:
         }
         if (_reg._eventManager.checkEvent<health>()) {
             for (auto& tmp : _reg._eventManager.getEvent<health>()) {
-                auto &pos = _reg.getComponent<Position>();
-                _udpServer.sendToAll(DEAD_ENTITY, DEAD_ENTITY, tmp->entity_id);
+                auto &hp = _reg.getComponent<Health>()[tmp->entity_id];
+                auto &vel = _reg.getComponent<Velocity>()[tmp->entity_id];
+                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, vel.value(), tmp->entity_id);
+                _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, hp.value(), tmp->entity_id);
             }
         }
         if (_reg._eventManager.checkEvent<score>()) {
