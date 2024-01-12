@@ -1,5 +1,4 @@
 /*
-
 ** EPITECH PROJECT, 2024
 ** R-type
 ** File description:
@@ -33,6 +32,5 @@ class ServerEventLoaderSystem : public ISystem {
         Udp &_udpServer;
         std::chrono::time_point<std::chrono::system_clock> _start;
 };
-
 
 #endif /* !SERVEREVENTLOADERSYSTEM_HPP_ */

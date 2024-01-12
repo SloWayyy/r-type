@@ -14,6 +14,7 @@
 #include "../../network/udp/udp.hpp"
 #include "../event/bullet.hpp"
 #include "../event/spawnedEnnemy.hpp"
+#include "../event/health.hpp"
 #include <chrono>
 #include <iostream>
 
@@ -81,6 +82,12 @@ public:
         if (_reg._eventManager.checkEvent<destroyEntity>()) {
             for (auto& tmp : _reg._eventManager.getEvent<destroyEntity>()) {
                 _udpServer.sendToAll(DESTROY_ENTITY, DESTROY_ENTITY, tmp->entity_id);
+            }
+        }
+        if (_reg._eventManager.checkEvent<health>()) {
+            for (auto& tmp : _reg._eventManager.getEvent<health>()) {
+                auto &pos = _reg.getComponent<Position>();
+                _udpServer.sendToAll(DEAD_ENTITY, DEAD_ENTITY, tmp->entity_id);
             }
         }
     };

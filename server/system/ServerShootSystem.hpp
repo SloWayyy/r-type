@@ -5,8 +5,8 @@
 ** ShootSystem
 */
 
-#ifndef SHOOTSYSTEM2_HPP_
-#define SHOOTSYSTEM2_HPP_
+#ifndef SHOOTSYSTEM_HPP_
+#define SHOOTSYSTEM_HPP_
 
 #include "../../ecs/event/shoot.hpp"
 #include "../../ecs/registry/registry.hpp"

@@ -152,8 +152,11 @@ int Udp::handleErrorReceive(const asio::error_code& error, std::vector<uint8_t> 
 {
     if (error)
         return -1;
+    if ((receivedPacket.packet_type == DEAD_ENTITY && receivedPacket.entity_id != _entity_id))
+        return 0;
     if (receivedComponent.size() == 0 && receivedPacket.packet_type != NEW_CONNECTION && receivedPacket.packet_type != RESPONSE_PACKET
         && receivedPacket.packet_type != DESTROY_ENTITY) {
+        std::cerr << "ERROR: received packet is empty" << std::endl;
         start_receive(isClient);
         return -1;
     }
@@ -169,6 +172,11 @@ void Udp::handleReceiveClient(const asio::error_code& error, std::size_t bytes_t
         return;
     if (receivedPacket.packet_type == NEW_CONNECTION) {
         handleNewConnection(receivedPacket, receivedComponent);
+    } else if (receivedPacket.packet_type == DEAD_ENTITY) {
+        std::cout << "--------> Je detruit l' entity coté client: " << receivedPacket.entity_id << std::endl;
+        auto &pos = reg.getComponent<Position>();
+        pos[receivedPacket.entity_id] = std::optional<Position>();
+        // mettre ca dans la queue pour que updateSparseArray mette a jour le sparseArray
     } else if (receivedPacket.timestamp >= _last_timestamp) {
         handleTimestampUpdate(receivedPacket, receivedComponent);
     } else {
