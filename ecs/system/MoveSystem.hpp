@@ -19,11 +19,11 @@ class MoveSystem : public ISystem {
         MoveSystem(registry &reg): _reg(reg) {};
         ~MoveSystem() = default;
 
-        bool isColliding(Sparse_array<Position> &position, Sparse_array<Velocity> &velocity, Sparse_array<HitBox> &hitbox, Sparse_array<CollisionGroup> &collisionGroup) {
+        bool isColliding(Sparse_array<Position> &position, Sparse_array<Velocity> &velocity, Sparse_array<HitBox> &hitbox, Sparse_array<CollisionGroup> &collisionGroup, Sparse_array<Health> &life) {
             for (long unsigned int i = 0; i < DEFAULT_SIZE; i++) {
-                if (position[i] && velocity[i] && hitbox[i]) {
+                if (position[i] && velocity[i] && hitbox[i] && (!life[i] || life[i].value().health > 0)) {
                     for (long unsigned int j = i + 1; j < DEFAULT_SIZE; j++) {
-                        if (position[j] && velocity[j] && i != j && hitbox[j]) {
+                        if (position[j] && velocity[j] && i != j && hitbox[j] && (!life[j] || life[j].value().health > 0)) {
                             if (collisionGroup[i] && collisionGroup[j])
                                 if (collisionGroup[i].value().collisionGroup == collisionGroup[j].value().collisionGroup)
                                     continue;
@@ -47,7 +47,8 @@ class MoveSystem : public ISystem {
             auto &velocity = _reg.getComponent<Velocity>();
             auto &hitbox = _reg.getComponent<HitBox>();
             auto &collision = _reg.getComponent<CollisionGroup>();
-            isColliding(position, velocity, hitbox, collision);
+            auto &health = _reg.getComponent<Health>();
+            isColliding(position, velocity, hitbox, collision, health);
 
             for (long unsigned int i = 0; i < position.size(); i++) {
                 if (position[i] && velocity[i]) {

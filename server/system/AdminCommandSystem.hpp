@@ -42,12 +42,7 @@ class adminCommandSystem : public ISystem {
             std::cout << "healing" << std::endl;
             auto &health = _reg.getComponent<Health>()[std::stoi(command[1])];
             health.value().health = 3;
-            auto &pos = _reg.getComponent<Position>()[std::stoi(command[1])];
-            pos.value().x = 200;
-            pos.value().y = 100;
             _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, health.value(), std::stoi(command[1]));
-            _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, pos.value(), std::stoi(command[1]));
-            std::cout << "send to all" << std::endl;
         }
         void dead(std::vector<std::string> command) {
             std::size_t id = _tcpServer.getClientByIndex(std::stoi(command[1]));
@@ -58,7 +53,11 @@ class adminCommandSystem : public ISystem {
                 return;
             std::cout << "dead" << std::endl;
             auto &hp = _reg.getComponent<Health>()[std::stoi(command[1])];
+            auto &vel = _reg.getComponent<Velocity>()[std::stoi(command[1])];
             hp.value().health = 0;
+            vel.value().x_speed = 0;
+            vel.value().y_speed = 0;
+            _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, vel.value(), std::stoi(command[1]));
             _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, hp.value(), std::stoi(command[1]));
             
         }
