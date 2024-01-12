@@ -152,10 +152,8 @@ int Udp::handleErrorReceive(const asio::error_code& error, std::vector<uint8_t> 
 {
     if (error)
         return -1;
-    if ((receivedPacket.packet_type == DEAD_ENTITY && receivedPacket.entity_id != _entity_id))
-        return 0;
     if (receivedComponent.size() == 0 && receivedPacket.packet_type != NEW_CONNECTION && receivedPacket.packet_type != RESPONSE_PACKET
-        && receivedPacket.packet_type != DESTROY_ENTITY) {
+        && receivedPacket.packet_type != DESTROY_ENTITY && receivedPacket.packet_type != DEAD_ENTITY) {
         std::cerr << "ERROR: received packet is empty" << std::endl;
         start_receive(isClient);
         return -1;

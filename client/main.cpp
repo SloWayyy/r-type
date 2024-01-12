@@ -46,7 +46,7 @@ int main(int ac, char** av)
     reg.add_system<messageSystem>(tcpClient);
     reg.add_system<PlayerSystem>();
     reg.add_system<MoveSystem>();
-    reg.add_system<HealthSystem>();
+    // reg.add_system<HealthSystem>();
     reg.add_system<AnimeSystem>();
     reg.add_system<NetworkSystem>(std::ref(udpClient), std::ref(tcpClient));
     reg.add_system<EntityDestroyerSystem>();

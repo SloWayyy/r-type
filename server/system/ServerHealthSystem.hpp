@@ -28,7 +28,6 @@ class HealthSystem : public ISystem {
                 auto& pos = _reg.getComponent<Position>();
 
                 for (auto &tmp : _reg._eventManager.getEvent<collision>()) {
-                    std::cout << "collision between " << tmp->_id1 << " and " << tmp->_id2 << std::endl;
                     if (healthVector[tmp->_id1] && pos[tmp->_id1])
                         if (tmp->_id1 <= 3) {
                             healthVector[tmp->_id1].value().health -= 1;
