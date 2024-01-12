@@ -9,6 +9,7 @@
 #define ADMINCOMMANDSYSTEM_HPP_
 #define HEALING "/heal"
 #define DEAD "/dead"
+#define IMMORTAL "/god"
 
 #include "../../ecs/system/ISystem.hpp"
 #include "../../ecs/registry/registry.hpp"
@@ -39,11 +40,14 @@ class adminCommandSystem : public ISystem {
             if (id == PLAYER_NOT_FOUND)
                 return;
             std::cout << "healing" << std::endl;
+            auto &health = _reg.getComponent<Health>()[std::stoi(command[1])];
+            health.value().health = 3;
             auto &pos = _reg.getComponent<Position>()[std::stoi(command[1])];
-            pos.value().x = 0;
-            pos.value().y = 0;
-            std::cout << "pos: " << pos.value().x << " " << pos.value().y << std::endl;
+            pos.value().x = 200;
+            pos.value().y = 100;
+            _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, health.value(), std::stoi(command[1]));
             _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, pos.value(), std::stoi(command[1]));
+            std::cout << "send to all" << std::endl;
         }
         void dead(std::vector<std::string> command) {
             std::size_t id = _tcpServer.getClientByIndex(std::stoi(command[1]));
@@ -53,11 +57,22 @@ class adminCommandSystem : public ISystem {
             if (id == PLAYER_NOT_FOUND)
                 return;
             std::cout << "dead" << std::endl;
-            auto &pos = _reg.getComponent<Position>()[std::stoi(command[1])];
-            pos.value().x = 500;
-            pos.value().y = 500;
-            std::cout << "pos: " << pos.value().x << " " << pos.value().y << std::endl;
-            _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, pos.value(), std::stoi(command[1]));
+            auto &hp = _reg.getComponent<Health>()[std::stoi(command[1])];
+            hp.value().health = 0;
+            _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, hp.value(), std::stoi(command[1]));
+            
+        }
+        void god(std::vector<std::string> command) {
+            std::size_t id = _tcpServer.getClientByIndex(std::stoi(command[1]));
+
+            if (command.size() != 2)
+                return;
+            if (id == PLAYER_NOT_FOUND)
+                return;
+            std::cout << "god" << std::endl;
+            auto &hp = _reg.getComponent<Health>()[std::stoi(command[1])];
+            hp.value().health = 1000;
+            _udpServer.sendToAll(DATA_PACKET, DATA_PACKET, hp.value(), std::stoi(command[1]));
             
         }
         void operator()() override {
@@ -80,6 +95,7 @@ class adminCommandSystem : public ISystem {
         const std::unordered_map<std::string, std::function<void(std::vector<std::string>)>> _adminCommand = {
             {HEALING, [this](std::vector<std::string> command) {healing(command);}},
             {DEAD, [this](std::vector<std::string> command) {dead(command);}},
+            {IMMORTAL, [this](std::vector<std::string> command) {god(command);}}
         };
 };
 
