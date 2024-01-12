@@ -42,19 +42,19 @@ class LoggerSystem : public ISystem {
         void checkInput() {
             if (_reg._eventManager.checkEvent<keyPressed>()) {
                 for (auto &tmp : _reg._eventManager.getEvent<keyPressed>()) {
-                    if (tmp->_key == sf::Keyboard::Down) {
+                    if (tmp->_key == sf::Keyboard::Right) {
                         if (_targetComponent < LAST - 1)
                             _targetComponent++;
                     }
-                    if (tmp->_key == sf::Keyboard::Up) {
+                    if (tmp->_key == sf::Keyboard::Left) {
                         if (_targetComponent > 0)
                             _targetComponent--;
                     }
-                    if (tmp->_key == sf::Keyboard::Right) {
+                    if (tmp->_key == sf::Keyboard::Up) {
                         if (_target < DEFAULT_SIZE - 1)
                             _target++;
                     }
-                    if (tmp->_key == sf::Keyboard::Left) {
+                    if (tmp->_key == sf::Keyboard::Down) {
                         if (_target > 0)
                             _target--;
                     }
@@ -62,19 +62,19 @@ class LoggerSystem : public ISystem {
             }
             if (_reg._eventManager.checkEvent<textEntered>()) {
                 for (auto &tmp : _reg._eventManager.getEvent<textEntered>()) {
-                    if (tmp->_key == '2') {
+                    if (tmp->_key == '6') {
                         if (_targetComponent < LAST - 1)
                             _targetComponent++;
                     }
-                    if (tmp->_key == '8') {
+                    if (tmp->_key == '4') {
                         if (_targetComponent > 0)
                             _targetComponent--;
                     }
-                    if (tmp->_key == '6') {
+                    if (tmp->_key == '8') {
                         if (_target < DEFAULT_SIZE - 1)
                             _target++;
                     }
-                    if (tmp->_key == '4') {
+                    if (tmp->_key == '5') {
                         if (_target > 0)
                             _target--;
                     }
@@ -85,6 +85,7 @@ class LoggerSystem : public ISystem {
         void displayComponent() {
             switch (_targetComponent) {
                 case POSITION:
+                    std::cout << "{POSITION} velocity size sprite collision hitbox" << std::endl;
                     if (position[_target]) {
                         std::cout << "entity [" << _target << "] ";
                         position[_target].value().print();
@@ -94,6 +95,7 @@ class LoggerSystem : public ISystem {
                     break;
 
                 case VELOCITY:
+                    std::cout << "position {VELOCITY} size sprite collision hitbox" << std::endl;
                     if (velocity[_target]) {
                         std::cout << "entity [" << _target << "] ";
                         velocity[_target].value().print();
@@ -103,6 +105,7 @@ class LoggerSystem : public ISystem {
                     break;
 
                 case NOT_WINDOW_SIZE:
+                    std::cout << "position velocity {SIZE} sprite collision hitbox" << std::endl;
                     if (size[_target]) {
                         std::cout << "entity [" << _target << "] ";
                         size[_target].value().print();
@@ -112,6 +115,7 @@ class LoggerSystem : public ISystem {
                     break;
 
                 case SPRITE:
+                    std::cout << "position velocity size {SPRITE} collision hitbox" << std::endl;
                     if (sprite[_target]) {
                         std::cout << "entity [" << _target << "] ";
                         sprite[_target].value().print();
@@ -121,6 +125,7 @@ class LoggerSystem : public ISystem {
                     break;
 
                 case COLLISION:
+                    std::cout << "position velocity size sprite {COLLISION} hitbox" << std::endl;
                     if (collision[_target]) {
                         std::cout << "entity [" << _target << "] ";
                         collision[_target].value().print();
@@ -130,6 +135,7 @@ class LoggerSystem : public ISystem {
                     break;
 
                 case HITBOX:
+                    std::cout << "position velocity size sprite collision {HITBOX}" << std::endl;
                     if (hitbox[_target]) {
                         std::cout << "entity [" << _target << "] ";
                         hitbox[_target].value().print();
