@@ -37,6 +37,13 @@ struct Size {
     float h;
 };
 
+struct Score {
+    Score(int score = 0)
+        : s(score) {};
+    void print() { std::cout << "Score: " << s << std::endl; };
+    int s;
+};
+
 struct Velocity {
     Velocity(int x_speed = 0, int y_speed = 0)
         : x_speed(x_speed)

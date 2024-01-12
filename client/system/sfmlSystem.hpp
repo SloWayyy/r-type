@@ -46,10 +46,13 @@ class SfmlSystem : public ISystem {
         };
     private:
         void drawSprite() {
-            _window.clear();
+            _window.clear(sf::Color::Cyan);
             auto &sprite_array = _reg.getComponent<Sprite>();
             auto &position = _reg.getComponent<Position>();
             auto &size = _reg.getComponent<Size>();
+            sf::Sprite spriteBg;
+            spriteBg.setTexture(_textures[4]);
+            _window.draw(spriteBg);
             for (long unsigned int i = 0; i < sprite_array.size(); i++) {
                 if (!sprite_array[i] || !position[i] || !size[i])
                     continue;
