@@ -16,6 +16,7 @@
 #include "./system/messageSystem.hpp"
 #include "./system/playerSystem.hpp"
 #include "./system/sfmlSystem.hpp"
+#include "./system/loggerSystem.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <chrono>
@@ -48,6 +49,7 @@ int main(int ac, char** av)
     reg.add_system<AnimeSystem>();
     reg.add_system<NetworkSystem>(std::ref(udpClient), std::ref(tcpClient));
     reg.add_system<EntityDestroyerSystem>();
+    reg.add_system<LoggerSystem>();
     auto current_time = std::chrono::high_resolution_clock::now();
     float refresh_rate = 1.0f / 60.0f;
     float elapsed_time = 0.0f;

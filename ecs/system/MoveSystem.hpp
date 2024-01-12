@@ -33,7 +33,7 @@ class MoveSystem : public ISystem {
                                 position[i].value().y + velocity[i].value().y_speed + hitbox[i].value().h > position[j].value().y) {
                                     _reg._eventManager.addEvent<collision>(i, j);
                                     velocity[i].value().x_speed = 0;
-                                    velocity[i].value().y_speed = 0;                                    // return true;
+                                    velocity[i].value().y_speed = 0;
                             }
                         }
                     }

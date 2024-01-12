@@ -10,11 +10,11 @@
 #include <typeindex>
 #include <unordered_map>
 
-Udp::Udp(std::size_t port, std::string ip, registry& reg, UpdateGame& updateGame)
+Udp::Udp(std::size_t port, std::string ip, registry& reg)
     : socket_(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), 0))
     , _magic_number(4242)
     , reg(reg)
-    , updateGame(updateGame)
+    , updateGame(reg)
     , ptr_fct({ { NEW_CONNECTION, [this](const Packet& packet, const std::vector<uint8_t>&) { handleNewConnection(packet); } },
           { RESPONSE_PACKET, [this](const Packet& packet, const std::vector<uint8_t>&) { handleResponsePacket(packet); } } })
 {
@@ -35,7 +35,7 @@ Udp::Udp(std::string ip, registry& reg)
     , socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0))
     , _last_timestamp(0)
     , reg(reg)
-    , updateGame(updateGame)
+    , updateGame(reg)
 {
     _thread = std::thread(&Udp::run, this);
     _port = socket_.local_endpoint().port();
