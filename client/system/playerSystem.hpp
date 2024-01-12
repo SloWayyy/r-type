@@ -21,6 +21,9 @@ class PlayerSystem : public ISystem {
         void operator()() override {
             for (auto &tmp : _reg._eventManager.getEvent<keyPressed>()) {
                 auto &velocity = _reg.getComponent<Velocity>();
+                auto &position = _reg.getComponent<Position>();
+                if (!position[_reg._player] && !velocity[_reg._player])
+                    return;
                 switch(tmp->_key) {
                     case sf::Keyboard::Right:
                         velocity[_reg._player].value().x_speed = 2;

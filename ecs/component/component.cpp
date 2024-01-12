@@ -12,6 +12,13 @@ struct Position {
     int y;
 };
 
+struct Health {
+    Health(int health = 0)
+        : health(health) {};
+    void print() { std::cout << "Health: " << health << std::endl; };
+    int health;
+};
+
 struct HitBox {
     HitBox(int width = 0, int height = 0)
         : w(width)

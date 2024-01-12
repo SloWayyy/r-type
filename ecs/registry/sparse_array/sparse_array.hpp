@@ -32,7 +32,7 @@ class Sparse_array {
         Sparse_array() {
             for (size_t i = 0; i < DEFAULT_SIZE; i++)
                 _data.push_back(std::nullopt);
-        }; 
+        };
         Sparse_array(Sparse_array const &other): _data(other._data) {}; // copy constructor
         Sparse_array(Sparse_array &&) = default; // move constructor
         ~Sparse_array() = default;

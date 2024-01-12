@@ -6,6 +6,7 @@
 */
 
 #include "../ecs/registry/registry.hpp"
+#include "../ecs/system/HealthSystem.hpp"
 #include "../ecs/system/MoveSystem.hpp"
 #include "../ecs/system/ShootSystem.hpp"
 #include "../network/tcpClient/tcpClient.hpp"
@@ -29,7 +30,7 @@ int main(int ac, char** av)
         return 84;
     }
     registry reg;
-    reg.addAllComponents<Position, Velocity, Size, HitBox, CollisionGroup, Anime, Sprite>();
+    reg.addAllComponents<Position, Velocity, Size, HitBox, CollisionGroup, Anime, Health, Sprite>();
     TCPClient tcpClient(std::stoi(av[1]), av[2], reg);
     Udp udpClient(av[2], reg);
     reg.add_system<SfmlSystem>("../game/assets", 800, 600, "R-Type");
@@ -46,6 +47,7 @@ int main(int ac, char** av)
     reg.add_system<messageSystem>(tcpClient);
     reg.add_system<PlayerSystem>();
     reg.add_system<MoveSystem>();
+    // reg.add_system<HealthSystem>();
     reg.add_system<AnimeSystem>();
     reg.add_system<NetworkSystem>(std::ref(udpClient), std::ref(tcpClient));
     reg.add_system<EntityDestroyerSystem>();

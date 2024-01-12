@@ -33,5 +33,4 @@ class ServerEventLoaderSystem : public ISystem {
         std::chrono::time_point<std::chrono::system_clock> _start;
 };
 
-
 #endif /* !SERVEREVENTLOADERSYSTEM_HPP_ */
