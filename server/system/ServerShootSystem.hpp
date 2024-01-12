@@ -22,6 +22,8 @@ public:
     {
         auto& position = _reg.getComponent<Position>();
         for (auto &tmp : _reg._eventManager.getEvent<shoot>()) {
+            if (!position[tmp->entity_id])
+                continue;
             uint32_t id = _reg.addEntity();
             bulletShot(id, position[tmp->entity_id].value().x, position[tmp->entity_id].value().y);
             _reg._eventManager.addEvent<bullet>(tmp->entity_id, id);
@@ -42,7 +44,7 @@ private:
         sprite.emplace_at(Entity_id, 2, 0, 0, 32, 28);
         position.emplace_at(Entity_id, player_x + 32, player_y + 14);
         size.emplace_at(Entity_id, 1, 1);
-        velocity.emplace_at(Entity_id, 0, 0, 0, 5, 0);
+        velocity.emplace_at(Entity_id, 5, 0);
     }
     registry& _reg;
 };

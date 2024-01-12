@@ -54,7 +54,7 @@ struct Packet {
 class Udp {
 public:
     // constructor / destructor
-    Udp(std::size_t port, std::string ip, registry& reg, UpdateGame& updateGame);
+    Udp(std::size_t port, std::string ip, registry& reg);
     Udp(std::string ip, registry& reg); // client
     ~Udp();
 
@@ -104,23 +104,21 @@ public:
     std::mutex _eventmtx;
     std::vector<std::any> _eventQueue;
 
-    private:
-        std::thread _thread;
-        std::size_t _port;
-        asio::ip::udp::endpoint _endpointServer;
-        asio::io_context _io_context;
-        asio::ip::udp::socket socket_;
-        asio::ip::udp::endpoint remote_endpoint_;
-        std::array<uint8_t, 1024> _recv_buffer;
-        long _last_timestamp = 0;
-        asio::ip::udp::endpoint _endpointClient;
-        uint32_t _magic_number = 4242;
-        int _entity_id = -1;
-        registry &reg;
-        UpdateGame &updateGame;
-        const std::map<std::size_t, std::function<void(const Packet&, const std::vector<uint8_t>&)>> ptr_fct
-        = { { NEW_CONNECTION, [this](const Packet& packet, const std::vector<uint8_t>& component) { handleNewConnection(packet); } },
-              { RESPONSE_PACKET, [this](const Packet& packet, const std::vector<uint8_t>& component) { handleResponsePacket(packet); } } };
+private:
+    std::thread _thread;
+    std::size_t _port;
+    asio::ip::udp::endpoint _endpointServer;
+    asio::io_context _io_context;
+    asio::ip::udp::socket socket_;
+    asio::ip::udp::endpoint remote_endpoint_;
+    std::array<uint8_t, 1024> _recv_buffer;
+    long _last_timestamp = 0;
+    asio::ip::udp::endpoint _endpointClient;
+    uint32_t _magic_number = 4242;
+    int _entity_id = -1;
+    registry& reg;
+    UpdateGame updateGame;
+    const std::map<std::size_t, std::function<void(const Packet&, const std::vector<uint8_t>&)>> ptr_fct;
 };
 
 #include "udp.cpp"
