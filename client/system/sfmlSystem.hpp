@@ -69,6 +69,11 @@ class SfmlSystem : public ISystem {
             spriteBg.setTexture(_textures[4]);
             _window.draw(spriteBg);
             auto &health = _reg.getComponent<Health>();
+
+            sf::Sprite spriteGameOver;
+            spriteGameOver.setTexture(_textures[5]);
+            spriteGameOver.setScale(1.25, 1.7);
+
             for (long unsigned int i = 0; i < sprite_array.size(); i++) {
                 if (!sprite_array[i] || !position[i] || !size[i])
                     continue;
@@ -92,6 +97,8 @@ class SfmlSystem : public ISystem {
                 textScore.setPosition(400, 0);
                 _window.draw(textScore);
             }
+            if (health[_reg.getPlayerEntity()] && health[_reg.getPlayerEntity()].value().health <= 0)
+                _window.draw(spriteGameOver);
             if (health[_reg._player]) {
                 sf::Text text("Life: " + std::to_string(health[_reg._player].value().health), _fonts[0]);
                 text.setCharacterSize(30);
