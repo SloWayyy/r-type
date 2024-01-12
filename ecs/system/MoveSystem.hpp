@@ -34,7 +34,6 @@ class MoveSystem : public ISystem {
                                     _reg._eventManager.addEvent<collision>(i, j);
                                     velocity[i].value().x_speed = 0;
                                     velocity[i].value().y_speed = 0;
-                                    // return true;
                             }
                         }
                     }

@@ -55,7 +55,7 @@ struct Packet {
 class Udp {
 public:
     // constructor / destructor
-    Udp(std::size_t port, std::string ip, registry& reg, UpdateGame& updateGame);
+    Udp(std::size_t port, std::string ip, registry& reg);
     Udp(std::string ip, registry& reg); // client
     ~Udp();
 
@@ -118,7 +118,7 @@ private:
     uint32_t _magic_number = 4242;
     int _entity_id = -1;
     registry& reg;
-    UpdateGame& updateGame;
+    UpdateGame updateGame;
     const std::map<std::size_t, std::function<void(const Packet&, const std::vector<uint8_t>&)>> ptr_fct;
 };
 

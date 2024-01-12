@@ -44,7 +44,7 @@ private:
         sprite.emplace_at(Entity_id, 2, 0, 0, 32, 28);
         position.emplace_at(Entity_id, player_x + 32, player_y + 14);
         size.emplace_at(Entity_id, 1, 1);
-        velocity.emplace_at(Entity_id, 0, 0, 0, 5, 0);
+        velocity.emplace_at(Entity_id, 5, 0);
     }
     registry& _reg;
 };
