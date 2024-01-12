@@ -172,7 +172,7 @@ void Udp::handleReceiveClient(const asio::error_code& error, std::size_t bytes_t
         handleNewConnection(receivedPacket, receivedComponent);
     } else if (receivedPacket.packet_type == DEAD_ENTITY) {
         std::cout << "--------> Je detruit l' entity coté client: " << receivedPacket.entity_id << std::endl;
-        auto &pos = reg.getComponent<Position>();
+        auto& pos = reg.getComponent<Position>();
         pos[receivedPacket.entity_id] = std::optional<Position>();
         // mettre ca dans la queue pour que updateSparseArray mette a jour le sparseArray
     } else if (receivedPacket.timestamp >= _last_timestamp) {
