@@ -58,8 +58,7 @@ jobs:
         run: mkdir -p ./binary
       
       - name: Install Dependencies for Linux
-        run: |
-          sudo apt update
+        run: sudo apt-get update && sudo apt-get install -y libc-dev libstdc++-6-dev
 
 
       - name: Configure and build with CMake
