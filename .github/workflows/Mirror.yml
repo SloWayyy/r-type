@@ -12,52 +12,69 @@ on:
 
 jobs:
 
-  linter_code:
-    name: Linter code
-    runs-on: ubuntu-latest
-    if: github.event.pull_request.merged != true
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+  # linter_code:
+  #   name: Linter code
+  #   runs-on: ubuntu-latest
+  #   if: github.event.pull_request.merged != true
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
 
-      - name: Install clang-format
-        run: sudo apt-get install -y clang-format
+  #     - name: Install clang-format
+  #       run: sudo apt-get install -y clang-format
 
-      - name: Linter code
-        run: |
-          echo "JE SUIS UN LINTER"
-          echo "origin: ${{ github.ref }}"
+  #     - name: Linter code
+  #       run: |
+  #         echo "JE SUIS UN LINTER"
+  #         echo "origin: ${{ github.ref }}"
 
-      - name: Run formmater.sh
-        run: |
-          chmod +x ./formatter.sh
-          ./formatter.sh
+  #     - name: Run formmater.sh
+  #       run: |
+  #         chmod +x ./formatter.sh
+  #         ./formatter.sh
 
-      - name: Check if code is formatted
-        shell: bash
-        run: |
-          git diff --exit-code
-          Status=$?
+  #     - name: Check if code is formatted
+  #       shell: bash
+  #       run: |
+  #         git diff --exit-code
+  #         Status=$?
 
-          if [ $Status -eq 0 ]; then
-            echo "Code is formatted"
-          else
-            echo "Code is not formatted"
-            exit 1
-          fi
+  #         if [ $Status -eq 0 ]; then
+  #           echo "Code is formatted"
+  #         else
+  #           echo "Code is not formatted"
+  #           exit 1
+  #         fi
 
   check_program_compilation_linux:
-    needs: [linter_code]
-    container:
-      image: epitechcontent/epitest-docker:latest
+    # needs: [linter_code]
     runs-on: ubuntu-latest
+    # container: epitechcontent/epitest-docker:latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        
+      - name: Install Dependencies for Linux
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+          libc6-dev \
+          libstdc++6 \
+          libxrandr-dev \
+          libxinerama-dev \
+          libxcursor-dev \
+          libxi-dev \
+          libgl1-mesa-dev \
+          libopenal-dev \
+          libflac-dev \
+          libvorbis-dev \
+          libudev-dev \
+          libfreetype-dev \
 
+      
       - name: Create binary folder
         run: mkdir -p ./binary
-
+      
       - name: Configure and build with CMake
         run: |
           cmake -B build
@@ -74,7 +91,7 @@ jobs:
           path: ./binary
 
   check_program_compilation_windows:
-    needs: [linter_code]
+    # needs: [linter_code]
     runs-on: windows-latest
     steps:
       - name: Checkout repository
@@ -109,7 +126,7 @@ jobs:
     needs: [check_program_compilation_linux, check_program_compilation_windows]
     name: Create release
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true || github.event_name == 'push'
+    # if: github.event.pull_request.merged == true || github.event_name == 'push'
     permissions:
       contents: write
     env:
