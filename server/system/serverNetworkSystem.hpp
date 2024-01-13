@@ -36,7 +36,6 @@ public:
         if (elapsed_seconds.count() >= 0.2) {
             _udpServer.mtxSendPacket.lock();
             for (auto& queue : _udpServer._queueSendPacket) {
-                // std::cout << "send packet to client" << std::endl;
                 _udpServer.sendServerToAClient(queue.second, queue.first);
             }
             _udpServer.mtxSendPacket.unlock();

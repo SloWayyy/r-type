@@ -84,8 +84,7 @@ void TCPClient::handleReceive()
             std::getline(input_stream, data);
             if (data.find("RFC") != std::string::npos) {
                 std::cout << data << std::endl;
-                this->_ServerMessages.push_back(
-                    data); // stocker toutes les commades reçues du serveur et ensuite recuperer ce vector en faisant un getter pour le passer au game
+                this->_ServerMessages.push_back(data);
             }
             handleReceive();
         } else {

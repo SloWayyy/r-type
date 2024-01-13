@@ -19,7 +19,6 @@ TCPServer::TCPServer(std::size_t port, std::size_t portUDP, std::string ip)
 {
     this->_adminPassword = "admin";
     this->OpenAndReadAdmin("../network/tcpServer/passwordAdmin.txt");
-    std::cout << "Admin password: " << this->_adminPassword << std::endl;
     this->OpenAndReadScoreboard("../network/tcpServer/scoreboard.txt");
     this->createSocket();
     this->startAccept();
@@ -73,9 +72,6 @@ int TCPServer::OpenAndReadScoreboard(std::string file)
         std::cerr << file << ": No such file or directory" << std::endl;
         return (-1);
     }
-    // for (auto &i : _scoreboard) {
-    //     std::cout << "SCOREBOARD: " << i.first << " " << i.second << std::endl;
-    // }
     ifs.close();
     return (0);
 }
