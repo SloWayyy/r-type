@@ -27,7 +27,6 @@ public:
         auto& owner = _reg.getComponent<Owner>();
         if (_reg._eventManager.checkEvent<collision>()) {
             for (auto& tmp : _reg._eventManager.getEvent<collision>()) {
-                std::cout << "==collision between " << tmp->_id1 << " and " << tmp->_id2 << std::endl;
                 if (owner[tmp->_id1]) {
                     score1[owner[tmp->_id1].value().i].value().s += 1;
                     _reg._eventManager.addEvent<score>(owner[tmp->_id1].value().i);

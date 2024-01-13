@@ -97,6 +97,16 @@ class SfmlSystem : public ISystem {
                 textScore.setPosition(400, 0);
                 _window.draw(textScore);
             }
+            int cpt = 0;
+            for (uint32_t i = 0; i < 4; i++) {
+                if (health[i] && i != _reg._player && health[i].value().health <= 0) {
+                    cpt++;
+                }
+            }
+            if (cpt == 3 && health[_reg._player] && health[_reg._player].value().health > 0) {
+                std::cout << "YOU WINNNNNNNNNNNNNNNNNNNNNNNNNNNNNN" << std::endl;
+                _window.draw(spriteGameOver);
+            }
             if (health[_reg.getPlayerEntity()] && health[_reg.getPlayerEntity()].value().health <= 0)
                 _window.draw(spriteGameOver);
             if (health[_reg._player]) {
