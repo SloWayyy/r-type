@@ -78,7 +78,7 @@ jobs:
           path: ./binary
 
   check_program_compilation_windows:
-    needs: [linter_code]
+    # needs: [linter_code]
     runs-on: windows-latest
     steps:
       - name: Checkout repository
