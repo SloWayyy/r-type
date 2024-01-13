@@ -57,7 +57,20 @@ jobs:
       - name: Install Dependencies for Linux
         run: |
           sudo apt-get update
-          sudo apt-get install -y libc6 libstdc++6
+          sudo apt-get install -y \
+          libc6-dev \
+          libstdc++6 \
+          libxrandr-dev \
+          libxinerama-dev \
+          libxcursor-dev \
+          libxi-dev \
+          libgl1-mesa-dev \
+          libopenal-dev \
+          libflac-dev \
+          libvorbis-dev \
+          libudev-dev \
+          libfreetype-dev \
+
       
       - name: Create binary folder
         run: mkdir -p ./binary
