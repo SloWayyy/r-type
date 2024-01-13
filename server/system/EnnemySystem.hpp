@@ -43,11 +43,11 @@ class EnnemySystem : public ISystem {
             sprite.emplace_at(Entity_id, 3, 0, 0, 576, 430);
             position.emplace_at(Entity_id, 750, (rand() % 750));
             size.emplace_at(Entity_id, 1, 1);
-            velocity.emplace_at(Entity_id, -3, 0);
+            velocity.emplace_at(Entity_id, -4, 0);
         }
         registry &_reg;
         uint32_t inside_clock = 0;
-        uint32_t target_clock = 60;
+        uint32_t target_clock = 30;
 };
 
 #endif /* !ENNEMYSYSTEM_HPP_ */
