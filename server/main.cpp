@@ -44,8 +44,8 @@ int handlingArgs(int ac, char const** av)
         std::cerr << "Port must be a number" << std::endl;
         return -1;
     }
-    if (std::atoi(av[1]) <= 0 || std::atoi(av[1]) > 65535) {
-        std::cerr << "Port must be between 0 and 65535" << std::endl;
+    if (std::atoi(av[1]) <= 1023 || std::atoi(av[1]) > 65535) {
+        std::cerr << "Port must be between 1024 and 65535" << std::endl;
         return -1;
     }
     if (!isIp(av[2])) {
