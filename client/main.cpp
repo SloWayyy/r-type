@@ -74,8 +74,8 @@ int main(int ac, char const** av)
     reg.addEntity();
     sprite.emplace_at(0, 0, 192, 0, 32, 32);
     sprite.emplace_at(1, 1, 192, 0, 32, 32);
-    sprite.emplace_at(2, 1, 192, 0, 32, 32);
-    sprite.emplace_at(3, 1, 192, 0, 32, 32);
+    sprite.emplace_at(2, 2, 192, 0, 32, 32);
+    sprite.emplace_at(3, 3, 192, 0, 32, 32);
 
     reg.add_system<messageSystem>(tcpClient);
     reg.add_system<PlayerSystem>();

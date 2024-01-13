@@ -40,7 +40,7 @@ class EnnemySystem : public ISystem {
             auto &hitbox = _reg.getComponent<HitBox>();
             hitbox.emplace_at(Entity_id, 45, 23);
             collision.emplace_at(Entity_id, 3);
-            sprite.emplace_at(Entity_id, 3, 0, 0, 576, 430);
+            sprite.emplace_at(Entity_id, 5, 0, 0, 576, 430);
             position.emplace_at(Entity_id, 750, (rand() % 750));
             size.emplace_at(Entity_id, 1, 1);
             velocity.emplace_at(Entity_id, -4, 0);

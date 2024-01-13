@@ -66,15 +66,15 @@ class SfmlSystem : public ISystem {
             auto &size = _reg.getComponent<Size>();
             auto &score = _reg.getComponent<Score>();
             sf::Sprite spriteBg;
-            spriteBg.setTexture(_textures[4]);
+            spriteBg.setTexture(_textures[6]);
             _window.draw(spriteBg);
             auto &health = _reg.getComponent<Health>();
 
             sf::Sprite spriteGameOver;
-            spriteGameOver.setTexture(_textures[5]);
+            spriteGameOver.setTexture(_textures[7]);
             spriteGameOver.setScale(1.25, 1.7);
             sf::Sprite spriteGameWin;
-            spriteGameWin.setTexture(_textures[6]);
+            spriteGameWin.setTexture(_textures[8]);
             spriteGameWin.setScale(2, 1.5);
 
             for (long unsigned int i = 0; i < sprite_array.size(); i++) {
