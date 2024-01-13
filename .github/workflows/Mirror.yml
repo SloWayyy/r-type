@@ -48,9 +48,8 @@ jobs:
 
   check_program_compilation_linux:
     needs: [linter_code]
-    container:
-      image: epitechcontent/epitest-docker:latest
     runs-on: ubuntu-latest
+    container: epitechcontent/epitest-docker:latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -60,7 +59,7 @@ jobs:
       
       - name: Install Dependencies for Linux
         run: |
-          apt update
+          sudo apt update
 
 
       - name: Configure and build with CMake
