@@ -60,7 +60,7 @@ jobs:
       
       - name: Install Dependencies for Linux
         run: |
-          sudo apt update
+          apt update
 
 
       - name: Configure and build with CMake
