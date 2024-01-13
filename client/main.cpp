@@ -13,10 +13,10 @@
 #include "../network/udp/udp.hpp"
 #include "./system/EntityDestroyerSystem.hpp"
 #include "./system/animeSystem.hpp"
+#include "./system/audioSystem.hpp"
 #include "./system/clientNetworkSystem.hpp"
 #include "./system/loggerSystem.hpp"
 #include "./system/messageSystem.hpp"
-#include "./system/audioSystem.hpp"
 #include "./system/playerSystem.hpp"
 #include "./system/sfmlSystem.hpp"
 #include <SFML/Graphics.hpp>
