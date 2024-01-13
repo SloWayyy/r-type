@@ -22,7 +22,10 @@ class PlayerSystem : public ISystem {
             for (auto &tmp : _reg._eventManager.getEvent<keyPressed>()) {
                 auto &velocity = _reg.getComponent<Velocity>();
                 auto &position = _reg.getComponent<Position>();
+                auto &health = _reg.getComponent<Health>();
                 if (!position[_reg._player] && !velocity[_reg._player])
+                    return;
+                if (!health[_reg._player] || health[_reg._player].value().health <= 0)
                     return;
                 switch(tmp->_key) {
                     case sf::Keyboard::Right:
