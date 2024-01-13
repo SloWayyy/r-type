@@ -21,6 +21,18 @@
 #include "./updateGame/updateGame.hpp"
 #include <asio.hpp>
 #include <iostream>
+#include <regex>
+
+bool isNumber(const std::string& number)
+{
+    return !number.empty() && std::find_if(number.begin(), number.end(), [](unsigned char c) { return !std::isdigit(c); }) == number.end();
+}
+
+bool isIp(const std::string& ip)
+{
+    std::regex pattern("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
+    return std::regex_match(ip, pattern);
+}
 
 int handlingArgs(int ac, char const** av)
 {
@@ -28,8 +40,16 @@ int handlingArgs(int ac, char const** av)
         std::cerr << "Usage: ./server [port] [ip]" << std::endl;
         return -1;
     }
-    if (std::isdigit(*av[1]) == 0) {
+    if (!isNumber(av[1])) {
         std::cerr << "Port must be a number" << std::endl;
+        return -1;
+    }
+    if (std::atoi(av[1]) <= 0 || std::atoi(av[1]) > 65535) {
+        std::cerr << "Port must be between 0 and 65535" << std::endl;
+        return -1;
+    }
+    if (!isIp(av[2])) {
+        std::cerr << "Ip must be a valid ip" << std::endl;
         return -1;
     }
     return 0;
@@ -38,7 +58,7 @@ int handlingArgs(int ac, char const** av)
 int main(int ac, char const** av)
 {
     if (handlingArgs(ac, av) == -1)
-        return -1;
+        return 84;
 
     registry reg;
     reg.addAllComponents<Position, Velocity, Size, HitBox, CollisionGroup, Anime, Health, Score, Owner, Sprite>();
