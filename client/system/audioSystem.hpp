@@ -17,15 +17,29 @@
 class AudioSystem : public ISystem {
     public:
         AudioSystem() = delete;
-        AudioSystem(registry &reg, Udp &udpClient, TCPClient &tcpClient): _reg(reg), _udpClient(udpClient), _tcpClient(tcpClient) {};
+        AudioSystem(registry &reg): _reg(reg) {
+            if (!bulletBuffer.loadFromFile("../client/bullet.ogg")) {
+                std::cerr << "Failed to load bullet sound file." << std::endl;
+                return;
+            }
+            bulletSound.setBuffer(bulletBuffer);
+        };
         ~AudioSystem() = default;
         void operator()() override {
-            
+            if(_reg._eventManager.checkEvent<shoot>()) {
+                auto &tmp = _reg._eventManager.getEvent<shoot>();
+                for_each(tmp.begin(), tmp.end(), [this](auto &) {
+                    playBulletSound();
+                });
+            }
         };
     private:
         registry &_reg;
-        Udp &_udpClient;
-        TCPClient &_tcpClient;
+        sf::SoundBuffer bulletBuffer;
+        sf::Sound bulletSound;
+        void playBulletSound() {
+            bulletSound.play();
+        }
 };
 
 #endif /* !AUDIOSYSTEM_HPP_ */

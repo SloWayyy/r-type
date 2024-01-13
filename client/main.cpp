@@ -13,6 +13,7 @@
 #include "../network/udp/udp.hpp"
 #include "./system/EntityDestroyerSystem.hpp"
 #include "./system/animeSystem.hpp"
+#include "./system/audioSystem.hpp"
 #include "./system/clientNetworkSystem.hpp"
 #include "./system/loggerSystem.hpp"
 #include "./system/messageSystem.hpp"
@@ -45,8 +46,8 @@ int handlingArgs(int ac, char const** av)
         std::cerr << "Port must be a number" << std::endl;
         return -1;
     }
-    if (std::atoi(av[1]) <= 0 || std::atoi(av[1]) > 65535) {
-        std::cerr << "Port must be between 0 and 65535" << std::endl;
+    if (std::atoi(av[1]) <= 1023 || std::atoi(av[1]) > 65535) {
+        std::cerr << "Port must be between 1024 and 65535" << std::endl;
         return -1;
     }
     if (!isIp(av[2])) {
@@ -79,11 +80,11 @@ int main(int ac, char const** av)
     reg.add_system<messageSystem>(tcpClient);
     reg.add_system<PlayerSystem>();
     reg.add_system<MoveSystem>();
-    // reg.add_system<HealthSystem>();
     reg.add_system<AnimeSystem>();
     reg.add_system<NetworkSystem>(std::ref(udpClient), std::ref(tcpClient));
     reg.add_system<EntityDestroyerSystem>();
     reg.add_system<LoggerSystem>();
+    reg.add_system<AudioSystem>();
     auto current_time = std::chrono::high_resolution_clock::now();
     float refresh_rate = 1.0f / 60.0f;
     float elapsed_time = 0.0f;

@@ -30,7 +30,6 @@ class EventManager {
         template<typename T>
         void addEvent(T event) {
             _events[std::type_index(typeid(T))].push_back(std::make_unique<T>(event));
-        //    _events[std::type_index(typeid(T))].push_back(std::move(event));
         }
 
         template<typename T>

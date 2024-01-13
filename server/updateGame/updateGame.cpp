@@ -18,7 +18,7 @@ std::vector<std::vector<uint8_t>> UpdateGame::updateEntity(uint32_t entity_id)
     std::vector<std::vector<uint8_t>> entities;
 
     static int y = 50;
-    // uint32_t entity_id = _reg.addEntity();
+
     entities.resize(9);
     entities[0].resize(sizeof(uint32_t));
     std::memcpy(entities[0].data(), &entity_id, sizeof(uint32_t));
