@@ -57,6 +57,12 @@ jobs:
 
       - name: Create binary folder
         run: mkdir -p ./binary
+      
+      - name: Install Dependencies for Linux
+        run: |
+          sudo apt update
+          sudo apt install -y libc6 libstdc++6
+
 
       - name: Configure and build with CMake
         run: |
@@ -109,7 +115,7 @@ jobs:
     needs: [check_program_compilation_linux, check_program_compilation_windows]
     name: Create release
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true || github.event_name == 'push'
+    # if: github.event.pull_request.merged == true || github.event_name == 'push'
     permissions:
       contents: write
     env:
