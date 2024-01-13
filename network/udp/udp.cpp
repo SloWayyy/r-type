@@ -11,7 +11,7 @@
 #include <unordered_map>
 
 Udp::Udp(std::size_t port, std::string ip, registry& reg)
-    : socket_(_io_context, asio::ip::udp::endpoint(asio::ip::make_address(ip), 0))
+    : socket_(_io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 0))
     , _magic_number(4242)
     , reg(reg)
     , updateGame(reg)
