@@ -60,8 +60,7 @@ jobs:
       
       - name: Install Dependencies for Linux
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libc6 libstdc++6
+          sudo apt update
 
 
       - name: Configure and build with CMake
