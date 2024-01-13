@@ -58,7 +58,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-          libc6-dev \
+          libc6 \
           libstdc++6 \
           libxrandr-dev \
           libxinerama-dev \
