@@ -16,6 +16,7 @@
 #include "./system/clientNetworkSystem.hpp"
 #include "./system/loggerSystem.hpp"
 #include "./system/messageSystem.hpp"
+#include "./system/audioSystem.hpp"
 #include "./system/playerSystem.hpp"
 #include "./system/sfmlSystem.hpp"
 #include <SFML/Graphics.hpp>
@@ -79,11 +80,11 @@ int main(int ac, char const** av)
     reg.add_system<messageSystem>(tcpClient);
     reg.add_system<PlayerSystem>();
     reg.add_system<MoveSystem>();
-    // reg.add_system<HealthSystem>();
     reg.add_system<AnimeSystem>();
     reg.add_system<NetworkSystem>(std::ref(udpClient), std::ref(tcpClient));
     reg.add_system<EntityDestroyerSystem>();
     reg.add_system<LoggerSystem>();
+    reg.add_system<AudioSystem>();
     auto current_time = std::chrono::high_resolution_clock::now();
     float refresh_rate = 1.0f / 60.0f;
     float elapsed_time = 0.0f;

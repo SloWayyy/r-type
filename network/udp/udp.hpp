@@ -54,7 +54,6 @@ struct Packet {
 
 class Udp {
 public:
-    // constructor / destructor
     Udp(std::size_t port, std::string ip, registry& reg);
     Udp(std::string ip, registry& reg); // client
     ~Udp();
