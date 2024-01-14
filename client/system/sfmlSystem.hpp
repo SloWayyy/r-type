@@ -93,17 +93,46 @@ class SfmlSystem : public ISystem {
                 sprite.setScale(size_value.w, size_value.h);
                 _window.draw(sprite);
             }
-            if (score[_reg._player]) {
-                sf::Text textScore("Score: " + std::to_string(score[_reg._player].value().s), _fonts[0]);
-                textScore.setCharacterSize(30);
-                textScore.setFillColor(sf::Color::Blue);
-                textScore.setPosition(400, 0);
-                _window.draw(textScore);
-            }
             int cpt = 0;
             for (uint32_t i = 0; i < 4; i++) {
                 if (health[i] && i != _reg._player && health[i].value().health <= 0) {
                     cpt++;
+                }
+            }
+            if (health[_reg._player]) {
+                if (_reg._player <= 3) {
+                    sf::Text text("Life: " + std::to_string(health[_reg._player].value().health), _fonts[0]);
+                    text.setCharacterSize(30);
+                    text.setFillColor(sf::Color::Red);
+                    text.setPosition(10, 0);
+                    _window.draw(text);
+                }
+            }
+            if (score[_reg._player]) {
+                if (_reg._player <= 3) {
+                    sf::Text textScore("Score: " + std::to_string(score[_reg._player].value().s), _fonts[0]);
+                    textScore.setCharacterSize(30);
+                    textScore.setFillColor(sf::Color::Blue);
+                    textScore.setPosition(650, 0);
+                    _window.draw(textScore);
+                }
+            }
+            if (score[_reg._player]) {
+                if (_reg._player > 3) {
+                    sf::Text textSpec("Mode spectator", _fonts[0]);
+                    textSpec.setCharacterSize(30);
+                    textSpec.setFillColor(sf::Color::Yellow);
+                    textSpec.setPosition(250, 0);
+                     _window.draw(textSpec);
+                }
+            }
+            if (score[_reg._player]) {
+                if (_reg._player <= 3) {
+                    sf::Text textSpec("Player: " + std::to_string(_reg._player), _fonts[0]);
+                    textSpec.setCharacterSize(20);
+                    textSpec.setFillColor(sf::Color::White);
+                    textSpec.setPosition(680, 570);
+                     _window.draw(textSpec);
                 }
             }
             if (cpt == 3 && health[_reg._player] && health[_reg._player].value().health > 0) {
@@ -111,12 +140,6 @@ class SfmlSystem : public ISystem {
             }
             if (health[_reg.getPlayerEntity()] && health[_reg.getPlayerEntity()].value().health <= 0 && cpt != 3)
                 _window.draw(spriteGameOver);
-            if (health[_reg._player]) {
-                sf::Text text("Life: " + std::to_string(health[_reg._player].value().health), _fonts[0]);
-                text.setCharacterSize(30);
-                text.setFillColor(sf::Color::Red);
-                _window.draw(text);
-            }
             _window.display();
         }
 
