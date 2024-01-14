@@ -6,12 +6,12 @@
 */
 
 #ifndef LOGGERSYSTEM_HPP_
-#define LOGGERSYSTEM_HPP_
+    #define LOGGERSYSTEM_HPP_
 
-#include "../../ecs/system/ISystem.hpp"
-#include "../../ecs/registry/registry.hpp"
-#include "../../ecs/event/keyPressed.hpp"
-#include "../../ecs/event/textEntered.hpp"
+    #include "../../ecs/system/ISystem.hpp"
+    #include "../../ecs/registry/registry.hpp"
+    #include "../../ecs/event/keyPressed.hpp"
+    #include "../../ecs/event/textEntered.hpp"
 
 enum Component {
     DEFAULT,
@@ -38,7 +38,6 @@ class LoggerSystem : public ISystem {
             displayComponent();
         };
     private:
-
         void checkInput() {
             if (_reg._eventManager.checkEvent<keyPressed>()) {
                 for (auto &tmp : _reg._eventManager.getEvent<keyPressed>()) {
@@ -149,7 +148,6 @@ class LoggerSystem : public ISystem {
                     break;
             }
         }
-
 
         registry &_reg;
         uint32_t _target = 0;

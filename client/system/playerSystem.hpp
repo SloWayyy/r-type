@@ -6,12 +6,12 @@
 */
 
 #ifndef PLAYERSYSTEM_HPP_
-#define PLAYERSYSTEM_HPP_
+    #define PLAYERSYSTEM_HPP_
 
-#include "../../ecs/system/ISystem.hpp"
-#include "../../ecs/registry/registry.hpp"
-#include "../../ecs/event/shoot.hpp"
-#include "../../ecs/event/ennemy.hpp"
+    #include "../../ecs/system/ISystem.hpp"
+    #include "../../ecs/registry/registry.hpp"
+    #include "../../ecs/event/shoot.hpp"
+    #include "../../ecs/event/ennemy.hpp"
 
 class PlayerSystem : public ISystem {
     public:

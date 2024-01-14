@@ -6,10 +6,11 @@
 */
 
 #ifndef COLLISION_HPP_
-#define COLLISION_HPP_
-#include "IEvent.hpp"
-#include <cstdint>
-#include <iostream>
+    #define COLLISION_HPP_
+
+    #include "IEvent.hpp"
+    #include <cstdint>
+    #include <iostream>
 
 class collision : public IEvent {
     public:
@@ -23,6 +24,5 @@ class collision : public IEvent {
     protected:
     private:
 };
-
 
 #endif /* !COLLISION_HPP_ */

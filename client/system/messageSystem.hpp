@@ -6,12 +6,12 @@
 */
 
 #ifndef MESSAGESYSTEM_HPP_
-#define MESSAGESYSTEM_HPP_
+    #define MESSAGESYSTEM_HPP_
 
-#include "../../ecs/system/ISystem.hpp"
-#include "../../ecs/registry/registry.hpp"
-#include "../../network/tcpClient/tcpClient.hpp"
-#include "../../ecs/event/textEntered.hpp"
+    #include "../../ecs/system/ISystem.hpp"
+    #include "../../ecs/registry/registry.hpp"
+    #include "../../network/tcpClient/tcpClient.hpp"
+    #include "../../ecs/event/textEntered.hpp"
 
 class messageSystem : public ISystem {
     public:

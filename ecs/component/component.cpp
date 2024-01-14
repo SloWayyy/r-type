@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2024
+** r-type
+** File description:
+** component
+*/
+
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <cstdint>

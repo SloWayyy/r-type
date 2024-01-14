@@ -6,11 +6,11 @@
 */
 
 #ifndef SERVEREVENTLOADERSYSTEM_HPP_
-#define SERVEREVENTLOADERSYSTEM_HPP_
+    #define SERVEREVENTLOADERSYSTEM_HPP_
 
-#include "../../ecs/system/ISystem.hpp"
-#include "../../network/tcpServer/tcpServer.hpp"
-#include "../../network/udp/udp.hpp"
+    #include "../../ecs/system/ISystem.hpp"
+    #include "../../network/tcpServer/tcpServer.hpp"
+    #include "../../network/udp/udp.hpp"
 
 class ServerEventLoaderSystem : public ISystem {
     public:

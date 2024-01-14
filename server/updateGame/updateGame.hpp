@@ -8,9 +8,9 @@
 #ifndef UPDATEGAME_HPP_
     #define UPDATEGAME_HPP_
 
-#include "../../ecs/registry/registry.hpp"
-#include <any>
-#include <vector>
+    #include "../../ecs/registry/registry.hpp"
+    #include <any>
+    #include <vector>
 
 class UpdateGame {
     public:

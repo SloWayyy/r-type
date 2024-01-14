@@ -6,16 +6,16 @@
 */
 
 #ifndef EVENT_HPP_
-#define EVENT_HPP_
+    #define EVENT_HPP_
 
-#include <unordered_map>
-#include <vector>
-#include <cstdint>
-#include <functional>
-#include <typeindex>
-#include <typeinfo>
-#include <memory>
-#include "IEvent.hpp"
+    #include <unordered_map>
+    #include <vector>
+    #include <cstdint>
+    #include <functional>
+    #include <typeindex>
+    #include <typeinfo>
+    #include <memory>
+    #include "IEvent.hpp"
 
 class EventManager {
     public:

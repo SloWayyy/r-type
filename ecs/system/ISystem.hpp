@@ -6,7 +6,7 @@
 */
 
 #ifndef ISYSTEM_HPP_
-#define ISYSTEM_HPP_
+    #define ISYSTEM_HPP_
 
 class ISystem {
     public:
