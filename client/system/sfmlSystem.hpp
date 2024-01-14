@@ -103,7 +103,7 @@ class SfmlSystem : public ISystem {
                 if (_reg._player <= 3) {
                     sf::Text text("Life: " + std::to_string(health[_reg._player].value().health), _fonts[0]);
                     text.setCharacterSize(30);
-                    text.setFillColor(sf::Color::Red);
+                    text.setFillColor(sf::Color::Green);
                     text.setPosition(10, 0);
                     _window.draw(text);
                 }
@@ -112,7 +112,7 @@ class SfmlSystem : public ISystem {
                 if (_reg._player <= 3) {
                     sf::Text textScore("Score: " + std::to_string(score[_reg._player].value().s), _fonts[0]);
                     textScore.setCharacterSize(30);
-                    textScore.setFillColor(sf::Color::Blue);
+                    textScore.setFillColor(sf::Color::Yellow);
                     textScore.setPosition(650, 0);
                     _window.draw(textScore);
                 }
@@ -130,7 +130,7 @@ class SfmlSystem : public ISystem {
                 if (_reg._player <= 3) {
                     sf::Text textSpec("Player: " + std::to_string(_reg._player), _fonts[0]);
                     textSpec.setCharacterSize(20);
-                    textSpec.setFillColor(sf::Color::White);
+                    textSpec.setFillColor(sf::Color::Red);
                     textSpec.setPosition(680, 570);
                      _window.draw(textSpec);
                 }
