@@ -42,7 +42,7 @@ private:
         auto &owner = _reg.getComponent<Owner>();
         hitbox.emplace_at(Entity_id, 14, 14);
         collision.emplace_at(Entity_id, 0);
-        sprite.emplace_at(Entity_id, 2, 0, 0, 32, 28);
+        sprite.emplace_at(Entity_id, 4, 0, 0, 32, 28);
         position.emplace_at(Entity_id, player_x + 32, player_y + 14);
         size.emplace_at(Entity_id, 1, 1);
         velocity.emplace_at(Entity_id, 5, 0);
