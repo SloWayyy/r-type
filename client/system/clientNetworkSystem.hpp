@@ -6,13 +6,13 @@
 */
 
 #ifndef NETWORKSYSTEM_HPP_
-#define NETWORKSYSTEM_HPP_
+    #define NETWORKSYSTEM_HPP_
 
-#include "../../ecs/system/ISystem.hpp"
-#include "../../network/tcpClient/tcpClient.hpp"
-#include "../../network/udp/udp.hpp"
-#include "../../ecs/event/keyPressed.hpp"
-#include "../../ecs/event/shoot.hpp"
+    #include "../../ecs/system/ISystem.hpp"
+    #include "../../network/tcpClient/tcpClient.hpp"
+    #include "../../network/udp/udp.hpp"
+    #include "../../ecs/event/keyPressed.hpp"
+    #include "../../ecs/event/shoot.hpp"
 
 class NetworkSystem : public ISystem {
     public:

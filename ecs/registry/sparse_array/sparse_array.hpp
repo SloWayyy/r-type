@@ -6,14 +6,14 @@
 */
 
 #ifndef SPARSE_ARRAY_HPP_
-#define SPARSE_ARRAY_HPP_
+    #define SPARSE_ARRAY_HPP_
 
-#include <iostream>
-#include <optional>
-#include <vector>
-#include <cstring>
+    #include <iostream>
+    #include <optional>
+    #include <vector>
+    #include <cstring>
 
-#define DEFAULT_SIZE 512
+    #define DEFAULT_SIZE 512
 
 template <typename Component> // You can also mirror the definition of std :: vector ,
 

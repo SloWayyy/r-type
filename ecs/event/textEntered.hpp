@@ -6,9 +6,10 @@
 */
 
 #ifndef TEXTENTERED_HPP_
-#define TEXTENTERED_HPP_
-#include "IEvent.hpp"
-#include <cstdint>
+    #define TEXTENTERED_HPP_
+
+    #include "IEvent.hpp"
+    #include <cstdint>
 
 class textEntered : public IEvent {
     public:
@@ -21,7 +22,5 @@ class textEntered : public IEvent {
     protected:
     private:
 };
-
-
 
 #endif /* !TEXTENTERED_HPP_ */

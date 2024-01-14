@@ -6,11 +6,10 @@
 */
 
 #ifndef ANIMESYSTEM_HPP_
-#define ANIMESYSTEM_HPP_
+    #define ANIMESYSTEM_HPP_
 
-#include "../../ecs/system/ISystem.hpp"
-#include "../../ecs/registry/registry.hpp"
-
+    #include "../../ecs/system/ISystem.hpp"
+    #include "../../ecs/registry/registry.hpp"
 
 class AnimeSystem : public ISystem {
     public:

@@ -6,15 +6,16 @@
 */
 
 #ifndef ADMINCOMMANDSYSTEM_HPP_
-#define ADMINCOMMANDSYSTEM_HPP_
-#define HEALING "/heal"
-#define DEAD "/dead"
-#define IMMORTAL "/god"
+    #define ADMINCOMMANDSYSTEM_HPP_
 
-#include "../../ecs/system/ISystem.hpp"
-#include "../../ecs/registry/registry.hpp"
-#include "../../network/tcpServer/tcpServer.hpp"
-#include "../../network/udp/udp.hpp"
+    #define HEALING "/heal"
+    #define DEAD "/dead"
+    #define IMMORTAL "/god"
+
+    #include "../../ecs/system/ISystem.hpp"
+    #include "../../ecs/registry/registry.hpp"
+    #include "../../network/tcpServer/tcpServer.hpp"
+    #include "../../network/udp/udp.hpp"
 
 
 class adminCommandSystem : public ISystem {
